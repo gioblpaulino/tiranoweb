@@ -15,9 +15,24 @@ from tiranocad_core.modelos.entidades import ErroGeometriaCAD
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PASTA_TEMPLATES = os.path.join(BASE_DIR, "templates")
+PASTA_STATIC = os.path.join(BASE_DIR, "static")
 PASTA_PERFIS = os.path.join(BASE_DIR, "tiranocad_core", "catalogos", "perfis")
 
-app = Flask(__name__, template_folder=PASTA_TEMPLATES)
+CATALOGO_MATERIAIS_MDF = [
+    {"id": "generico_branco_tx", "nome": "Branco TX (Padrão)", "marca": "Genérico", "hex": "#ECEFF1", "veio": False},
+    {"id": "duratex_carvalho_avela", "nome": "Carvalho Avelã", "marca": "Duratex", "hex": "#B68656", "veio": True},
+    {"id": "duratex_carvalho_hanover", "nome": "Carvalho Hanover", "marca": "Duratex", "hex": "#C89D66", "veio": True},
+    {"id": "duratex_grafite_trama", "nome": "Grafite Trama", "marca": "Duratex", "hex": "#373B3E", "veio": False},
+    {"id": "duratex_gianduia_trama", "nome": "Gianduia Trama", "marca": "Duratex", "hex": "#8D7B68", "veio": False},
+    {"id": "arauco_louro_freijo", "nome": "Louro Freijó", "marca": "Arauco", "hex": "#A86B3E", "veio": True},
+    {"id": "arauco_cinza_cristal", "nome": "Cinza Cristal", "marca": "Arauco", "hex": "#9E9E9E", "veio": False},
+    {"id": "guararapes_freijo_puro", "nome": "Freijó Puro", "marca": "Guararapes", "hex": "#9C6236", "veio": True},
+    {"id": "guararapes_azul_petroleo", "nome": "Azul Petróleo", "marca": "Guararapes", "hex": "#1B3B48", "veio": False},
+    {"id": "generico_preto_tx", "nome": "Preto TX", "marca": "Genérico", "hex": "#1C1C1C", "veio": False},
+    {"id": "mdf_cru", "nome": "MDF Cru (Sem Revestimento)", "marca": "Industrial", "hex": "#D2B48C", "veio": False}
+]
+
+app = Flask(__name__, template_folder=PASTA_TEMPLATES, static_folder=PASTA_STATIC)
 
 COFRE_MODULOS_ATIVOS = {}
 
@@ -139,7 +154,7 @@ def api_fabricar_modulo():
 
         era_modulo_existente = id_modulo in COFRE_MODULOS_ATIVOS
         pos_anterior = COFRE_MODULOS_ATIVOS[id_modulo].get("posicionamento_ambiente") if era_modulo_existente else None
-
+        
         nome_projeto = str(dados.get("nome_projeto", "COZINHA_TIRANOGIO")).strip().upper()
         familia = str(dados.get("familia", "MODULO_INFERIOR")).strip().upper()
 
@@ -185,7 +200,9 @@ def api_fabricar_modulo():
             id_perfil=id_perfil,
             overrides_perfil=overrides_perfil if overrides_perfil else None,
             operacoes_internas=operacoes_internas,
-            opcoes_especiais=opcoes_especiais
+            opcoes_especiais=opcoes_especiais,
+            overrides_pecas=COFRE_MODULOS_ATIVOS[id_modulo]["parametros"].get("overrides_pecas"),
+            zonas_materiais=COFRE_MODULOS_ATIVOS[id_modulo]["parametros"].get("zonas_materiais")
         )
 
         if msg_copiloto:
@@ -335,9 +352,102 @@ def limpar_projeto_ativo():
     COFRE_MODULOS_ATIVOS.clear()
     return jsonify({"sucesso": True, "mensagem": "Ambiente limpo com sucesso."}), 200
 
+@app.route("/api/catalogo_materiais", methods=["GET"])
+def obter_catalogo_materiais():
+    """Retorna o catálogo de chapas MDF multi-marcas para o Pintor 3D."""
+    return jsonify({"materiais": CATALOGO_MATERIAIS_MDF}), 200
+
+
+@app.route("/api/modulo/pintar", methods=["POST"])
+def api_pintar_modulo_ou_peca():
+    """
+    Atualiza as 8 Zonas de Material/Fita do módulo OU aplica override de material
+    e fita de borda em uma Peça Individual SEM alterar a engenharia ou geometria!
+    """
+    dados = request.get_json(silent=True) or {}
+    id_mod = str(dados.get("id_modulo", "")).strip()
+    if id_mod not in COFRE_MODULOS_ATIVOS:
+        return jsonify({"sucesso": False, "erro_engenharia": "Módulo não encontrado."}), 404
+
+    mod = COFRE_MODULOS_ATIVOS[id_mod]
+    params = mod.setdefault("parametros", {})
+    zonas_atuais = params.setdefault("zonas_materiais", {})
+    overrides_pecas = params.setdefault("overrides_pecas", {})
+
+    # 1. Atualiza Zonas do Módulo (se enviadas)
+    if "zonas_materiais" in dados and isinstance(dados["zonas_materiais"], dict):
+        zonas_atuais.update(dados["zonas_materiais"])
+
+    # 2. Atualiza Override de Peça Individual (se enviado)
+    if "override_peca" in dados and isinstance(dados["override_peca"], dict):
+        ov = dados["override_peca"]
+        nome_peca = str(ov.get("nome_comercial", "")).strip()
+        if nome_peca:
+            overrides_pecas[nome_peca] = {
+                "material": ov.get("material"),
+                "cor_fita_borda": ov.get("cor_fita_borda"),
+                "fitas_borda": ov.get("fitas_borda")
+            }
+
+    # Limpa overrides individuais se solicitado
+    if dados.get("resetar_pecas_individuais"):
+        overrides_pecas.clear()
+
+    def possui_veio(nome_mat: str) -> bool:
+        return not any(iso in nome_mat.upper() for iso in ["BRANCO", "CRU", "PRETO", "CINZA", "GRAFITE", "TX"])
+
+    cats_caixaria = {
+        "base_inferior", "base_superior", "lateral_esquerda", "lateral_direita",
+        "sarrafo_frontal", "sarrafo_traseiro_deitado", "sarrafo_traseiro_em_pe",
+        "regua_mao_amiga_movel", "regua_mao_amiga_parede", "travessa_fixacao_aereo",
+        "travessa_reforco_torre_sup", "travessa_reforco_torre_inf"
+    }
+    cats_frentes = {
+        "porta_giro_esquerda", "porta_giro_direita", "porta_basculante",
+        "frente_gaveta", "frente_porta_tempero", "painel_tamponamento"
+    }
+    cats_fundo_gaveta = {"fundo_gaveta", "fundo_sapateira"}
+
+    # Reaplica as cores diretamente nos dicionários das peças já calculadas (Zero recálculo geométrico!)
+    for p_dict in mod.get("lista_de_pecas", []):
+        cat = str(p_dict.get("categoria_industrial", "")).lower()
+        nome_com = p_dict.get("nome_comercial", "")
+
+        if cat in cats_caixaria:
+            if zonas_atuais.get("cor_caixaria"): p_dict["material"] = zonas_atuais["cor_caixaria"]
+            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frontal_caixaria") or p_dict["material"]
+        elif cat in cats_frentes:
+            if zonas_atuais.get("cor_frentes"): p_dict["material"] = zonas_atuais["cor_frentes"]
+            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frentes") or p_dict["material"]
+        elif cat in cats_fundo_gaveta:
+            if zonas_atuais.get("cor_fundo_gaveta"): p_dict["material"] = zonas_atuais["cor_fundo_gaveta"]
+            p_dict["cor_fita_borda"] = "SEM_FITA"
+        elif cat == "fundo_costa":
+            if zonas_atuais.get("cor_fundo_costa"): p_dict["material"] = zonas_atuais["cor_fundo_costa"]
+            p_dict["cor_fita_borda"] = "SEM_FITA"
+        else:
+            if zonas_atuais.get("cor_internos"): p_dict["material"] = zonas_atuais["cor_internos"]
+            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_internos") or p_dict["material"]
+
+        p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
+
+        # Aplica o override individual se esta peça específica foi customizada pelo usuário
+        if nome_com in overrides_pecas:
+            ov_p = overrides_pecas[nome_com]
+            if ov_p.get("material"):
+                p_dict["material"] = ov_p["material"]
+                p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
+            if ov_p.get("cor_fita_borda"):
+                p_dict["cor_fita_borda"] = ov_p["cor_fita_borda"]
+            if isinstance(ov_p.get("fitas_borda"), dict):
+                p_dict["fitas_borda"].update(ov_p["fitas_borda"])
+
+    return jsonify({"sucesso": True, "modulo": mod}), 200
 
 if __name__ == "__main__":
     os.makedirs(PASTA_TEMPLATES, exist_ok=True)
+    os.makedirs(os.path.join(PASTA_STATIC, "css"), exist_ok=True)
+    os.makedirs(os.path.join(PASTA_STATIC, "js"), exist_ok=True)
 
     cmd_1 = copiloto.interpretar_comando("Coloque 4 gavetas")
     m1 = orquestrador.fabricar_modulo(
@@ -359,3 +469,5 @@ if __name__ == "__main__":
 
     print("🚀 Estúdio Web CAD 3D disponível em: http://localhost:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)
+    
+    

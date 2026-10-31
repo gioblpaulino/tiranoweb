@@ -58,7 +58,9 @@ class OrquestradorModulo:
         id_perfil: str = "padrao_convencional_15mm",
         overrides_perfil: Optional[Dict[str, Any]] = None,
         operacoes_internas: Optional[List[Dict[str, Any]]] = None,
-        opcoes_especiais: Optional[Dict[str, Any]] = None
+        opcoes_especiais: Optional[Dict[str, Any]] = None,
+        zonas_materiais: Optional[Dict[str, Any]] = None,
+        overrides_pecas: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         familia = familia.strip().upper()
         opcoes_esp = opcoes_especiais or {}
@@ -195,6 +197,7 @@ class OrquestradorModulo:
                 todas_pecas.extend(pecas_basc)
 
         o_usinagens.aplicar_todas_usinagens(mapa_estrutural, vao_raiz)
+        self.aplicar_matriz_materiais(todas_pecas, zonas_materiais, overrides_pecas)
 
         alertas_engenharia: List[str] = []
         for p in todas_pecas:
@@ -206,8 +209,84 @@ class OrquestradorModulo:
             alertas_engenharia, todas_pecas, None
         )
 
+    @staticmethod
+    def aplicar_matriz_materiais(
+        lista_pecas: List[Peca],
+        zonas_materiais: Optional[Dict[str, Any]] = None,
+        overrides_pecas: Optional[Dict[str, Dict[str, Any]]] = None
+    ) -> None:
+        """
+        Aplica a Matriz de 8 Zonas de Materiais/Fitas e os Overrides de Peças
+        Individuais sem interferir na engenharia geométrica ou nas furações.
+        """
+        zonas = zonas_materiais or {}
+        ov_pecas = overrides_pecas or {}
+
+        def possui_veio(nome_mat: str) -> bool:
+            return not any(iso in nome_mat.upper() for iso in ["BRANCO", "CRU", "PRETO", "CINZA", "GRAFITE", "TX"])
+
+        # Categorias pertencentes a cada Zona
+        cats_caixaria = {
+            "base_inferior", "base_superior", "lateral_esquerda", "lateral_direita",
+            "sarrafo_frontal", "sarrafo_traseiro_deitado", "sarrafo_traseiro_em_pe",
+            "regua_mao_amiga_movel", "regua_mao_amiga_parede", "travessa_fixacao_aereo",
+            "travessa_reforco_torre_sup", "travessa_reforco_torre_inf"
+        }
+        cats_frentes = {
+            "porta_giro_esquerda", "porta_giro_direita", "porta_basculante",
+            "frente_gaveta", "frente_porta_tempero", "painel_tamponamento"
+        }
+        cats_fundo_gaveta = {"fundo_gaveta", "fundo_sapateira"}
+
+        for p in lista_pecas:
+            cat = p.categoria_industrial.lower()
+
+            # 1. Aplicação das 8 Zonas Globais do Módulo
+            if cat in cats_caixaria:
+                if zonas.get("cor_caixaria"):
+                    p.material = str(zonas["cor_caixaria"])
+                p.cor_fita_borda = str(zonas.get("fita_frontal_caixaria") or p.material)
+
+            elif cat in cats_frentes:
+                if zonas.get("cor_frentes"):
+                    p.material = str(zonas["cor_frentes"])
+                p.cor_fita_borda = str(zonas.get("fita_frentes") or p.material)
+
+            elif cat in cats_fundo_gaveta:
+                if zonas.get("cor_fundo_gaveta"):
+                    p.material = str(zonas["cor_fundo_gaveta"])
+                p.cor_fita_borda = "SEM_FITA"
+
+            elif cat == "fundo_costa":
+                if zonas.get("cor_fundo_costa"):
+                    p.material = str(zonas["cor_fundo_costa"])
+                p.cor_fita_borda = "SEM_FITA"
+
+            else:
+                # Zona 3: Todos os Internos (Divisórias, Prateleiras, Corpo de Gaveta, Sapateira, Internos Tempero)
+                if zonas.get("cor_internos"):
+                    p.material = str(zonas["cor_internos"])
+                p.cor_fita_borda = str(zonas.get("fita_internos") or p.material)
+
+            p.tem_veio = False if "fundo" in cat else possui_veio(p.material)
+
+            # 2. Aplicação de Override de Peça Individual (Indexado por nome_comercial)
+            ov = ov_pecas.get(p.nome_comercial)
+            if ov:
+                if ov.get("material"):
+                    p.material = str(ov["material"])
+                    p.tem_veio = False if "fundo" in cat else possui_veio(p.material)
+                if ov.get("cor_fita_borda"):
+                    p.cor_fita_borda = str(ov["cor_fita_borda"])
+                if "fitas_borda" in ov and isinstance(ov["fitas_borda"], dict):
+                    fb = ov["fitas_borda"]
+                    p.fitas.base = bool(fb.get("base", p.fitas.base))
+                    p.fitas.topo = bool(fb.get("topo", p.fitas.topo))
+                    p.fitas.esquerda = bool(fb.get("esquerda", p.fitas.esquerda))
+                    p.fitas.direita = bool(fb.get("direita", p.fitas.direita))
+                    
     def _empacotar_payload(
-        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore, alertas, pecas, msg_custom
+        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore, alertas, pecas, msg_custom, zonas_materiais=None, overrides_pecas=None
     ) -> Dict[str, Any]:
         payload = {
             "id_modulo": id_mod,
@@ -223,7 +302,9 @@ class OrquestradorModulo:
                 "material_caixaria": mat_c,
                 "material_frentes": mat_f,
                 "id_perfil_ativo": self.gerenciador_perfis.id_perfil_ativo,
-                "perfil_ativo": self.gerenciador_perfis.dados_perfil
+                "perfil_ativo": self.gerenciador_perfis.dados_perfil,
+                "zonas_materiais": zonas_materiais or {},
+                "overrides_pecas": overrides_pecas or {}        
             },
             "operacoes_internas": ops,
             "arvore_espacial_vaos": arvore,

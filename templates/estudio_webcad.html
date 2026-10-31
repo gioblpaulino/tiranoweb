@@ -2,168 +2,31 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>TiranoGio Web CAD 3D - Controle Direcional, Multi-Seleção & Ambiente</title>
+    <title>Tirano-Gio | Estúdio CAD 3D & Automação CNC</title>
+    <link rel="stylesheet" href="/static/css/estudio.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <style>
-        :root {
-            --bg-dark: #07090C;
-            --panel-bg: #101419;
-            --card-bg: #171C24;
-            --accent-green: #4CE660;
-            --btn-green: #389E48;
-            --accent-purple: #8E24AA;
-            --accent-blue: #1E88E5;
-            --accent-slate: #455A64;
-            --accent-orange: #FF9800;
-            --accent-red: #E53935;
-            --accent-cyan: #00E5FF;
-            --text-main: #ECEFF1;
-            --text-muted: #90A4AE;
-            --border-color: #263238;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-
-        .sidebar-left {
-            width: 390px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; padding: 10px; overflow-y: auto; gap: 8px;
-        }
-        .brand-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding-bottom: 6px; border-bottom: 1px solid var(--border-color);
-        }
-        .brand-title { font-size: 15px; font-weight: 800; color: var(--accent-green); }
-        .badge-status { font-size: 10px; background: #1B5E20; color: #A5D6A7; padding: 3px 8px; border-radius: 12px; }
-
-        .card {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 9px; display: flex; flex-direction: column; gap: 6px;
-        }
-        .card-title {
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            color: var(--accent-orange); letter-spacing: 0.5px;
-        }
-
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-        .row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
-
-        label { font-size: 10px; color: var(--text-muted); display: block; margin-bottom: 2px; }
-        input, select, textarea {
-            width: 100%; background: #151515; border: 1px solid #3D3D3D; color: #FFF;
-            padding: 5px 7px; border-radius: 5px; font-size: 11px; outline: none;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-green); }
-        textarea { resize: vertical; min-height: 46px; }
-
-        .btn {
-            border: none; border-radius: 5px; padding: 7px 9px; font-size: 11px;
-            font-weight: 700; cursor: pointer; transition: 0.15s; color: #FFF;
-            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-        }
-        .btn-primary { background: #2E7D32; }
-        .btn-primary:hover { background: #388E3C; }
-        .btn-blue { background: var(--accent-blue); }
-        .btn-blue:hover { background: #039BE5; }
-        .btn-danger { background: #C62828; }
-        .btn-danger:hover { background: #E53935; }
-        .btn-secondary { background: #37474F; }
-        .btn-secondary:hover { background: #455A64; }
-        .btn-secondary.ativo { background: #00838F; border: 1px solid var(--accent-cyan); }
-        .btn-mode { background: #263238; border: 1px solid #455A64; }
-        .btn-mode.ativo { background: #E65100; border-color: #FFB74D; }
-
-        .preset-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-        .chip {
-            font-size: 10px; background: #1A2634; color: #81D4FA; border: 1px solid #0277BD;
-            padding: 3px 6px; border-radius: 4px; cursor: pointer;
-        }
-        .chip:hover { background: #0277BD; color: #FFF; }
-
-        /* PALCO 3D / 2D */
-        .stage-center { flex: 1; position: relative; display: flex; flex-direction: column; background: #141414; }
-        .toolbar-top {
-            height: 50px; background: rgba(26, 26, 26, 0.96); border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 10;
-        }
-        .toolbar-group { display: flex; align-items: center; gap: 7px; }
-        #canvas-container { flex: 1; width: 100%; height: 100%; position: relative; }
-
-        /* JOYSTICK / CONTROLE DIRECIONAL CAD FLUTUANTE */
-        .dpad-hud {
-            position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 24, 28, 0.95); border: 1px solid #0288D1; border-radius: 10px;
-            padding: 10px 14px; display: flex; align-items: center; gap: 14px; z-index: 20;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
-        }
-        .dpad-cross {
-            display: grid; grid-template-columns: 36px 36px 36px; grid-template-rows: 30px 30px 30px; gap: 4px;
-        }
-        .dpad-btn {
-            background: #263238; border: 1px solid #455A64; color: #FFF; border-radius: 5px;
-            font-size: 12px; font-weight: bold; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; transition: 0.12s;
-        }
-        .dpad-btn:hover { background: #0288D1; border-color: #80D8FF; }
-        .dpad-btn.eixo-x { border-bottom: 2px solid #FF5252; }
-        .dpad-btn.eixo-y { border-bottom: 2px solid #448AFF; }
-        .dpad-btn.eixo-z { border-bottom: 2px solid #00E676; }
-
-        .hud-bottom-left {
-            position: absolute; bottom: 14px; left: 14px;
-            background: rgba(18, 18, 18, 0.90); border: 1px solid var(--border-color);
-            padding: 8px 12px; border-radius: 8px; font-size: 11px; max-width: 310px; pointer-events: none;
-        }
-        .legend-pill { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 3px; }
-
-        /* COLUNA DIREITA */
-        .sidebar-right {
-            width: 350px; background: var(--panel-bg); border-left: 1px solid var(--border-color);
-            display: flex; flex-direction: column; padding: 10px; overflow-y: auto; gap: 8px;
-        }
-        .list-container { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
-        .module-item, .part-item {
-            background: #161616; border: 1px solid #2E2E2E; border-radius: 5px;
-            padding: 6px 8px; font-size: 11px; cursor: pointer; display: flex;
-            justify-content: space-between; align-items: center; gap: 6px;
-        }
-        .module-item.active { border-color: var(--accent-green); background: #1B2E22; }
-        .module-item.multi-selected { border-color: var(--accent-cyan); background: #102830; }
-        .chk-sel { width: 14px; height: 14px; accent-color: var(--accent-cyan); cursor: pointer; }
-        .tag-mirror { color: #80D8FF; font-weight: bold; font-size: 10px; }
-    </style>
 </head>
 <body>
 
-    <!-- COLUNA ESQUERDA: CONSTRUTORES -->
+    <!-- COLUNA ESQUERDA: CONSTRUTORES E ENGENHARIA -->
     <div class="sidebar-left">
-        <div class="brand-header" style="padding: 8px 4px 12px 4px; border-bottom: 1px solid #263238; display:flex; align-items:center; gap:12px;">
-            <!-- LOGO VETORIAL CYBER-REX (PADRONIZADA COM O TIRANOCUT) -->
-            <svg width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Arco Energético Verde -->
+        <div class="brand-header">
+            <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M 28 24 A 38 38 0 0 1 78 28" stroke="#4CE660" stroke-width="3.5" stroke-linecap="round"/>
                 <path d="M 28 76 A 38 38 0 0 0 78 72" stroke="#4CE660" stroke-width="3.5" stroke-linecap="round"/>
-                <!-- Trilhas de Circuito (Esquerda) -->
                 <line x1="6" y1="44" x2="26" y2="44" stroke="#4CE660" stroke-width="2.5"/>
                 <circle cx="28" cy="44" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
                 <line x1="12" y1="53" x2="34" y2="53" stroke="#4CE660" stroke-width="2.5"/>
                 <circle cx="36" cy="53" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
                 <line x1="16" y1="62" x2="28" y2="62" stroke="#4CE660" stroke-width="2.5"/>
                 <circle cx="30" cy="62" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
-                <!-- Silhueta Geométrica T-Rex (Branca) -->
                 <path d="M 38 38 L 48 28 L 66 28 L 84 36 L 84 48 L 62 48 L 56 54 L 76 56 L 72 64 L 50 64 L 44 74" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-                <!-- Olho Verde Neon -->
                 <polygon points="55,35 64,35 61,39 53,39" fill="#4CE660"/>
             </svg>
-            <div style="display:flex; flex-direction:column;">
-                <div style="font-size:17px; font-weight:900; letter-spacing:3px; color:#FFFFFF;">
-                    TIRANO-<span style="color:#4CE660;">GIO</span>
-                </div>
-                <div style="font-size:8.5px; letter-spacing:1.6px; color:#90A4AE; font-weight:600;">
-                    AUTOMAÇÃO DE SISTEMAS | CAD 3D & CNC
-                </div>
+            <div>
+                <div class="brand-title-main">TIRANO-<span style="color:#4CE660;">GIO</span></div>
+                <div class="brand-title-sub">AUTOMAÇÃO DE SISTEMAS | CAD 3D & CNC</div>
             </div>
         </div>
 
@@ -336,7 +199,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="row-4">
                 <div><label>Gap Esq</label><input type="number" id="inp_gap_esq" value="3.0" step="0.5"></div>
                 <div><label>Gap Dir</label><input type="number" id="inp_gap_dir" value="3.0" step="0.5"></div>
@@ -361,13 +224,15 @@
             <div class="card-title">🤖 3. Copiloto & Fabricação</div>
             <textarea id="inp_prompt">Coloque 2 prateleiras e 2 portas</textarea>
             <div class="preset-chips">
-                <span class="chip" onclick="usarPreset('Coloque 4 gavetas')">4 Gavetas</span>
-                <span class="chip" onclick="usarPreset('Coloque 2 prateleiras e 2 portas')">2 Prat + 2 Portas</span>
+                <span class="chip" onclick="usarPreset('Coloque 4 gavetas')">4 Gavetas Ext.</span>
+                <span class="chip" onclick="usarPreset('Coloque 3 gavetas internas e 2 portas')">3 Gav. Internas + Portas</span>
+                <span class="chip" onclick="usarPreset('Coloque 2 sapateiras e 2 portas')">2 Sapateiras + Portas</span>
+                <span class="chip" onclick="usarPreset('Coloque 1 prateleira e 1 porta basculante')">Aéreo Basculante</span>
                 <span class="chip" onclick="usarPreset('Coloque porta-tempero de 200mm na esquerda e 1 prateleira na direita e 2 portas na direita')">🍾 Porta-Tempero + 2 Portas</span>
                 <span class="chip" onclick="usarPreset('Torre quente com 3 gavetas embaixo, nicho de 450mm no meio e 1 prateleira em cima e 2 portas em cima')">🔥 Torre Quente</span>
             </div>
             <button class="btn btn-primary" onclick="fabricarModuloAtual(false)">🚀 FABRICAR / ATUALIZAR ITEM ATUAL</button>
-            <button class="btn btn-blue" onclick="criarNovoSlotModulo()">➕ ADICIONAR NOVO ITEM C/ AUTO-SNAP</button>
+            <button class="btn btn-purple" onclick="criarNovoSlotModulo()">➕ ADICIONAR NOVO ITEM C/ AUTO-SNAP</button>
         </div>
     </div>
 
@@ -378,7 +243,8 @@
                 <button class="btn btn-mode" id="btn_modo_isolado" onclick="mudarModoCamera('ISOLADO')">🔍 Módulo Isolado</button>
                 <button class="btn btn-mode ativo" id="btn_modo_ambiente3d" onclick="mudarModoCamera('AMBIENTE_3D')">🏠 Ambiente 3D</button>
                 <button class="btn btn-mode" id="btn_modo_planta2d" onclick="mudarModoCamera('PLANTA_2D')">📐 Planta Baixa 2D (Paredes)</button>
-
+                <button class="btn btn-secondary" id="btn_palco_amplo" onclick="alternarPalcoAmplo()" title="Ocultar painéis laterais">⛶ Palco Amplo</button>
+                <button class="btn btn-purple" id="btn_menu_materiais" onclick="alternarMenuMateriais()">🎨 Materiais & Peças</button>
                 <label style="margin:0 0 0 6px; color:#FFF; font-weight:bold;">💥</label>
                 <input type="range" id="rng_explosao" min="0" max="220" value="0" style="width:70px;" oninput="atualizarCinematica3D()">
 
@@ -398,7 +264,7 @@
         <div id="canvas-container"></div>
 
         <!-- PAINEL FLUTUANTE DO CONSTRUTOR DE PAREDES (MODO PLANTA 2D) -->
-        <div id="painel_construtor_paredes" style="display:none; position:absolute; top:60px; left:14px; width:350px; background:rgba(20,20,20,0.96); border:1px solid #FFB74D; border-radius:8px; padding:12px; z-index:25;">
+        <div id="painel_construtor_paredes" class="floating-modal" style="left:14px; width:350px; border:1px solid #FFB74D;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <strong style="color:#FFB74D; font-size:12px;">🧱 Construtor de Paredes (Planta 2D)</strong>
                 <span style="font-size:10px; background:#E65100; padding:2px 6px; border-radius:4px;">Estilo Promob</span>
@@ -437,11 +303,11 @@
                 <button class="btn btn-secondary" onclick="removerUltimaParedeUI()">↩️ Desfazer Última Parede</button>
                 <button class="btn btn-danger" onclick="limparTodasParedesUI()">🗑️ Limpar Paredes</button>
             </div>
-            <div id="status_desenho_2d" style="margin-top:6px; font-size:11px; color:#00E676; font-weight:bold;"></div>
+            <div id="status_desenho_2d" style="margin-top:6px; font-size:11px; color:#4CE660; font-weight:bold;"></div>
         </div>
 
         <!-- MENU FLUTUANTE DE INTERAÇÃO DIRETA COM O NÓ ESPACIAL 3D -->
-        <div id="painel_interacao_vao" style="display:none; position:absolute; top:60px; right:16px; width:295px; background:rgba(22,22,22,0.96); border:1px solid #00E5FF; border-radius:8px; padding:12px; z-index:25;">
+        <div id="painel_interacao_vao" class="floating-modal" style="right:16px; width:305px; border:1px solid #00E5FF;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <strong id="titulo_vao_clicado" style="color:#00E5FF; font-size:12px;">📐 Vão Selecionado</strong>
                 <span style="cursor:pointer; color:#9E9E9E; font-weight:bold;" onclick="fecharPainelVao()">✕</span>
@@ -451,15 +317,60 @@
                 <button class="btn btn-secondary" onclick="aplicarOperacaoNoVao('DIVISORIA_VERTICAL')">➕ Dividir Vertical</button>
                 <button class="btn btn-secondary" onclick="aplicarOperacaoNoVao('DIVISORIA_HORIZONTAL')">➖ Dividir Horiz.</button>
                 <button class="btn btn-primary" onclick="aplicarOperacaoNoVao('GAVETEIRO', {quantidade: 4})">🗄️ +4 Gavetas Ext.</button>
-                <button class="btn btn-primary" style="background:#8E24AA;" onclick="aplicarOperacaoNoVao('GAVETEIRO_INTERNO', {quantidade: 3})">🔒 +3 Gav. Internas</button>
-                <button class="btn btn-primary" style="background:#00838F;" onclick="aplicarOperacaoNoVao('SAPATEIRA', {quantidade: 2})">👟 +2 Sapateiras</button>
+                <button class="btn btn-purple" onclick="aplicarOperacaoNoVao('GAVETEIRO_INTERNO', {quantidade: 3})">🔒 +3 Gav. Internas</button>
+                <button class="btn btn-secondary" style="background:#00838F;" onclick="aplicarOperacaoNoVao('SAPATEIRA', {quantidade: 2})">👟 +2 Sapateiras</button>
                 <button class="btn btn-primary" onclick="aplicarOperacaoNoVao('PRATELEIRAS', {quantidade: 2})">📏 +2 Prateleiras</button>
                 <button class="btn btn-blue" onclick="aplicarOperacaoNoVao('PORTA_TEMPERO')">🍾 Porta-Tempero</button>
                 <button class="btn btn-blue" onclick="aplicarOperacaoNoVao('PORTAS_GIRO', {abertura: 'DUPLA'})">🚪 Porta Giro Dupla</button>
                 <button class="btn btn-blue" style="background:#E65100; grid-column: span 2;" onclick="aplicarOperacaoNoVao('PORTAS_BASCULANTES', {quantidade: 1})">⏫ Porta Basculante (Pistão)</button>
             </div>
         </div>
+        <!-- MENU FLUTUANTE DE MATERIAIS (8 ZONAS DO MÓDULO + PINTOR DE PEÇA INDIVIDUAL) -->
+        <div id="painel_flutuante_materiais" class="floating-modal" style="right:16px; top:60px; width:365px; border:1px solid #8E24AA;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong style="color:#E1BEE7; font-size:12px;">🎨 Matriz de Materiais & Fitas (<span id="lbl_mod_mat">#001</span>)</strong>
+                <span style="cursor:pointer; color:#9E9E9E; font-weight:bold;" onclick="alternarMenuMateriais()">✕</span>
+            </div>
 
+            <div class="card-title" style="color:#4CE660;">1. Chapas MDF por Zona do Módulo</div>
+            <div class="row-2" style="margin-bottom:4px;">
+                <div><label>Caixaria (Externa)</label><select id="mat_zona_caixaria" class="combo-mdf"></select></div>
+                <div><label>Frentes & Portas</label><select id="mat_zona_frentes" class="combo-mdf"></select></div>
+            </div>
+            <div class="row-3" style="margin-bottom:6px;">
+                <div><label>Internos (15/18mm)</label><select id="mat_zona_internos" class="combo-mdf"></select></div>
+                <div><label>Fundo Gaveta (6mm)</label><select id="mat_zona_fgav" class="combo-mdf"></select></div>
+                <div><label>Fundo Costa (3/6mm)</label><select id="mat_zona_fcosta" class="combo-mdf"></select></div>
+            </div>
+
+            <div class="card-title" style="color:#FF9800;">2. Fitas de Borda por Zona</div>
+            <div class="row-3" style="margin-bottom:8px;">
+                <div><label>Fita Frontal Caixa</label><select id="fita_zona_caixaria" class="combo-mdf"></select></div>
+                <div><label>Fita das Frentes</label><select id="fita_zona_frentes" class="combo-mdf"></select></div>
+                <div><label>Fita dos Internos</label><select id="fita_zona_internos" class="combo-mdf"></select></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="aplicarZonasMateriaisModulo()">✅ Aplicar Zonas no Módulo</button>
+
+            <!-- SEÇÃO DE PEÇA INDIVIDUAL (SEM AFETAR ENGENHARIA) -->
+            <div style="border-top:1px solid #263238; padding-top:8px;">
+                <div class="card-title" style="color:#00E5FF;">🎯 3. Pintor de Peça Individual (Clique na Peça)</div>
+                <div id="nome_peca_pintor" style="font-size:11px; font-weight:bold; color:#FFF; margin:4px 0;">Nenhuma peça individual clicada</div>
+                <div class="row-2" style="margin-bottom:6px;">
+                    <div><label>MDF Exclusivo da Peça</label><select id="mat_peca_ind" class="combo-mdf"></select></div>
+                    <div><label>Cor Fita da Peça</label><select id="fita_peca_ind" class="combo-mdf"></select></div>
+                </div>
+                <div class="row-4" style="margin-bottom:8px;">
+                    <label><input type="checkbox" id="chk_fita_base"> Fita Base</label>
+                    <label><input type="checkbox" id="chk_fita_topo"> Fita Topo</label>
+                    <label><input type="checkbox" id="chk_fita_esq"> Fita Esq</label>
+                    <label><input type="checkbox" id="chk_fita_dir"> Fita Dir</label>
+                </div>
+                <div class="row-2">
+                    <button class="btn btn-purple" onclick="aplicarPinturaPecaIndividual()">🖌️ Pintar Só Esta Peça</button>
+                    <button class="btn btn-secondary" onclick="resetarPinturasIndividuais()">🔄 Resetar Peças</button>
+                </div>
+            </div>
+        </div>
         <!-- LEGENDA INFERIOR ESQUERDA -->
         <div class="hud-bottom-left">
             <div style="margin-bottom:3px;">
@@ -471,22 +382,21 @@
             <div id="txt_resposta_copiloto" style="color:#A5D6A7; font-size:10px;">Clique num módulo no 3D (ou Shift+Clique p/ vários).</div>
         </div>
 
-        <!-- 🕹️ CONTROLE DIRECIONAL CAD 3D (MÓDULO ÚNICO OU MULTI-SELEÇÃO) -->
+        <!-- CONTROLE DIRECIONAL CAD 3D (D-PAD) -->
         <div class="dpad-hud">
             <div style="display:flex; flex-direction:column; gap:4px; min-width:115px;">
                 <span id="lbl_selecao_dpad" style="font-size:11px; font-weight:800; color:#00E5FF;">🎯 1 Selecionado</span>
                 <label style="margin:0;">Passo Movimento:</label>
-                <select id="sel_passo_dpad" style="padding:4px; font-weight:bold; color:#00E676;">
+                <select id="sel_passo_dpad" style="padding:4px; font-weight:bold; color:#4CE660;">
                     <option value="1">1 mm (Fino)</option>
                     <option value="10">10 mm (1 cm)</option>
                     <option value="50">50 mm (5 cm)</option>
                     <option value="100" selected>100 mm (10 cm)</option>
                     <option value="500">500 mm (50 cm)</option>
                 </select>
-                <button class="btn btn-danger" style="padding:5px; margin-top:2px;" onclick="excluirSelecionados()" title="Atalho: Tecla Delete">🗑️ Excluir (Del)</button>
+                <button class="btn btn-danger" style="padding:5px; margin-top:2px;" onclick="excluirSelecionados()">🗑️ Excluir (Del)</button>
             </div>
 
-            <!-- CRUZ DIRECIONAL X (ESQ/DIR) e Y (FUNDO/FRENTE) -->
             <div class="dpad-cross">
                 <div></div>
                 <button class="dpad-btn eixo-y" onclick="moverSelecionados(0, -1, 0)" title="Encostar na Parede (-Y)">▲</button>
@@ -499,12 +409,11 @@
                 <div></div>
             </div>
 
-            <!-- CONTROLE DE ELEVAÇÃO Z (SUBIR / DESCER) -->
             <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="margin:0; text-align:center;">Elevação (Z)</label>
                 <div class="row-2">
-                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, 1)" title="Subir (+Z)">⏫ +Z</button>
-                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, -1)" title="Descer (-Z)">⏬ -Z</button>
+                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, 1)">⏫ +Z</button>
+                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, -1)">⏬ -Z</button>
                 </div>
                 <div class="row-2">
                     <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(0)">Piso (0)</button>
@@ -512,13 +421,12 @@
                 </div>
             </div>
 
-            <!-- CONTROLE DE ROTAÇÃO (GIRO 3D) -->
             <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="margin:0; text-align:center;">Rotação (Giro)</label>
                 <div class="row-3">
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(-45)" title="Girar -45°">↺-45°</button>
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(45)" title="Girar +45°">↻+45°</button>
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(90)" title="Girar 90°">↻90°</button>
+                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(-45)">↺-45°</button>
+                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(45)">↻+45°</button>
+                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(90)">↻90°</button>
                 </div>
                 <div class="row-2">
                     <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="resetarRotacaoEParedeSelecionados()">Alinhar Parede</button>
@@ -530,7 +438,7 @@
 
     <!-- COLUNA DIREITA: COORDENADAS EXATAS, MULTI-SELEÇÃO E PEÇAS -->
     <div class="sidebar-right">
-        <div class="card" style="border-color:#0288D1;">
+        <div class="card" style="border-color:#1E88E5;">
             <div class="card-title">📍 Coordenadas Exatas do Item Ativo</div>
             <div class="row-2">
                 <div>
@@ -580,1118 +488,6 @@
         </div>
     </div>
 
-<script>
-    let scene, camera, renderer, controls;
-    let grupoAmbienteModulos = new THREE.Group();
-    let grupoParedes3D = new THREE.Group();
-    let grupoVaos3D = new THREE.Group();
-
-    let modoCamera = "AMBIENTE_3D";
-    let mostrarVaos = false;
-    let mostrarUsinagens = true;
-    let mostrarFitas = true;
-    let modoRaioX = false;
-
-    let ambienteCache = { paredes: [] };
-    let modulosCache = [];
-    let moduloAtivo = null;
-    // Conjunto de IDs selecionados para suportar Seleção Simples e Múltipla!
-    let idsSelecionados = new Set();
-    let vaoSelecionadoId = null;
-
-    let pontoInicialParede2D = null;
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const planoPiso = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-
-    function inicializarPalco3D() {
-        const container = document.getElementById("canvas-container");
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x141414);
-
-        camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 1, 35000);
-        camera.position.set(2200, 2100, 3800);
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
-
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.target.set(1600, 600, 800);
-        controls.update();
-
-        scene.add(new THREE.AmbientLight(0xffffff, 0.72));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
-        dirLight.position.set(2000, 3500, 2500);
-        scene.add(dirLight);
-
-        const grid = new THREE.GridHelper(8000, 80, 0x37474F, 0x222222);
-        grid.position.set(2000, 0, 1500);
-        scene.add(grid);
-
-        scene.add(grupoParedes3D);
-        scene.add(grupoAmbienteModulos);
-        scene.add(grupoVaos3D);
-
-        window.addEventListener("resize", () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-
-        configurarEventosMouseETeclado();
-        animar();
-    }
-
-    function animar() {
-        requestAnimationFrame(animar);
-        atualizarTransparenciaInteligenteParedes();
-        renderer.render(scene, camera);
-    }
-
-    function atualizarTransparenciaInteligenteParedes() {
-        if (modoCamera === "PLANTA_2D") return;
-        const posCam = camera.position;
-
-        grupoParedes3D.children.forEach(meshPar => {
-            if (!meshPar.userData || !meshPar.userData.dadosParede) return;
-            const p = meshPar.userData.dadosParede;
-            const mx = (p.x1 + p.x2) / 2.0;
-            const mz = (p.y1 + p.y2) / 2.0;
-            const vx = posCam.x - mx;
-            const vz = posCam.z - mz;
-            const nx = p.vetor_normal_interno.nx;
-            const nz = p.vetor_normal_interno.ny;
-
-            const dot = (vx * nx) + (vz * nz);
-            meshPar.material.opacity = (dot < 0) ? 0.12 : 0.85;
-        });
-    }
-
-    function alternarFamiliaUI() {
-        const fam = document.getElementById("sel_familia").value;
-        document.getElementById("card_opcoes_painel").style.display = (fam === "MODULO_PAINEL") ? "flex" : "none";
-        document.getElementById("card_opcoes_avulso").style.display = (fam === "MODULO_AVULSO") ? "flex" : "none";
-        document.getElementById("card_caixaria_fabrica").style.display =
-            (fam === "MODULO_PAINEL" || fam === "MODULO_AVULSO") ? "none" : "flex";
-
-        if (fam === "MODULO_AEREO") {
-            document.getElementById("inp_elevacao_z").value = 1450;
-            document.getElementById("inp_profundidade").value = 350;
-        } else if (fam === "MODULO_TORRE") {
-            document.getElementById("inp_elevacao_z").value = 0;
-            document.getElementById("inp_altura").value = 2200;
-            document.getElementById("inp_profundidade").value = 550;
-        } else if (fam === "MODULO_INFERIOR") {
-            document.getElementById("inp_elevacao_z").value = 0;
-            document.getElementById("inp_altura").value = 700;
-            document.getElementById("inp_profundidade").value = 550;
-        }
-    }
-
-    function mudarModoCamera(novoModo) {
-        modoCamera = novoModo;
-        document.getElementById("btn_modo_isolado").classList.toggle("ativo", novoModo === "ISOLADO");
-        document.getElementById("btn_modo_ambiente3d").classList.toggle("ativo", novoModo === "AMBIENTE_3D");
-        document.getElementById("btn_modo_planta2d").classList.toggle("ativo", novoModo === "PLANTA_2D");
-        document.getElementById("painel_construtor_paredes").style.display = (novoModo === "PLANTA_2D") ? "block" : "none";
-
-        if (novoModo === "PLANTA_2D") {
-            camera.position.set(1800, 5200, 1200);
-            controls.target.set(1800, 0, 1200);
-            controls.enableRotate = false;
-        } else if (novoModo === "AMBIENTE_3D") {
-            controls.enableRotate = true;
-            camera.position.set(2200, 2100, 3800);
-            controls.target.set(1600, 600, 800);
-        } else {
-            controls.enableRotate = true;
-            if (moduloAtivo) {
-                const lx = moduloAtivo.dimensoes_ocupadas.largura_x / 2.0;
-                const ay = moduloAtivo.dimensoes_ocupadas.altura_y / 2.0;
-                const pz = moduloAtivo.dimensoes_ocupadas.profundidade_z / 2.0;
-                camera.position.set(lx + 900, ay + 800, pz + 1700);
-                controls.target.set(lx, ay, pz);
-            }
-        }
-        controls.update();
-        renderizarCenaCompleta();
-    }
-
-    function usarPreset(texto) {
-        document.getElementById("inp_prompt").value = texto;
-        fabricarModuloAtual(false);
-    }
-
-    function criarNovoSlotModulo() {
-        let maiorNum = 0;
-        modulosCache.forEach(m => {
-            const n = parseInt(m.id_modulo);
-            if (!isNaN(n) && n > maiorNum) maiorNum = n;
-        });
-        const proximoId = String(maiorNum + 1).padStart(3, "0");
-        document.getElementById("inp_id_modulo").value = proximoId;
-
-        // Se a família atual for Aéreo, já garante Z=1450 no novo slot!
-        const fam = document.getElementById("sel_familia").value;
-        if (fam === "MODULO_AEREO") {
-            document.getElementById("inp_elevacao_z").value = 1450;
-        } else {
-            document.getElementById("inp_elevacao_z").value = 0;
-        }
-
-        fabricarModuloAtual(true);
-    }
-
-    async function fabricarModuloAtual(forcarAutoSnap = false) {
-        const escolhaTopo = document.getElementById("sel_topo_balcao").value;
-        const overrides = {
-            tipo_montagem_caixa: document.getElementById("sel_sistema_fixacao").value,
-            materiais_padrao: {
-                espessura_estrutural_mm: parseFloat(document.getElementById("sel_esp_caixa").value),
-                espessura_frente_mm: parseFloat(document.getElementById("sel_esp_frente").value)
-            },
-            geometria_caixaria: {
-                montagem_base_inferior: document.getElementById("sel_modo_base").value,
-                montagem_teto_balcao: escolhaTopo === "TAMPO_INTEIRO" ? "TAMPO_INTEIRO" : "SARRAFOS",
-                posicao_sarrafo_traseiro_balcao: escolhaTopo === "EM_PE" ? "EM_PE" : "DEITADO",
-                tipo_montagem_fundo: document.getElementById("sel_modo_fundo").value,
-                largura_sarrafo: parseFloat(document.getElementById("inp_larg_sarrafo").value),
-                recuo_frontal_prateleira: parseFloat(document.getElementById("inp_recuo_prat").value),
-                recuo_canal_fundo: parseFloat(document.getElementById("inp_recuo_fundo").value),
-                sistema_fixacao_aereo: document.getElementById("sel_fixacao_aereo").value,
-                reforco_traseiro_torre: document.getElementById("sel_reforco_torre").value,
-            },
-            folgas_frentes: {
-                tipo_montagem_frente: document.getElementById("sel_modo_frente").value,
-                gap_lateral_esquerda: parseFloat(document.getElementById("inp_gap_esq").value),
-                gap_lateral_direita: parseFloat(document.getElementById("inp_gap_dir").value),
-                gap_superior: parseFloat(document.getElementById("inp_gap_vert").value),
-                gap_inferior: parseFloat(document.getElementById("inp_gap_vert").value),
-                gap_entre_frentes: parseFloat(document.getElementById("inp_gap_entre").value)
-            },
-            regras_gaveta: {
-                folga_corredica_cada_lado: parseFloat(document.getElementById("inp_folga_corredica").value)
-            },
-            parametros_usinagem: {
-                largura_canal_fundo: parseFloat(document.getElementById("inp_larg_canal").value),
-                profundidade_canal_fundo: parseFloat(document.getElementById("inp_prof_canal").value),
-                broca_parafuso_estrutural: parseFloat(document.getElementById("inp_broca_estrut").value),
-                distancia_centro_caneco_borda: parseFloat(document.getElementById("inp_cota_caneco").value)
-            }
-        };
-
-        const opcoesEspeciais = {
-            modo_espessura: document.getElementById("sel_modo_painel").value,
-            orientacao_espacial: document.getElementById("sel_orient_painel").value,
-            nome_personalizado: document.getElementById("inp_nome_painel").value,
-            subtipo_avulso: document.getElementById("sel_subtipo_avulso").value,
-            quantidade_avulso: parseInt(document.getElementById("inp_qtd_avulso").value)
-        };
-
-        const payload = {
-            id_modulo: document.getElementById("inp_id_modulo").value,
-            familia: document.getElementById("sel_familia").value,
-            largura_x: parseFloat(document.getElementById("inp_largura").value),
-            altura_y: parseFloat(document.getElementById("inp_altura").value),
-            profundidade_z: parseFloat(document.getElementById("inp_profundidade").value),
-            material_caixaria: document.getElementById("sel_mat_caixa").value,
-            material_frentes: document.getElementById("sel_mat_frentes").value,
-            overrides_perfil: overrides,
-            opcoes_especiais: opcoesEspeciais,
-            prompt_copiloto: document.getElementById("inp_prompt").value,
-            id_parede: document.getElementById("sel_parede_modulo").value || null,
-            elevacao_z: parseFloat(document.getElementById("inp_elevacao_z").value),
-            usar_autosnap: forcarAutoSnap
-        };
-
-        const resp = await fetch("/api/fabricar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        const dados = await resp.json();
-
-        if (!dados.sucesso) {
-            alert(dados.erro_engenharia || dados.erro_interno);
-            return;
-        }
-
-        moduloAtivo = dados.modulo;
-        idsSelecionados.clear();
-        idsSelecionados.add(moduloAtivo.id_modulo);
-        await carregarEstadoAmbiente();
-    }
-
-    // =========================================================================
-    // CONTROLE DIRECIONAL, ROTAÇÃO E EXCLUSÃO (INDIVIDUAL E MULTI-SELEÇÃO)
-    // =========================================================================
-    function obterListaIdsAlvo() {
-        if (idsSelecionados.size > 0) return Array.from(idsSelecionados);
-        if (moduloAtivo) return [moduloAtivo.id_modulo];
-        return [];
-    }
-
-    async function moverSelecionados(dirX, dirY, dirZ) {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        const passo = parseFloat(document.getElementById("sel_passo_dpad").value) || 100.0;
-        const resp = await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                ids_modulos: ids,
-                delta_x: dirX * passo,
-                delta_y: dirY * passo,
-                delta_z: dirZ * passo
-            })
-        });
-        const dados = await resp.json();
-        if (dados.sucesso) await carregarEstadoAmbiente();
-    }
-
-    async function girarSelecionados(deltaGraus) {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        const resp = await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                ids_modulos: ids,
-                delta_rotacao: deltaGraus
-            })
-        });
-        const dados = await resp.json();
-        if (dados.sucesso) await carregarEstadoAmbiente();
-    }
-
-    async function definirZAbsolutoSelecionados(novoZ) {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids_modulos: ids, z_absoluto: novoZ })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function resetarRotacaoEParedeSelecionados() {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids_modulos: ids, y_absoluto: 0.0, rotacao_absoluta: 0.0 })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function encostarAutoSnapSelecionados() {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids_modulos: ids, aplicar_autosnap: true, y_absoluto: 0.0, rotacao_absoluta: 0.0 })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function trocarParedeSelecionados(idNovaParede) {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        await fetch("/api/modulos/transformar_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids_modulos: ids, nova_id_parede: idNovaParede, aplicar_autosnap: true })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function excluirSelecionados() {
-        const ids = obterListaIdsAlvo();
-        if (ids.length === 0) return;
-
-        const resp = await fetch("/api/modulos/excluir_lote", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ids_modulos: ids })
-        });
-        const dados = await resp.json();
-        if (dados.sucesso) {
-            idsSelecionados.clear();
-            moduloAtivo = null;
-            await carregarEstadoAmbiente();
-        }
-    }
-
-    function selecionarTodosModulos() {
-        modulosCache.forEach(m => idsSelecionados.add(m.id_modulo));
-        atualizarContadorSelecaoUI();
-        renderizarCenaCompleta();
-        atualizarListaModulosDOM();
-    }
-
-    function limparSelecaoMultipla() {
-        idsSelecionados.clear();
-        if (moduloAtivo) idsSelecionados.add(moduloAtivo.id_modulo);
-        atualizarContadorSelecaoUI();
-        renderizarCenaCompleta();
-        atualizarListaModulosDOM();
-    }
-
-    function alternarCheckboxModulo(idMod, event) {
-        event.stopPropagation();
-        if (idsSelecionados.has(idMod)) {
-            idsSelecionados.delete(idMod);
-        } else {
-            idsSelecionados.add(idMod);
-        }
-        atualizarContadorSelecaoUI();
-        renderizarCenaCompleta();
-        atualizarListaModulosDOM();
-    }
-
-    function atualizarContadorSelecaoUI() {
-        const qtd = idsSelecionados.size;
-        document.getElementById("lbl_selecao_dpad").innerText =
-            qtd > 1 ? `🎯 ${qtd} Módulos (Lote)` : `🎯 ${qtd === 1 ? '#' + Array.from(idsSelecionados)[0] : 'Nenhum'}`;
-    }
-
-    async function carregarEstadoAmbiente() {
-        const resp = await fetch("/api/ambiente");
-        const dados = await resp.json();
-        ambienteCache = dados.ambiente;
-        modulosCache = dados.modulos;
-
-        const selPar = document.getElementById("sel_parede_modulo");
-        const parAtual = selPar.value;
-        selPar.innerHTML = "";
-        (ambienteCache.paredes || []).forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.id_parede;
-            opt.innerText = `${p.nome} (${p.comprimento}mm | ${p.angulo_graus}°)`;
-            selPar.appendChild(opt);
-        });
-        if (parAtual) selPar.value = parAtual;
-
-        if (!moduloAtivo && modulosCache.length > 0) {
-            moduloAtivo = modulosCache[0];
-        }
-        if (moduloAtivo) {
-            moduloAtivo = modulosCache.find(m => m.id_modulo === moduloAtivo.id_modulo) || modulosCache[0] || null;
-        }
-        if (moduloAtivo && idsSelecionados.size === 0) {
-            idsSelecionados.add(moduloAtivo.id_modulo);
-        }
-
-        atualizarContadorSelecaoUI();
-        atualizarListaModulosDOM();
-
-        let totalPecas = 0;
-        modulosCache.forEach(m => totalPecas += m.lista_de_pecas.length);
-        document.getElementById("lbl_resumo_topo").innerText =
-            `🏠 ${ambienteCache.paredes.length} Parede(s) | 📦 ${modulosCache.length} Item(ns) | ${totalPecas} Peças p/ TiranoCut`;
-
-        if (moduloAtivo) {
-            sincronizarInputsPosicao(moduloAtivo);
-        }
-        renderizarCenaCompleta();
-    }
-
-    function atualizarListaModulosDOM() {
-        const container = document.getElementById("lista_modulos_ambiente");
-        container.innerHTML = "";
-
-        modulosCache.forEach(mod => {
-            const pos = mod.posicionamento_ambiente || {};
-            const ehAtivo = (moduloAtivo && moduloAtivo.id_modulo === mod.id_modulo);
-            const ehMarcado = idsSelecionados.has(mod.id_modulo);
-
-            const div = document.createElement("div");
-            div.className = "module-item" + (ehAtivo ? " active" : (ehMarcado ? " multi-selected" : ""));
-            div.innerHTML = `
-                <input type="checkbox" class="chk-sel" ${ehMarcado ? 'checked' : ''} onclick="alternarCheckboxModulo('${mod.id_modulo}', event)">
-                <span style="flex:1;" onclick="selecionarModuloDaFila('${mod.id_modulo}', false)">
-                    <strong>#${mod.id_modulo}</strong> ${mod.familia.replace('MODULO_', '')} (${mod.dimensoes_ocupadas.largura_x}mm)
-                    <small style="color:#80D8FF;">[${pos.nome_parede || 'Livre'} X:${pos.distancia_x_parede || 0} Z:${pos.elevacao_z || 0}]</small>
-                </span>
-                <span style="color:#00E676;">${mod.lista_de_pecas.length}pç</span>
-            `;
-            container.appendChild(div);
-        });
-    }
-
-    function sincronizarInputsPosicao(mod) {
-        if (!mod || !mod.posicionamento_ambiente) return;
-        const pos = mod.posicionamento_ambiente;
-        if (pos.id_parede) document.getElementById("sel_parede_modulo").value = pos.id_parede;
-        document.getElementById("inp_dist_x_parede").value = pos.distancia_x_parede || 0;
-        document.getElementById("inp_afast_y").value = pos.afastamento_parede || 0;
-        document.getElementById("inp_elevacao_z").value = pos.elevacao_z || 0;
-        document.getElementById("inp_rot_offset").value = pos.rotacao_offset_graus || 0;
-        document.getElementById("lbl_sobra_parede").innerText =
-            `Espaço restante na ${pos.nome_parede}: ${pos.sobra_parede_mm} mm`;
-    }
-
-    function selecionarModuloDaFila(idMod, somarSelecao = false) {
-        const achado = modulosCache.find(m => m.id_modulo === idMod);
-        if (!achado) return;
-        moduloAtivo = achado;
-
-        if (somarSelecao) {
-            if (idsSelecionados.has(idMod)) idsSelecionados.delete(idMod);
-            else idsSelecionados.add(idMod);
-        } else {
-            idsSelecionados.clear();
-            idsSelecionados.add(idMod);
-        }
-
-        document.getElementById("inp_id_modulo").value = achado.id_modulo;
-        document.getElementById("sel_familia").value = achado.familia;
-        alternarFamiliaUI();
-        document.getElementById("inp_largura").value = achado.dimensoes_ocupadas.largura_x;
-        document.getElementById("inp_altura").value = achado.dimensoes_ocupadas.altura_y;
-        document.getElementById("inp_profundidade").value = achado.dimensoes_ocupadas.profundidade_z;
-        if (achado.prompt_original) document.getElementById("inp_prompt").value = achado.prompt_original;
-
-        sincronizarInputsPosicao(achado);
-        atualizarContadorSelecaoUI();
-        atualizarListaModulosDOM();
-        renderizarCenaCompleta();
-    }
-
-    async function posicionarModuloManual(usarSnap) {
-        if (!moduloAtivo) return;
-        const resp = await fetch("/api/modulo/posicionar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id_modulo: moduloAtivo.id_modulo,
-                id_parede: document.getElementById("sel_parede_modulo").value,
-                distancia_x_parede: parseFloat(document.getElementById("inp_dist_x_parede").value),
-                afastamento_parede: parseFloat(document.getElementById("inp_afast_y").value),
-                elevacao_z: parseFloat(document.getElementById("inp_elevacao_z").value),
-                rotacao_offset_graus: parseFloat(document.getElementById("inp_rot_offset").value),
-                usar_autosnap: usarSnap
-            })
-        });
-        const dados = await resp.json();
-        if (dados.sucesso) {
-            moduloAtivo = dados.modulo;
-            await carregarEstadoAmbiente();
-        }
-    }
-
-    function descontarCantoParede() {
-        moverSelecionados(0, 0, 0);
-        const atual = parseFloat(document.getElementById("inp_dist_x_parede").value) || 0;
-        document.getElementById("inp_dist_x_parede").value = atual + 550;
-        posicionarModuloManual(false);
-    }
-
-    // =========================================================================
-    // RENDERIZAÇÃO 3D COM GIZMO DE COORDENADAS NOS MÓDULOS SELECIONADOS
-    // =========================================================================
-    function cadParaThree(x, y, z, profTotal) {
-        return new THREE.Vector3(x, z, profTotal - y);
-    }
-
-    function renderizarCenaCompleta() {
-        grupoParedes3D.clear();
-        grupoAmbienteModulos.clear();
-        grupoVaos3D.clear();
-
-        if (modoCamera !== "ISOLADO") {
-            renderizarParedesAmbiente();
-        }
-
-        const listaParaDesenhar = (modoCamera === "ISOLADO" && moduloAtivo)
-            ? [moduloAtivo]
-            : modulosCache;
-
-        listaParaDesenhar.forEach(mod => {
-            const ehAtivo = (moduloAtivo && mod.id_modulo === moduloAtivo.id_modulo);
-            const ehMultiSel = idsSelecionados.has(mod.id_modulo);
-            const grupoMod = construirGrupo3DDoModulo(mod, ehAtivo, ehMultiSel);
-
-            if (modoCamera !== "ISOLADO" && mod.posicionamento_ambiente) {
-                const pos = mod.posicionamento_ambiente;
-                grupoMod.position.set(pos.x_ambiente, pos.z_ambiente, pos.y_ambiente);
-                grupoMod.rotation.y = -THREE.MathUtils.degToRad(pos.rotacao_graus || 0);
-            }
-
-            grupoAmbienteModulos.add(grupoMod);
-        });
-
-        if (moduloAtivo) {
-            atualizarListaPecasUI(moduloAtivo);
-        }
-        atualizarCinematica3D();
-    }
-
-    function renderizarParedesAmbiente() {
-        (ambienteCache.paredes || []).forEach(p => {
-            const comp = p.comprimento;
-            const alt = (modoCamera === "PLANTA_2D") ? 120.0 : p.pe_direito;
-            const esp = p.espessura;
-
-            const geom = new THREE.BoxGeometry(comp, alt, esp);
-            const mat = new THREE.MeshStandardMaterial({
-                color: 0x37474F,
-                roughness: 0.9,
-                transparent: true,
-                opacity: modoCamera === "PLANTA_2D" ? 0.95 : 0.85
-            });
-            const mesh = new THREE.Mesh(geom, mat);
-
-            const rad = THREE.MathUtils.degToRad(p.angulo_graus);
-            const nx = p.vetor_normal_interno.nx;
-            const ny = p.vetor_normal_interno.ny;
-
-            const cx = ((p.x1 + p.x2) / 2.0) - (nx * (esp / 2.0));
-            const cz = ((p.y1 + p.y2) / 2.0) - (ny * (esp / 2.0));
-
-            mesh.position.set(cx, alt / 2.0, cz);
-            mesh.rotation.y = -rad;
-            mesh.userData = { dadosParede: p };
-
-            const edges = new THREE.EdgesGeometry(geom);
-            mesh.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xFFB74D })));
-
-            grupoParedes3D.add(mesh);
-        });
-    }
-
-    function construirGrupo3DDoModulo(modulo, ehAtivo, ehMultiSel) {
-        const grupoMod = new THREE.Group();
-        grupoMod.userData = { idModulo: modulo.id_modulo };
-
-        const largTotal = modulo.dimensoes_ocupadas.largura_x;
-        const altTotal = modulo.dimensoes_ocupadas.altura_y;
-        const profTotal = modulo.dimensoes_ocupadas.profundidade_z;
-
-        const cxMod = largTotal / 2.0;
-        const cyMod = altTotal / 2.0;
-        const czMod = profTotal / 2.0;
-
-        // Se o módulo estiver selecionado, desenha o Gizmo Direcional 3D (Setas X, Y, Z) sobre ele!
-        if (ehAtivo || ehMultiSel) {
-            const origemGizmo = new THREE.Vector3(cxMod, altTotal + 45, czMod);
-            // Seta X (Vermelha = Direita)
-            grupoMod.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origemGizmo, 240, 0xFF5252, 45, 28));
-            // Seta Y/Profundidade (Azul = Frente)
-            grupoMod.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origemGizmo, 240, 0x448AFF, 45, 28));
-            // Seta Z/Altura (Verde = Subir)
-            grupoMod.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origemGizmo, 240, 0x00E676, 45, 28));
-        }
-
-        modulo.lista_de_pecas.forEach(p => {
-            const dx = p.dimensoes.x, dy = p.dimensoes.y, dz = p.dimensoes.z;
-            const px = p.posicao_relativa.pos_x, py = p.posicao_relativa.pos_y, pz = p.posicao_relativa.pos_z;
-
-            const containerPeca = new THREE.Group();
-            const centroThree = cadParaThree(px + dx / 2.0, py + dy / 2.0, pz + dz / 2.0, profTotal);
-            containerPeca.position.copy(centroThree);
-
-            containerPeca.userData = {
-                peca: p,
-                idModulo: modulo.id_modulo,
-                posOriginal: centroThree.clone(),
-                vetorExplosao: new THREE.Vector3(centroThree.x - cxMod, centroThree.y - cyMod, centroThree.z - czMod).normalize()
-            };
-
-            let corHex = 0xECEFF1;
-            if (p.material && p.material.toLowerCase().includes("freijo")) corHex = 0xB87A4B;
-            else if (p.material && p.material.toLowerCase().includes("carvalho")) corHex = 0xC89D66;
-            else if (p.categoria_industrial.includes("fundo")) corHex = 0xBCAAA4;
-            else if (p.categoria_industrial.includes("frente") || p.categoria_industrial.includes("porta")) corHex = 0xDCE775;
-
-            const geom = new THREE.BoxGeometry(dx, dz, dy);
-            const mat = new THREE.MeshStandardMaterial({
-                color: corHex,
-                roughness: 0.55,
-                transparent: modoRaioX,
-                opacity: modoRaioX ? 0.22 : 1.0
-            });
-            const meshMdf = new THREE.Mesh(geom, mat);
-            meshMdf.name = "corpo_mdf";
-            meshMdf.userData = { idModulo: modulo.id_modulo };
-            containerPeca.add(meshMdf);
-
-            let corBorda = 0x263238;
-            if (ehAtivo) corBorda = 0x00E676;
-            else if (ehMultiSel) corBorda = 0x00E5FF;
-
-            containerPeca.add(new THREE.LineSegments(new THREE.EdgesGeometry(geom), new THREE.LineBasicMaterial({ color: corBorda })));
-
-            const grupoFitas = new THREE.Group();
-            grupoFitas.name = "camada_fitas";
-            grupoFitas.visible = mostrarFitas;
-            adicionarFitasBorda3D(grupoFitas, p, dx, dy, dz);
-            containerPeca.add(grupoFitas);
-
-            const grupoUsinagens = new THREE.Group();
-            grupoUsinagens.name = "camada_usinagens";
-            grupoUsinagens.visible = mostrarUsinagens;
-            adicionarUsinagens3D(grupoUsinagens, p, centroThree, profTotal);
-            containerPeca.add(grupoUsinagens);
-
-            grupoMod.add(containerPeca);
-        });
-
-        if (ehAtivo && modulo.arvore_espacial_vaos) {
-            desenharNoEspacialRecursivo(modulo.arvore_espacial_vaos, profTotal, grupoMod);
-        }
-
-        return grupoMod;
-    }
-
-    function atualizarListaPecasUI(modulo) {
-        document.getElementById("txt_resposta_copiloto").innerText =
-            modulo.resposta_copiloto || `Item #${modulo.id_modulo} selecionado.`;
-
-        const listaUI = document.getElementById("lista_pecas_modulo");
-        listaUI.innerHTML = "";
-        document.getElementById("qtd_pecas_mod").innerText = modulo.lista_de_pecas.length;
-
-        modulo.lista_de_pecas.forEach((p, idx) => {
-            const item = document.createElement("div");
-            item.className = "part-item";
-            const d2 = p.dimensoes_2d_planificadas;
-            const tagEsp = p.espelhar_cam_x ? `<span class="tag-mirror">🔄 ESP</span>` : "";
-            item.innerHTML = `
-                <span>#${idx + 1} ${p.nome_comercial} ${tagEsp}</span>
-                <span style="color:#9E9E9E;">${d2.largura_x}x${d2.altura_y}</span>
-            `;
-            listaUI.appendChild(item);
-        });
-    }
-
-    function adicionarFitasBorda3D(grupoFitas, p, dx, dy, dz) {
-        if (!p.fitas_borda) return;
-        const matFita = new THREE.MeshBasicMaterial({ color: 0xFF1744 });
-        const espFita = 1.4;
-
-        if (p.orientacao_3d === "HORIZONTAL_XY") {
-            if (p.fitas_borda.base) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(dx, dz, espFita), matFita);
-                m.position.set(0, 0, dy / 2.0);
-                grupoFitas.add(m);
-            }
-        } else if (p.orientacao_3d === "VERTICAL_YZ") {
-            if (p.fitas_borda.esquerda) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.5, dz, espFita), matFita);
-                m.position.set(0, 0, dy / 2.0);
-                grupoFitas.add(m);
-            }
-            if (p.fitas_borda.topo) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.5, espFita, dy), matFita);
-                m.position.set(0, dz / 2.0, 0);
-                grupoFitas.add(m);
-            }
-        } else {
-            if (p.fitas_borda.topo) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(dx, espFita, dy + 0.5), matFita);
-                m.position.set(0, dz / 2.0, 0);
-                grupoFitas.add(m);
-            }
-            if (p.fitas_borda.base) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(dx, espFita, dy + 0.5), matFita);
-                m.position.set(0, -dz / 2.0, 0);
-                grupoFitas.add(m);
-            }
-            if (p.fitas_borda.esquerda) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz, dy + 0.5), matFita);
-                m.position.set(-dx / 2.0, 0, 0);
-                grupoFitas.add(m);
-            }
-            if (p.fitas_borda.direita) {
-                const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz, dy + 0.5), matFita);
-                m.position.set(dx / 2.0, 0, 0);
-                grupoFitas.add(m);
-            }
-        }
-    }
-
-    function adicionarUsinagens3D(grupoUsinagens, p, centroPecaThree, profTotal) {
-        (p.usinagens.rasgos || []).forEach(r => {
-            if (!r.geometria_3d) return;
-            const g = r.geometria_3d;
-            const meshR = new THREE.Mesh(
-                new THREE.BoxGeometry(g.dx + 0.4, g.dz + 0.4, g.dy + 0.4),
-                new THREE.MeshBasicMaterial({ color: 0x4E342E })
-            );
-            const posGlobalR = cadParaThree(g.pos_x + g.dx / 2.0, g.pos_y + g.dy / 2.0, g.pos_z + g.dz / 2.0, profTotal);
-            meshR.position.copy(posGlobalR.sub(centroPecaThree));
-            grupoUsinagens.add(meshR);
-        });
-
-        (p.usinagens.furos || []).forEach(f => {
-            if (!f.geometria_3d) return;
-            const g = f.geometria_3d;
-            const raio = Math.max(f.diametro / 2.0, 2.2);
-            const altCilindro = p.dimensoes_2d_planificadas.espessura + 1.5;
-
-            let corFuro = 0x00E5FF;
-            if (f.diametro >= 30.0) corFuro = 0xFF9800;
-            else if (f.diametro >= 14.0) corFuro = 0xE040FB;
-            else if (f.diametro >= 7.5) corFuro = 0x7C4DFF;
-            else if (f.diametro <= 3.5) corFuro = 0xFFEB3B;
-
-            const meshF = new THREE.Mesh(
-                new THREE.CylinderGeometry(raio, raio, altCilindro, 16),
-                new THREE.MeshBasicMaterial({ color: corFuro })
-            );
-            if (g.eixo === "X") meshF.rotation.z = Math.PI / 2.0;
-            else if (g.eixo === "Y") meshF.rotation.x = Math.PI / 2.0;
-
-            const posGlobalF = cadParaThree(g.x, g.y, g.z, profTotal);
-            meshF.position.copy(posGlobalF.sub(centroPecaThree));
-            grupoUsinagens.add(meshF);
-        });
-    }
-
-    function desenharNoEspacialRecursivo(no, profTotal, grupoMod) {
-        if (no.eh_folha) {
-            const g = no.geometria_3d;
-            const geom = new THREE.BoxGeometry(g.largura - 4, g.altura - 4, g.profundidade - 4);
-            const matFace = new THREE.MeshBasicMaterial({
-                color: no.id_vao === vaoSelecionadoId ? 0x00E676 : 0x00E5FF,
-                transparent: true,
-                opacity: no.id_vao === vaoSelecionadoId ? 0.22 : 0.08,
-                depthWrite: false
-            });
-            const box = new THREE.Mesh(geom, matFace);
-            box.position.copy(cadParaThree(g.x + g.largura / 2.0, g.y + g.profundidade / 2.0, g.z + g.altura / 2.0, profTotal));
-            box.userData = { noEspacial: no, ehCaixaVao: true };
-            box.visible = mostrarVaos;
-
-            const edges = new THREE.EdgesGeometry(geom);
-            box.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({
-                color: no.id_vao === vaoSelecionadoId ? 0x00E676 : 0x00E5FF
-            })));
-
-            grupoMod.add(box);
-            grupoVaos3D.children.push(box);
-        }
-        (no.filhos || []).forEach(f => desenharNoEspacialRecursivo(f, profTotal, grupoMod));
-    }
-
-    function atualizarCinematica3D() {
-        const fatorExplosao = parseFloat(document.getElementById("rng_explosao").value);
-        const pctAbertura = parseFloat(document.getElementById("rng_abertura").value) / 100.0;
-
-        grupoAmbienteModulos.children.forEach(grupoMod => {
-            grupoMod.children.forEach(container => {
-                if (!container.userData || !container.userData.peca) return;
-                const orig = container.userData.posOriginal;
-                const dir = container.userData.vetorExplosao;
-                const p = container.userData.peca;
-                const cat = p.categoria_industrial;
-
-                const baseX = orig.x + dir.x * fatorExplosao;
-                const baseY = orig.y + dir.y * fatorExplosao;
-                const baseZ = orig.z + dir.z * fatorExplosao;
-
-                container.rotation.set(0, 0, 0);
-
-                if (cat.includes("gaveta") || cat.includes("tempero") || cat.includes("sapateira")) {
-                    if (!cat.includes("engrosso")) {
-                        container.position.set(baseX, baseY, baseZ + (pctAbertura * 340.0));
-                    } else {
-                        container.position.set(baseX, baseY, baseZ);
-                    }
-                } else if (cat.includes("porta_basculante")) {
-                    // Porta Basculante gira 95° para CIMA em torno da borda superior!
-                    const meiaAlt = p.dimensoes.z / 2.0;
-                    const anguloBasc = pctAbertura * ((95.0 * Math.PI) / 180.0);
-                    const yDobradicaTopo = baseY + meiaAlt;
-                    const dyCentro = baseY - yDobradicaTopo; // -meiaAlt
-
-                    container.position.set(
-                        baseX,
-                        yDobradicaTopo + dyCentro * Math.cos(anguloBasc),
-                        baseZ - dyCentro * Math.sin(anguloBasc)
-                    );
-                    container.rotation.x = -anguloBasc;
-                } else if (cat.includes("porta_giro")) {
-                    const ehDireita = cat.includes("direita");
-                    const meiaLarg = p.dimensoes.x / 2.0;
-                    const angulo = pctAbertura * ((92.0 * Math.PI) / 180.0) * (ehDireita ? 1.0 : -1.0);
-                    const xDobradica = ehDireita ? (baseX + meiaLarg) : (baseX - meiaLarg);
-                    const dxCentro = baseX - xDobradica;
-
-                    container.position.set(
-                        xDobradica + dxCentro * Math.cos(angulo),
-                        baseY,
-                        baseZ - dxCentro * Math.sin(angulo)
-                    );
-                    container.rotation.y = angulo;
-                } else {
-                    container.position.set(baseX, baseY, baseZ);
-                }
-            });
-        });
-    }
-
-    // =========================================================================
-    // INTERAÇÃO DE MOUSE (SELEÇÃO 3D, SHIFT+CLIQUE E DESENHO 2D) E TECLADO
-    // =========================================================================
-    function configurarEventosMouseETeclado() {
-        const container = document.getElementById("canvas-container");
-        let posDown = { x: 0, y: 0 };
-
-        container.addEventListener("pointerdown", (e) => {
-            posDown = { x: e.clientX, y: e.clientY };
-        });
-
-        container.addEventListener("pointerup", async (event) => {
-            if (event.button !== 0) return;
-            // Ignora se o usuário estava apenas arrastando a câmera orbital
-            if (Math.hypot(event.clientX - posDown.x, event.clientY - posDown.y) > 6) return;
-
-            const rect = renderer.domElement.getBoundingClientRect();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-
-            // 1. MODO PLANTA BAIXA 2D: Desenhar Parede
-            if (modoCamera === "PLANTA_2D") {
-                const ptIntersecao = new THREE.Vector3();
-                raycaster.ray.intersectPlane(planoPiso, ptIntersecao);
-                if (!ptIntersecao) return;
-
-                const xGrid = Math.round(ptIntersecao.x / 50.0) * 50.0;
-                const yGrid = Math.round(ptIntersecao.z / 50.0) * 50.0;
-
-                if (!pontoInicialParede2D) {
-                    pontoInicialParede2D = { x: xGrid, y: yGrid };
-                    document.getElementById("status_desenho_2d").innerText =
-                        `📍 Origem (${xGrid}, ${yGrid}). Clique no ponto final!`;
-                } else {
-                    const dist = Math.hypot(xGrid - pontoInicialParede2D.x, yGrid - pontoInicialParede2D.y);
-                    if (dist >= 100) {
-                        await fetch("/api/ambiente/parede/adicionar", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                x1: pontoInicialParede2D.x,
-                                y1: pontoInicialParede2D.y,
-                                x2: xGrid,
-                                y2: yGrid,
-                                pe_direito: parseFloat(document.getElementById("inp_pe_direito").value),
-                                espessura: parseFloat(document.getElementById("inp_esp_parede").value)
-                            })
-                        });
-                        pontoInicialParede2D = null;
-                        document.getElementById("status_desenho_2d").innerText = "✅ Parede criada!";
-                        await carregarEstadoAmbiente();
-                    }
-                }
-                return;
-            }
-
-            // 2. CLIQUE EM VÃO DO NOESPACIAL 3D (Quando camada Vãos está ligada)
-            if (mostrarVaos && grupoVaos3D.children.length > 0) {
-                const intVaos = raycaster.intersectObjects(grupoVaos3D.children, false);
-                if (intVaos.length > 0) {
-                    const noClicado = intVaos[0].object.userData.noEspacial;
-                    vaoSelecionadoId = noClicado.id_vao;
-                    abrirPainelVao(noClicado);
-                    renderizarCenaCompleta();
-                    return;
-                }
-            }
-
-            // 3. CLIQUE DIRETO EM QUALQUER MÓDULO NO 3D (Suporta Shift + Clique p/ Multi-Seleção!)
-            const malhasMdf = [];
-            grupoAmbienteModulos.traverse(obj => {
-                if (obj.isMesh && obj.name === "corpo_mdf") malhasMdf.push(obj);
-            });
-
-            const intMod = raycaster.intersectObjects(malhasMdf, false);
-            if (intMod.length > 0) {
-                const idModClicado = intMod[0].object.userData.idModulo;
-                if (idModClicado) {
-                    selecionarModuloDaFila(idModClicado, event.shiftKey);
-                }
-            }
-        });
-
-        // Atalhos de Teclado para Produtividade no Chão de Fábrica
-        window.addEventListener("keydown", (e) => {
-            if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
-
-            if (e.key === "Delete") {
-                e.preventDefault();
-                excluirSelecionados();
-            } else if (e.key === "ArrowLeft") {
-                e.preventDefault();
-                moverSelecionados(-1, 0, 0);
-            } else if (e.key === "ArrowRight") {
-                e.preventDefault();
-                moverSelecionados(1, 0, 0);
-            } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                moverSelecionados(0, -1, 0);
-            } else if (e.key === "ArrowDown") {
-                e.preventDefault();
-                moverSelecionados(0, 1, 0);
-            } else if (e.key === "PageUp") {
-                e.preventDefault();
-                moverSelecionados(0, 0, 1);
-            } else if (e.key === "PageDown") {
-                e.preventDefault();
-                moverSelecionados(0, 0, -1);
-            } else if (e.key.toLowerCase() === "r") {
-                e.preventDefault();
-                girarSelecionados(45);
-            }
-        });
-    }
-
-    async function aplicarPresetParedes() {
-        await fetch("/api/ambiente/preset", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                formato: document.getElementById("sel_preset_parede").value,
-                pe_direito: parseFloat(document.getElementById("inp_pe_direito").value),
-                espessura: parseFloat(document.getElementById("inp_esp_parede").value)
-            })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function adicionarSegmentoParedeUI() {
-        await fetch("/api/ambiente/parede/adicionar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                comprimento: parseFloat(document.getElementById("inp_comp_nova_par").value),
-                angulo_graus: parseFloat(document.getElementById("sel_ang_nova_par").value),
-                pe_direito: parseFloat(document.getElementById("inp_pe_direito").value),
-                espessura: parseFloat(document.getElementById("inp_esp_parede").value)
-            })
-        });
-        await carregarEstadoAmbiente();
-    }
-
-    async function removerUltimaParedeUI() {
-        await fetch("/api/ambiente/parede/remover_ultima", { method: "POST" });
-        await carregarEstadoAmbiente();
-    }
-
-    async function limparTodasParedesUI() {
-        await fetch("/api/ambiente/paredes/limpar", { method: "POST" });
-        await carregarEstadoAmbiente();
-    }
-
-    function abrirPainelVao(no) {
-        const g = no.geometria_3d;
-        document.getElementById("painel_interacao_vao").style.display = "block";
-        document.getElementById("titulo_vao_clicado").innerText = `📐 ${no.nome_vao} (${no.id_vao})`;
-        document.getElementById("medidas_vao_clicado").innerHTML =
-            `Vão Livre: <b>${g.largura} x ${g.altura} x ${g.profundidade}mm</b><br>` +
-            `Status: <b>${no.ocupacao_interna || "Livre"}</b>`;
-    }
-
-    function fecharPainelVao() {
-        vaoSelecionadoId = null;
-        document.getElementById("painel_interacao_vao").style.display = "none";
-        renderizarCenaCompleta();
-    }
-
-    async function aplicarOperacaoNoVao(tipoOp, extras = {}) {
-        if (!moduloAtivo || !vaoSelecionadoId) return;
-        const operacoesAtuais = moduloAtivo.operacoes_internas ? [...moduloAtivo.operacoes_internas] : [];
-        operacoesAtuais.push({ tipo: tipoOp, id_vao: vaoSelecionadoId, ...extras });
-        document.getElementById("inp_prompt").value = "";
-
-        const tiposOcupacao = ["GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA", "PORTA_TEMPERO"];
-        const tiposPorta = ["PORTAS_GIRO", "PORTAS_BASCULANTES"];
-
-        // Se o utilizador escolheu uma nova ocupação para o mesmo vão, substitui a ocupação anterior daquele vão!
-        if (tiposOcupacao.includes(tipoOp)) {
-            operacoesAtuais = operacoesAtuais.filter(
-                op => !(op.id_vao === vaoSelecionadoId && tiposOcupacao.includes(op.tipo))
-            );
-        } else if (tiposPorta.includes(tipoOp)) {
-            operacoesAtuais = operacoesAtuais.filter(
-                op => !(op.id_vao === vaoSelecionadoId && tiposPorta.includes(op.tipo))
-            );
-        }
-
-        operacoesAtuais.push({ tipo: tipoOp, id_vao: vaoSelecionadoId, ...extras });
-        document.getElementById("inp_prompt").value = "";
-
-        const resp = await fetch("/api/fabricar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id_modulo: moduloAtivo.id_modulo,
-                familia: document.getElementById("sel_familia").value,
-                largura_x: parseFloat(document.getElementById("inp_largura").value),
-                altura_y: parseFloat(document.getElementById("inp_altura").value),
-                profundidade_z: parseFloat(document.getElementById("inp_profundidade").value),
-                material_caixaria: document.getElementById("sel_mat_caixa").value,
-                material_frentes: document.getElementById("sel_mat_frentes").value,
-                operacoes_internas: operacoesAtuais
-            })
-        });
-        const dados = await resp.json();
-        if (!dados.sucesso) {
-            alert(dados.erro_engenharia || dados.erro_interno);
-            return;
-        }
-        moduloAtivo = dados.modulo;
-        fecharPainelVao();
-        await carregarEstadoAmbiente();
-    }
-
-    function alternarCamadaUsinagens() {
-        mostrarUsinagens = !mostrarUsinagens;
-        document.getElementById("btn_usinagens").classList.toggle("ativo", mostrarUsinagens);
-        renderizarCenaCompleta();
-    }
-
-    function alternarCamadaFitas() {
-        mostrarFitas = !mostrarFitas;
-        document.getElementById("btn_fitas").classList.toggle("ativo", mostrarFitas);
-        renderizarCenaCompleta();
-    }
-
-    function alternarVaosEspaciais() {
-        mostrarVaos = !mostrarVaos;
-        document.getElementById("btn_vaos").classList.toggle("ativo", mostrarVaos);
-        renderizarCenaCompleta();
-    }
-
-    function alternarRaioX() {
-        modoRaioX = !modoRaioX;
-        document.getElementById("btn_raiox").classList.toggle("ativo", modoRaioX);
-        renderizarCenaCompleta();
-    }
-
-    async function limparAmbiente() {
-        await fetch("/api/modulos/limpar", { method: "POST" });
-        idsSelecionados.clear();
-        moduloAtivo = null;
-        await carregarEstadoAmbiente();
-    }
-
-    window.onload = async () => {
-        inicializarPalco3D();
-        await carregarEstadoAmbiente();
-    };
-</script>
+    <script src="/static/js/estudio_3d.js"></script>
 </body>
 </html>

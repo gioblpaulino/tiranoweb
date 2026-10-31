@@ -1,0 +1,363 @@
+/* =============================================================================
+ * ARQUIVO: static/css/estudio.css
+ * RESPONSABILIDADE: Identidade visual Cyber-Rex (padronizada com o TiranoCut),
+ * layout de painéis laterais, controles flutuantes (D-Pad 3D) e seleções.
+ * ============================================================================= */
+
+:root {
+    --bg-dark: #07090C;
+    --panel-bg: #101419;
+    --card-bg: #171C24;
+    --accent-green: #4CE660;
+    --btn-green: #389E48;
+    --accent-purple: #8E24AA;
+    --accent-blue: #1E88E5;
+    --accent-slate: #455A64;
+    --accent-orange: #FF9800;
+    --accent-red: #E53935;
+    --accent-cyan: #00E5FF;
+    --text-main: #ECEFF1;
+    --text-muted: #90A4AE;
+    --border-color: #263238;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-main);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =============================================================================
+ * PAINEL ESQUERDO: CONSTRUTORES E OPÇÕES DE CHÃO DE FÁBRICA
+ * ============================================================================= */
+.sidebar-left {
+    width: 395px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: auto;
+    gap: 8px;
+}
+
+.brand-header {
+    padding: 6px 4px 10px 4px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-title-main {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #FFFFFF;
+}
+
+.brand-title-sub {
+    font-size: 8.5px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-orange);
+    letter-spacing: 0.5px;
+}
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
+
+label {
+    font-size: 10px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+}
+
+input, select, textarea {
+    width: 100%;
+    background: #0B0E12;
+    border: 1px solid #37474F;
+    color: #FFFFFF;
+    padding: 5px 7px;
+    border-radius: 5px;
+    font-size: 11px;
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-green);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 46px;
+}
+
+/* =============================================================================
+ * BOTÕES E CHIPS DE PRESET
+ * ============================================================================= */
+.btn {
+    border: none;
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.btn-primary { background: var(--btn-green); }
+.btn-primary:hover { background: #43A047; }
+
+.btn-purple { background: var(--accent-purple); }
+.btn-purple:hover { background: #9C27B0; }
+
+.btn-blue { background: var(--accent-blue); }
+.btn-blue:hover { background: #2196F3; }
+
+.btn-danger { background: var(--accent-red); }
+.btn-danger:hover { background: #F44336; }
+
+.btn-secondary { background: var(--accent-slate); }
+.btn-secondary:hover { background: #546E7A; }
+.btn-secondary.ativo {
+    background: #00838F;
+    border: 1px solid var(--accent-cyan);
+}
+
+.btn-mode {
+    background: #1C242B;
+    border: 1px solid #37474F;
+}
+.btn-mode.ativo {
+    background: #E65100;
+    border-color: #FFB74D;
+}
+
+.preset-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.chip {
+    font-size: 10px;
+    background: #15202B;
+    color: #81D4FA;
+    border: 1px solid #0277BD;
+    padding: 3px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.chip:hover {
+    background: #0277BD;
+    color: #FFFFFF;
+}
+
+/* =============================================================================
+ * PALCO CENTRAL 3D / 2D E HUD DIRECIONAL (D-PAD)
+ * ============================================================================= */
+.stage-center {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-dark);
+}
+
+.toolbar-top {
+    height: 50px;
+    background: rgba(16, 20, 25, 0.96);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 10;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+#canvas-container {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.floating-modal {
+    display: none;
+    position: absolute;
+    top: 60px;
+    background: rgba(16, 20, 25, 0.96);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 25;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
+}
+
+.dpad-hud {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(16, 20, 25, 0.95);
+    border: 1px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 20;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8);
+}
+
+.dpad-cross {
+    display: grid;
+    grid-template-columns: 36px 36px 36px;
+    grid-template-rows: 30px 30px 30px;
+    gap: 4px;
+}
+
+.dpad-btn {
+    background: #1C242B;
+    border: 1px solid #455A64;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.12s;
+}
+.dpad-btn:hover {
+    background: var(--accent-blue);
+    border-color: #80D8FF;
+}
+.dpad-btn.eixo-x { border-bottom: 2px solid #FF5252; }
+.dpad-btn.eixo-y { border-bottom: 2px solid #448AFF; }
+.dpad-btn.eixo-z { border-bottom: 2px solid var(--accent-green); }
+
+.hud-bottom-left {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    background: rgba(16, 20, 25, 0.92);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    max-width: 310px;
+    pointer-events: none;
+}
+
+.legend-pill {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 3px;
+}
+
+/* =============================================================================
+ * PAINEL DIREITO: POSICIONAMENTO, FILA MULTI-SELEÇÃO E PEÇAS
+ * ============================================================================= */
+.sidebar-right {
+    width: 350px;
+    background: var(--panel-bg);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: auto;
+    gap: 8px;
+}
+
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.module-item, .part-item {
+    background: #0D1116;
+    border: 1px solid #263238;
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.module-item.active {
+    border-color: var(--accent-green);
+    background: #14281D;
+}
+
+.module-item.multi-selected {
+    border-color: var(--accent-cyan);
+    background: #102830;
+}
+
+.chk-sel {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent-cyan);
+    cursor: pointer;
+}
+
+.tag-mirror {
+    color: #80D8FF;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+/* MODO PALCO AMPLO (OCULTA BARRAS LATERAIS PARA MAXIMIZAR O 3D) */
+body.palco-amplo .sidebar-left,
+body.palco-amplo .sidebar-right {
+    display: none !important;
+}

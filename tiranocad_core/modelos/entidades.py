@@ -132,6 +132,7 @@ class Peca:
         self.furos: List[Furo] = []
         self.rasgos: List[Rasgo] = []
         self.fitas: FitasBorda = FitasBorda()
+        self.cor_fita_borda: str = material
         self.avisos_auditoria: List[str] = []
 
     @staticmethod
@@ -304,6 +305,7 @@ class Peca:
             },
             "posicao_relativa": self.posicao_relativa,
             "fitas_borda": self.fitas.to_dict(),
+            "cor_fita_borda": self.cor_fita_borda,
             "usinagens": {
                 "furos": [f.to_dict(self._projetar_furo_3d(f)) for f in self.furos],
                 "rasgos": [r.to_dict(self._projetar_rasgo_3d(r)) for r in self.rasgos]
