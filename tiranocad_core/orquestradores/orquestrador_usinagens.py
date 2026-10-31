@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/orquestradores/orquestrador_usinagens.py
-# RESPONSABILIDADE: Aplicar furações automáticas guiadas pelo Perfil JSON,
-# adaptando-se a Base Passante vs. Lateral Passante, Sarrafo Deitado vs. Em Pé,
-# Soberbo, Cavilha, Minifix, Gaveteiros, Porta-Tempero e Portas de Giro.
+# RESPONSABILIDADE: Aplicar furações automáticas guiadas pelo Perfil JSON, com
+# validação prévia de limites para nunca estourar coordenadas em casos extremos.
 # =============================================================================
 
 from typing import Dict, Tuple
@@ -26,7 +25,6 @@ class OrquestradorUsinagens:
         y_global: float,
         z_global: float
     ) -> Tuple[float, float]:
-        """Converte coordenadas (X, Y, Z) do armário 3D para (X_2D, Y_2D) da peça planificada."""
         dx, dy, dz = peca.dimensoes_3d["x"], peca.dimensoes_3d["y"], peca.dimensoes_3d["z"]
         px, py, pz = peca.posicao_relativa["pos_x"], peca.posicao_relativa["pos_y"], peca.posicao_relativa["pos_z"]
         esp = peca.espessura
@@ -38,6 +36,21 @@ class OrquestradorUsinagens:
         else:
             return round(x_global - px, 2), round(z_global - pz, 2)
 
+    @staticmethod
+    def _furar_seguro(
+        peca: Peca,
+        x_2d: float,
+        y_2d: float,
+        diametro: float,
+        profundidade: float,
+        face: str = "FACE_INTERNA",
+        tipo_furo: str = "ESTRUTURAL"
+    ) -> None:
+        """Garante que o furo está dentro da área útil da peça antes de inseri-lo."""
+        if (2.0 <= x_2d <= peca.dim_x_2d - 2.0) and (2.0 <= y_2d <= peca.dim_y_2d - 2.0):
+            prof_segura = min(profundidade, peca.espessura)
+            peca.adicionar_furo(x_2d, y_2d, diametro, prof_segura, face, tipo_furo)
+
     def aplicar_todas_usinagens(
         self,
         mapa_estrutural: Dict[str, Peca],
@@ -46,9 +59,6 @@ class OrquestradorUsinagens:
         self._furar_caixaria_externa(mapa_estrutural)
         self._furar_arvore_recursiva(vao_raiz)
 
-    # =========================================================================
-    # 1. FURAÇÃO DA CAIXARIA EXTERNA
-    # =========================================================================
     def _furar_caixaria_externa(self, mapa: Dict[str, Peca]) -> None:
         tipo_montagem = str(self.perfil.obter("tipo_montagem_caixa")).strip().upper()
         modo_base = str(self.perfil.obter("geometria_caixaria.montagem_base_inferior")).strip().upper()
@@ -75,78 +85,96 @@ class OrquestradorUsinagens:
         base_sup = mapa.get("base_superior")
         sarrafo_front = mapa.get("sarrafo_frontal")
         sarrafo_tras_deit = mapa.get("sarrafo_traseiro_deitado")
-        sarrafo_tras_pe = mapa.get("sarrafo_traseiro_em_pe")
 
         meia_esp = esp_mdf / 2.0
 
-        # 1A. União Base Inferior <-> Laterais (Respeita Base Passante vs. Lateral Passante)
+        # 1A. União Base Inferior <-> Laterais
         if base_inf and lat_esq and lat_dir:
             prof_total = base_inf.dimensoes_3d["y"]
             cotas_y_base = [recuo_f, prof_total / 2.0, prof_total - recuo_t]
 
             for cy in cotas_y_base:
+                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
+
                 if modo_base == "LATERAL_PASSANTE":
-                    # Na Lateral Passante, o parafuso entra pelas Laterais (Z = meia_esp)
-                    # ou o Tambor Minifix fica nas bordas da Base Inferior!
                     if usa_minifix:
                         larg_b = base_inf.dimensoes_3d["x"]
                         for x_local_b in (dist_borda_minifix, larg_b - dist_borda_minifix):
                             bx, by = self.converter_global_para_2d_peca(
                                 base_inf, base_inf.posicao_relativa["pos_x"] + x_local_b, cy, 0.0
                             )
-                            base_inf.adicionar_furo(bx, by, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                            self._furar_seguro(base_inf, bx, by, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
                     else:
                         for lat in (lat_esq, lat_dir):
                             lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, meia_esp)
-                            lat.adicionar_furo(lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
-                            if usa_cavilha:
-                                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
-                                lx_c, ly_c = self.converter_global_para_2d_peca(lat, 0.0, cy_cav, meia_esp)
-                                lat.adicionar_furo(lx_c, ly_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
+                            self._furar_seguro(lat, lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+
+                    if usa_cavilha:
+                        for lat in (lat_esq, lat_dir):
+                            lx_c, ly_c = self.converter_global_para_2d_peca(lat, 0.0, cy_cav, meia_esp)
+                            self._furar_seguro(lat, lx_c, ly_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
                 else:
-                    # Na Base Passante, o parafuso entra por baixo da Base Inferior
                     larg_total = base_inf.dimensoes_3d["x"]
                     if usa_minifix:
                         z_tambor_inf = esp_mdf + dist_borda_minifix
                         for lat in (lat_esq, lat_dir):
                             lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, z_tambor_inf)
-                            lat.adicionar_furo(lx, ly, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                            self._furar_seguro(lat, lx, ly, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
                     else:
                         for x_borda in (meia_esp, larg_total - meia_esp):
                             bx, by = self.converter_global_para_2d_peca(base_inf, x_borda, cy, 0.0)
-                            base_inf.adicionar_furo(bx, by, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                            self._furar_seguro(base_inf, bx, by, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
                     if usa_cavilha:
-                        cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
                         for x_borda in (meia_esp, larg_total - meia_esp):
                             bx_c, by_c = self.converter_global_para_2d_peca(base_inf, x_borda, cy_cav, 0.0)
-                            base_inf.adicionar_furo(bx_c, by_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
+                            self._furar_seguro(base_inf, bx_c, by_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
 
-        # 1B. União Base Superior (Teto Inteiro) <-> Laterais
+        # 1B. União Base Superior (Teto) <-> Laterais
         if base_sup and lat_esq and lat_dir:
-            larg_total = base_sup.dimensoes_3d["x"]
             prof_total = base_sup.dimensoes_3d["y"]
             z_topo = base_sup.posicao_relativa["pos_z"]
+            z_meio_teto = z_topo + meia_esp
             cotas_y_sup = [recuo_f, prof_total / 2.0, prof_total - recuo_t]
 
             for cy in cotas_y_sup:
-                if usa_minifix:
-                    z_tambor_sup = z_topo - dist_borda_minifix
-                    for lat in (lat_esq, lat_dir):
-                        lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, z_tambor_sup)
-                        lat.adicionar_furo(lx, ly, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
+
+                if modo_base == "LATERAL_PASSANTE":
+                    if usa_minifix:
+                        larg_t = base_sup.dimensoes_3d["x"]
+                        for x_local_t in (dist_borda_minifix, larg_t - dist_borda_minifix):
+                            sx, sy = self.converter_global_para_2d_peca(
+                                base_sup, base_sup.posicao_relativa["pos_x"] + x_local_t, cy, z_topo
+                            )
+                            self._furar_seguro(base_sup, sx, sy, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                    else:
+                        for lat in (lat_esq, lat_dir):
+                            lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, z_meio_teto)
+                            self._furar_seguro(lat, lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+
+                    if usa_cavilha:
+                        for lat in (lat_esq, lat_dir):
+                            lx_c, ly_c = self.converter_global_para_2d_peca(lat, 0.0, cy_cav, z_meio_teto)
+                            self._furar_seguro(lat, lx_c, ly_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
                 else:
-                    for x_borda in (meia_esp, larg_total - meia_esp):
-                        sx, sy = self.converter_global_para_2d_peca(base_sup, x_borda, cy, z_topo)
-                        base_sup.adicionar_furo(sx, sy, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                    larg_total = base_sup.dimensoes_3d["x"]
+                    if usa_minifix:
+                        z_tambor_sup = z_topo - dist_borda_minifix
+                        for lat in (lat_esq, lat_dir):
+                            lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, z_tambor_sup)
+                            self._furar_seguro(lat, lx, ly, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                    else:
+                        for x_borda in (meia_esp, larg_total - meia_esp):
+                            sx, sy = self.converter_global_para_2d_peca(base_sup, x_borda, cy, z_topo)
+                            self._furar_seguro(base_sup, sx, sy, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
-                if usa_cavilha:
-                    cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
-                    for x_borda in (meia_esp, larg_total - meia_esp):
-                        sx_c, sy_c = self.converter_global_para_2d_peca(base_sup, x_borda, cy_cav, z_topo)
-                        base_sup.adicionar_furo(sx_c, sy_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
+                    if usa_cavilha:
+                        for x_borda in (meia_esp, larg_total - meia_esp):
+                            sx_c, sy_c = self.converter_global_para_2d_peca(base_sup, x_borda, cy_cav, z_topo)
+                            self._furar_seguro(base_sup, sx_c, sy_c, diam_cavilha, prof_cavilha, "FACE_INTERNA", "CAVILHA")
 
-        # 1C. Fixação de Sarrafos Deitados (Frontal e Traseiro Deitado)
+        # 1C. Sarrafos Deitados (Frontal e Traseiro)
         for sarrafo in (sarrafo_front, sarrafo_tras_deit):
             if not sarrafo or not lat_esq or not lat_dir:
                 continue
@@ -163,14 +191,14 @@ class OrquestradorUsinagens:
                         sx, sy = self.converter_global_para_2d_peca(
                             sarrafo, sarrafo.posicao_relativa["pos_x"] + x_tambor, cy, z_meio_s
                         )
-                        sarrafo.adicionar_furo(sx, sy, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
+                        self._furar_seguro(sarrafo, sx, sy, diam_minifix, prof_minifix, "FACE_INTERNA", "MINIFIX")
             else:
                 for cy in cotas_y_sarrafo:
                     for lat in (lat_esq, lat_dir):
                         lx, ly = self.converter_global_para_2d_peca(lat, 0.0, cy, z_meio_s)
-                        lat.adicionar_furo(lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                        self._furar_seguro(lat, lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
-        # 1D. Fixação de todas as Travessas/Réguas Traseiras EM PÉ nas Laterais
+        # 1D. Travessas e Réguas Traseiras em Pé
         chaves_travessas_em_pe = [
             "sarrafo_traseiro_em_pe",
             "regua_mao_amiga_movel",
@@ -186,16 +214,13 @@ class OrquestradorUsinagens:
             y_meio_pe = peca_pe.posicao_relativa["pos_y"] + meia_esp
             z_ini_pe = peca_pe.posicao_relativa["pos_z"]
             alt_pe = peca_pe.dimensoes_3d["z"]
-            cotas_z_pe = [z_ini_pe + 18.0, z_ini_pe + alt_pe - 18.0]
+            cotas_z_pe = [z_ini_pe + 15.0, z_ini_pe + alt_pe - 15.0]
 
             for cz in cotas_z_pe:
                 for lat in (lat_esq, lat_dir):
                     lx, ly = self.converter_global_para_2d_peca(lat, 0.0, y_meio_pe, cz)
-                    lat.adicionar_furo(lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                    self._furar_seguro(lat, lx, ly, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
-    # =========================================================================
-    # 2. VARREDURA RECURSIVA DA ÁRVORE ESPACIAL
-    # =========================================================================
     def _furar_arvore_recursiva(self, no: NoEspacial) -> None:
         esp_mdf = float(self.perfil.obter("materiais_padrao.espessura_estrutural_mm"))
         diam_estrutural = float(self.perfil.obter("parametros_usinagem.broca_parafuso_estrutural"))
@@ -217,50 +242,53 @@ class OrquestradorUsinagens:
             for vizinho_horizontal in (no.vizinhos.get("base"), no.vizinhos.get("topo")):
                 if not vizinho_horizontal:
                     continue
-                y_min_v = vizinho_horizontal.posicao_relativa["pos_y"]
-                y_max_v = y_min_v + vizinho_horizontal.dimensoes_3d["y"]
-
                 for cy in cotas_y_div:
-                    if (y_min_v + 10.0) <= cy <= (y_max_v - 10.0):
-                        vx, vy = self.converter_global_para_2d_peca(vizinho_horizontal, x_centro_div, cy, 0.0)
-                        vizinho_horizontal.adicionar_furo(vx, vy, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                    vx, vy = self.converter_global_para_2d_peca(vizinho_horizontal, x_centro_div, cy, 0.0)
+                    self._furar_seguro(vizinho_horizontal, vx, vy, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
-        # B) Prateleira Fixa ou Livre
+        # B1) Divisão Horizontal Estrutural (Prateleira Fixa de Torre Quente)
         elif no.tipo_divisao == "HORIZONTAL" and no.peca_divisora:
-            prat = no.peca_divisora
-            eh_fixa = (prat.categoria_industrial == "prateleira_fixa")
-            diam_aplicado = diam_estrutural if eh_fixa else diam_guia
-            prof_aplicada = esp_mdf if eh_fixa else prof_guia
-            face_aplicada = "FACE_EXTERNA" if eh_fixa else "FACE_INTERNA"
-            tipo_furo = "ESTRUTURAL" if eh_fixa else "GUIA"
+            self._furar_apoio_prateleira(no, no.peca_divisora, recuo_f, recuo_t, meia_esp, diam_estrutural, diam_guia, esp_mdf, prof_guia)
 
-            z_furo_global = prat.posicao_relativa["pos_z"] + (meia_esp if eh_fixa else 0.0)
-            y_ini_p = prat.posicao_relativa["pos_y"]
-            prof_p = prat.dimensoes_3d["y"]
-            cotas_y_prat = [y_ini_p + recuo_f, y_ini_p + prof_p - recuo_t]
+        # B2) Prateleiras Internas Distribuídas no Vão (Livres ou Fixas)
+        if hasattr(no, "metadados_prateleiras"):
+            for prat in getattr(no, "metadados_prateleiras"):
+                self._furar_apoio_prateleira(no, prat, recuo_f, recuo_t, meia_esp, diam_estrutural, diam_guia, esp_mdf, prof_guia)
 
-            for lado in ("esquerda", "direita"):
-                painel_apoio = no.vizinhos.get(lado)
-                if not painel_apoio:
-                    continue
-                for cy in cotas_y_prat:
-                    px_2d, py_2d = self.converter_global_para_2d_peca(painel_apoio, 0.0, cy, z_furo_global)
-                    painel_apoio.adicionar_furo(px_2d, py_2d, diam_aplicado, prof_aplicada, face_aplicada, tipo_furo)
-
-        # C) Gaveteiro ou Porta-Tempero
+        # C) Gaveteiro, Gaveta Interna, Sapateira ou Porta-Tempero
         if hasattr(no, "metadados_gaveteiro"):
             self._furar_gaveteiro_ou_tempero(no, getattr(no, "metadados_gaveteiro"))
 
-        # D) Portas de Giro
+        # D) Portas de Giro ou Basculantes
         if hasattr(no, "metadados_portas"):
             self._furar_portas(getattr(no, "metadados_portas"))
 
         for filho in no.filhos:
             self._furar_arvore_recursiva(filho)
 
-    # =========================================================================
-    # 3. FURAÇÃO DE GAVETEIROS E PORTA-TEMPERO
-    # =========================================================================
+    def _furar_apoio_prateleira(
+        self, no: NoEspacial, prat: Peca, recuo_f: float, recuo_t: float,
+        meia_esp: float, diam_estrut: float, diam_guia: float, esp_mdf: float, prof_guia: float
+    ) -> None:
+        eh_fixa = (prat.categoria_industrial == "prateleira_fixa")
+        diam_aplicado = diam_estrut if eh_fixa else diam_guia
+        prof_aplicada = esp_mdf if eh_fixa else prof_guia
+        face_aplicada = "FACE_EXTERNA" if eh_fixa else "FACE_INTERNA"
+        tipo_furo = "ESTRUTURAL" if eh_fixa else "GUIA"
+
+        z_furo_global = prat.posicao_relativa["pos_z"] + (meia_esp if eh_fixa else 0.0)
+        y_ini_p = prat.posicao_relativa["pos_y"]
+        prof_p = prat.dimensoes_3d["y"]
+        cotas_y_prat = [y_ini_p + recuo_f, y_ini_p + prof_p - recuo_t]
+
+        for lado in ("esquerda", "direita"):
+            painel_apoio = no.vizinhos.get(lado)
+            if not painel_apoio:
+                continue
+            for cy in cotas_y_prat:
+                px_2d, py_2d = self.converter_global_para_2d_peca(painel_apoio, 0.0, cy, z_furo_global)
+                self._furar_seguro(painel_apoio, px_2d, py_2d, diam_aplicado, prof_aplicada, face_aplicada, tipo_furo)
+
     def _furar_gaveteiro_ou_tempero(self, no: NoEspacial, lista_itens: list) -> None:
         esp_mdf = float(self.perfil.obter("materiais_padrao.espessura_estrutural_mm"))
         diam_estrutural = float(self.perfil.obter("parametros_usinagem.broca_parafuso_estrutural"))
@@ -277,7 +305,6 @@ class OrquestradorUsinagens:
             y_ini = item["y_inicio_trilho"]
             comp_trilho = item["comprimento_trilho"]
 
-            # 3A. Furos guia (3mm) dos trilhos nas Laterais/Divisórias do armário
             cotas_y_trilho = [y_ini + 37.0, y_ini + (comp_trilho / 2.0), y_ini + comp_trilho - 37.0]
             for lado in ("esquerda", "direita"):
                 painel_vizinho = no.vizinhos.get(lado)
@@ -285,27 +312,22 @@ class OrquestradorUsinagens:
                     continue
                 for cy in cotas_y_trilho:
                     vx, vy = self.converter_global_para_2d_peca(painel_vizinho, 0.0, cy, z_trilho)
-                    painel_vizinho.adicionar_furo(vx, vy, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
+                    self._furar_seguro(painel_vizinho, vx, vy, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
 
-            # Se for o carro do Porta-Tempero, fura a estrutura dele e pula a furação de gaveta comum
             if item.get("somente_trilho_lateral"):
                 continue
 
-            # 3B. Furos estruturais (4.5mm) nas Laterais de Gaveta prendendo Contra-Frente e Traseira
             for lat_gav in (item["lat_esq"], item["lat_dir"]):
                 alt_lat = lat_gav.dim_y_2d
                 comp_lat = lat_gav.dim_x_2d
 
-                z_furo_inf_local = round(recuo_canal_gav + larg_canal + 15.0, 2)
-                z_furo_sup_local = round(alt_lat - recuo_gav, 2)
+                z_furo_inf_local = min(alt_lat - 12.0, round(recuo_canal_gav + larg_canal + 12.0, 2))
+                z_furo_sup_local = max(z_furo_inf_local + 10.0, round(alt_lat - min(recuo_gav, alt_lat * 0.25), 2))
 
                 for y_2d in (z_furo_inf_local, z_furo_sup_local):
-                    lat_gav.adicionar_furo(meia_esp, y_2d, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
-                    lat_gav.adicionar_furo(comp_lat - meia_esp, y_2d, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                    self._furar_seguro(lat_gav, meia_esp, y_2d, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
+                    self._furar_seguro(lat_gav, comp_lat - meia_esp, y_2d, diam_estrutural, esp_mdf, "FACE_EXTERNA", "ESTRUTURAL")
 
-    # =========================================================================
-    # 4. FURAÇÃO DE CANECOS DE DOBRADIÇA (35mm) E CALÇOS NAS LATERAIS
-    # =========================================================================
     def _furar_portas(self, lista_portas: list) -> None:
         diam_caneco = float(self.perfil.obter("parametros_usinagem.broca_caneco_dobradica"))
         prof_caneco = float(self.perfil.obter("parametros_usinagem.profundidade_caneco_dobradica"))
@@ -317,55 +339,41 @@ class OrquestradorUsinagens:
         for item in lista_portas:
             porta: Peca = item["peca_porta"]
 
-            # CASO A: PORTA BASCULANTE (Canecos na borda superior horizontal + Pistão a Gás)
             if item.get("eh_basculante"):
                 larg_porta = porta.dim_x_2d
                 alt_porta = porta.dim_y_2d
                 y_caneco_topo = round(alt_porta - dist_borda_caneco, 2)
-                cotas_x_basc = [recuo_topo_base, round(larg_porta - recuo_topo_base, 2)]
+                recuo_x = min(recuo_topo_base, larg_porta * 0.25)
+                cotas_x_basc = [recuo_x, round(larg_porta - recuo_x, 2)]
 
                 for cx_local in cotas_x_basc:
-                    porta.adicionar_furo(cx_local, y_caneco_topo, diam_caneco, prof_caneco, "FACE_INTERNA", "CANECO")
+                    self._furar_seguro(porta, cx_local, y_caneco_topo, diam_caneco, prof_caneco, "FACE_INTERNA", "CANECO")
 
-                # Furos guia (3mm) dos pistões a gás nas laterais do vão
                 for painel_lat in (item.get("peca_apoio_esq"), item.get("peca_apoio_dir")):
                     if not painel_lat:
                         continue
                     z_pistao = round(porta.posicao_relativa["pos_z"] + alt_porta - 80.0, 2)
                     y_pistao = round(painel_lat.posicao_relativa["pos_y"] + 55.0, 2)
-                    z_min_p = painel_lat.posicao_relativa["pos_z"]
-                    z_max_p = z_min_p + painel_lat.dimensoes_3d["z"]
-                    if z_min_p <= z_pistao <= z_max_p:
-                        px, py = self.converter_global_para_2d_peca(painel_lat, 0.0, y_pistao, z_pistao)
-                        painel_lat.adicionar_furo(px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
+                    px, py = self.converter_global_para_2d_peca(painel_lat, 0.0, y_pistao, z_pistao)
+                    self._furar_seguro(painel_lat, px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
                 continue
 
-            # CASO B: PORTA DE GIRO VERTICAL
             painel_apoio: Peca = item.get("peca_apoio_lateral")
             alt_porta = porta.dim_y_2d
             qtd_dobradicas = self.perfil.calcular_qtd_dobradicas(alt_porta)
+            recuo_y = min(recuo_topo_base, alt_porta * 0.25)
 
             if qtd_dobradicas <= 2:
-                cotas_y_porta = [recuo_topo_base, alt_porta - recuo_topo_base]
+                cotas_y_porta = [recuo_y, round(alt_porta - recuo_y, 2)]
             else:
-                espaco_entre = (alt_porta - (2.0 * recuo_topo_base)) / float(qtd_dobradicas - 1)
-                cotas_y_porta = [round(recuo_topo_base + i * espaco_entre, 2) for i in range(qtd_dobradicas)]
+                espaco_entre = (alt_porta - (2.0 * recuo_y)) / float(qtd_dobradicas - 1)
+                cotas_y_porta = [round(recuo_y + i * espaco_entre, 2) for i in range(qtd_dobradicas)]
 
             for cy_local in cotas_y_porta:
-                porta.adicionar_furo(
-                    x=dist_borda_caneco,
-                    y=cy_local,
-                    diametro=diam_caneco,
-                    profundidade=prof_caneco,
-                    face="FACE_INTERNA",
-                    tipo_furo="CANECO"
-                )
+                self._furar_seguro(porta, dist_borda_caneco, cy_local, diam_caneco, prof_caneco, "FACE_INTERNA", "CANECO")
 
                 if painel_apoio:
                     z_global_dobradica = porta.posicao_relativa["pos_z"] + cy_local
                     y_global_calco = painel_apoio.posicao_relativa["pos_y"] + 37.0
-                    z_min_p = painel_apoio.posicao_relativa["pos_z"]
-                    z_max_p = z_min_p + painel_apoio.dimensoes_3d["z"]
-                    if z_min_p <= z_global_dobradica <= z_max_p:
-                        px, py = self.converter_global_para_2d_peca(painel_apoio, 0.0, y_global_calco, z_global_dobradica)
-                        painel_apoio.adicionar_furo(px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
+                    px, py = self.converter_global_para_2d_peca(painel_apoio, 0.0, y_global_calco, z_global_dobradica)
+                    self._furar_seguro(painel_apoio, px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")

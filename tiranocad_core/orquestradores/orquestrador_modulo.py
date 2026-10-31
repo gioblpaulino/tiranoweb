@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/orquestradores/orquestrador_modulo.py
-# RESPONSABILIDADE: Orquestrar a fabricação de Módulos Completos (Inferior,
-# Aéreo, Torre), Painéis/Tamponamentos/Engrossados (MODULO_PAINEL) e Peças ou
-# Subconjuntos Avulsos (MODULO_AVULSO), incluindo metadados de posição no Ambiente.
+# RESPONSABILIDADE: Orquestrar a fabricação completa de Módulos, Painéis e
+# Avulsos, despachando todas as operações espaciais para os construtores.
 # =============================================================================
 
 import uuid
@@ -22,10 +21,7 @@ from tiranocad_core.orquestradores.orquestrador_usinagens import OrquestradorUsi
 
 
 class OrquestradorModulo:
-    """
-    Maestro central do TiranoCAD em Python.
-    Unifica Módulos de Caixaria, Painéis Compostos e Componentes Avulsos.
-    """
+    """Maestro central do TiranoCAD em Python."""
 
     def __init__(self, pasta_perfis: str):
         self.gerenciador_perfis = GerenciadorPerfis(pasta_perfis)
@@ -64,7 +60,6 @@ class OrquestradorModulo:
         operacoes_internas: Optional[List[Dict[str, Any]]] = None,
         opcoes_especiais: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Constrói qualquer família do ecossistema e retorna o JSON industrial validado."""
         familia = familia.strip().upper()
         opcoes_esp = opcoes_especiais or {}
 
@@ -76,16 +71,12 @@ class OrquestradorModulo:
         mat_frentes = str(self.gerenciador_perfis.obter("materiais_padrao.material_frentes"))
         esp_caixa = float(self.gerenciador_perfis.obter("materiais_padrao.espessura_estrutural_mm"))
 
-        # =====================================================================
-        # ROTA ESPECIAL 1: CONSTRUTOR DE PAINÉIS, TAMPONAMENTOS E ENGROSSADOS
-        # =====================================================================
         if familia == "MODULO_PAINEL":
             c_paineis = ConstrutorPaineis(self.gerenciador_perfis)
             modo_esp = str(opcoes_esp.get("modo_espessura", "SIMPLES")).upper()
             orientacao = str(opcoes_esp.get("orientacao_espacial", "VERTICAL_FRONTAL")).upper()
             nome_p = str(opcoes_esp.get("nome_personalizado", f"Painel {modo_esp.title()}"))
 
-            # Se for horizontal (Tampo/Bancada), usa Largura x Profundidade; senão usa Largura x Altura
             cota_1 = largura_x
             cota_2 = profundidade_z if orientacao == "HORIZONTAL" else altura_y
 
@@ -102,12 +93,9 @@ class OrquestradorModulo:
             return self._empacotar_payload(
                 id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
                 mat_caixa, mat_frentes, [], None, [], pecas_painel,
-                f"🪵 Construtor de Painéis: '{nome_p}' ({modo_esp}) fabricado com {len(pecas_painel)} peça(s) de corte."
+                f"🪵 Construtor de Painéis: '{nome_p}' ({modo_esp}) fabricado com {len(pecas_painel)} peça(s)."
             )
 
-        # =====================================================================
-        # ROTA ESPECIAL 2: CONSTRUTOR DE PEÇAS E SUBCONJUNTOS AVULSOS
-        # =====================================================================
         if familia == "MODULO_AVULSO":
             c_avulsos = ConstrutorAvulsos(self.gerenciador_perfis)
             subtipo = str(opcoes_esp.get("subtipo_avulso", "GAVETA_COMPLETA")).upper()
@@ -127,9 +115,6 @@ class OrquestradorModulo:
                 f"🔩 Construtor Avulso: '{subtipo}' fabricado com {len(pecas_avulsas)} peça(s)."
             )
 
-        # =====================================================================
-        # ROTA PADRÃO: MÓDULOS DE CAIXARIA (INFERIOR, AÉREO, TORRE)
-        # =====================================================================
         c_caixaria = ConstrutorCaixaria(self.gerenciador_perfis)
         c_internos = ConstrutorInternos(self.gerenciador_perfis)
         c_gavetas = ConstrutorGavetas(self.gerenciador_perfis)
@@ -181,6 +166,18 @@ class OrquestradorModulo:
                 )
                 todas_pecas.extend(pecas_gav)
 
+            elif tipo_op == "GAVETEIRO_INTERNO":
+                pecas_gav_int = c_gavetas.construir_gaveteiro_interno(
+                    id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_gavetas=int(op.get("quantidade", 3))
+                )
+                todas_pecas.extend(pecas_gav_int)
+
+            elif tipo_op == "SAPATEIRA":
+                pecas_sap = c_gavetas.construir_sapateira(
+                    id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_sapateiras=int(op.get("quantidade", 2))
+                )
+                todas_pecas.extend(pecas_sap)
+
             elif tipo_op == "PORTA_TEMPERO":
                 pecas_temp = c_tempero.construir_porta_tempero(id_modulo=id_modulo, vao_alvo=vao_alvo)
                 todas_pecas.extend(pecas_temp)
@@ -190,25 +187,13 @@ class OrquestradorModulo:
                     id_modulo=id_modulo, vao_alvo=vao_alvo, tipo_abertura=str(op.get("abertura", "DUPLA"))
                 )
                 todas_pecas.extend(pecas_portas)
-            
-            elif tipo_op == "GAVETEIRO_INTERNO":
-             pecas_gav_int = c_gavetas.construir_gaveteiro_interno(
-                 id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_gavetas=int(op.get("quantidade", 3))
-             )
-             todas_pecas.extend(pecas_gav_int)
-            
-            elif tipo_op == "SAPATEIRA":
-             pecas_sap = c_gavetas.construir_sapateira(
-                 id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_sapateiras=int(op.get("quantidade", 2))
-             )
-             todas_pecas.extend(pecas_sap)
-             
+
             elif tipo_op == "PORTAS_BASCULANTES":
-             pecas_basc = c_frentes.construir_portas_basculantes(
-                 id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_basculantes=int(op.get("quantidade", 1))
-             )
-             todas_pecas.extend(pecas_basc)
-            
+                pecas_basc = c_frentes.construir_portas_basculantes(
+                    id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_basculantes=int(op.get("quantidade", 1))
+                )
+                todas_pecas.extend(pecas_basc)
+
         o_usinagens.aplicar_todas_usinagens(mapa_estrutural, vao_raiz)
 
         alertas_engenharia: List[str] = []
