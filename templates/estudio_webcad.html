@@ -126,17 +126,8 @@
             <button class="btn btn-secondary" id="btn_palco_amplo" onclick="alternarPalcoAmplo()" title="Ocultar ou Mostrar todos os painéis flutuantes">⛶ Palco Limpo</button>
         </div>
 
-        <!-- CAMADAS VISUAIS 3D E CONTROLES DE ABERTURA SEPARADOS -->
+        <!-- CAMADAS VISUAIS 3D PADRONIZADAS -->
         <div class="toolbar-group">
-            <label style="margin:0; color:#FFF; font-weight:bold;" title="Explosão 3D">💥</label>
-            <input type="range" id="rng_explosao" min="0" max="220" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
-
-            <label style="margin:0; color:#FFB74D; font-weight:bold;" title="Abrir Portas (Giro e Basculantes)">🚪</label>
-            <input type="range" id="rng_abertura_portas" min="0" max="100" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
-
-            <label style="margin:0; color:#80D8FF; font-weight:bold;" title="Abrir Gavetas, Sapateiras e Porta-Tempero">🗄️</label>
-            <input type="range" id="rng_abertura_gavetas" min="0" max="100" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
-
             <button class="btn btn-secondary" id="btn_ocultar_frentes" onclick="alternarOcultarFrentes()" title="Ocultar Portas e Frentes Externas">🙈 S/ Frentes</button>
             <button class="btn btn-secondary ativo" id="btn_usinagens" onclick="alternarCamadaUsinagens()">🔩 Furos</button>
             <button class="btn btn-secondary" id="btn_fitas" onclick="alternarCamadaFitas()" title="Alternar destaque técnico das fitas de borda">📼 Mapa Fitas</button>
@@ -387,14 +378,16 @@
                         <label>Avanço Frontal (+Y)</label>
                         <input type="number" id="inp_tamp_avanco" value="18.0" step="1">
                     </div>
+
                     <div>
                         <label>Subida Vista L (+Z)</label>
                         <input type="number" id="inp_tamp_subida" value="70.0" step="5">
                     </div>
                 </div>
-                <div class="row-2">
-                    <div><label>Aba Deitada do "L"</label><input type="number" id="inp_tamp_aba_l" value="60.0" step="5"></div>
+                <div class="row-3">
+                    <div><label>Aba Deitada "L"</label><input type="number" id="inp_tamp_aba_l" value="60.0" step="5"></div>
                     <div><label>Descida Base (-Z)</label><input type="number" id="inp_tamp_descida" value="0.0" step="5"></div>
+                    <div><label title="0 = Profundidade Total | Ex: 70 = Reguinha Frontal de Parede">Prof. Lat. (0=Total)</label><input type="number" id="inp_tamp_prof_lat" value="0.0" step="10"></div>
                 </div>
 
                 <div class="card-title" style="margin-top:6px; color:#FFB74D;">2. Fechamento / Afastador de Parede (Mesma Altura)</div>
@@ -625,52 +618,70 @@
 
         <!-- CONTROLE DIRECIONAL CAD 3D (D-PAD) -->
         <div class="dpad-hud" id="hud_dpad">
-            <div style="display:flex; flex-direction:column; gap:4px; min-width:110px;">
-                <span id="lbl_selecao_dpad" style="font-size:11px; font-weight:800; color:#00E5FF;">🎯 1 Selecionado</span>
-                <select id="sel_passo_dpad" style="padding:4px; font-weight:bold; color:#4CE660;">
-                    <option value="1">Passo: 1 mm</option>
-                    <option value="10">Passo: 10 mm</option>
-                    <option value="50">Passo: 50 mm</option>
-                    <option value="100" selected>Passo: 100 mm</option>
-                    <option value="500">Passo: 500 mm</option>
-                </select>
-                <button class="btn btn-danger" style="padding:4px;" onclick="excluirSelecionados()">🗑️ Excluir (Del)</button>
-            </div>
-
-            <div class="dpad-cross">
-                <div></div>
-                <button class="dpad-btn eixo-y" onclick="moverSelecionados(0, -1, 0)" title="Encostar na Parede (-Y)">▲</button>
-                <div></div>
-                <button class="dpad-btn eixo-x" onclick="moverSelecionados(-1, 0, 0)" title="Mover p/ Esquerda (-X)">◀</button>
-                <button class="dpad-btn" onclick="encostarAutoSnapSelecionados()" title="Auto-Snap Magnético">🧲</button>
-                <button class="dpad-btn eixo-x" onclick="moverSelecionados(1, 0, 0)" title="Mover p/ Direita (+X)">▶</button>
-                <div></div>
-                <button class="dpad-btn eixo-y" onclick="moverSelecionados(0, 1, 0)" title="Afastar da Parede (+Y)">▼</button>
-                <div></div>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="margin:0; text-align:center;">Elevação (Z)</label>
-                <div class="row-2">
-                    <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, 1)">⏫ +Z</button>
-                    <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, -1)">⏬ -Z</button>
+            <div class="dpad-kinematics-bar">
+                <div class="dpad-kinematics-item">
+                    <span title="Explosão 3D">💥 Explosão:</span>
+                    <input type="range" id="rng_explosao" min="0" max="220" value="0" style="width:85px;" oninput="atualizarCinematica3D()">
                 </div>
-                <div class="row-2">
-                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(0)">Piso (0)</button>
-                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(1450)">Aéreo</button>
+                <div class="dpad-kinematics-item">
+                    <span style="color:#FFB74D;" title="Abrir Portas">🚪 Portas:</span>
+                    <input type="range" id="rng_abertura_portas" min="0" max="100" value="0" style="width:85px;" oninput="atualizarCinematica3D()">
+                </div>
+                <div class="dpad-kinematics-item">
+                    <span style="color:#80D8FF;" title="Abrir Gavetas, Sapateiras e Porta-Tempero">🗄️ Gavetas:</span>
+                    <input type="range" id="rng_abertura_gavetas" min="0" max="100" value="0" style="width:85px;" oninput="atualizarCinematica3D()">
                 </div>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="margin:0; text-align:center;">Rotação (Giro)</label>
-                <div class="row-3">
-                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(-45)">↺-45°</button>
-                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(45)">↻+45°</button>
-                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(90)">↻90°</button>
+            <div class="dpad-main-row">
+                <div style="display:flex; flex-direction:column; gap:4px; min-width:110px;">
+                    <span id="lbl_selecao_dpad" style="font-size:11px; font-weight:800; color:#00E5FF;">🎯 1 Selecionado</span>
+                    <select id="sel_passo_dpad" style="padding:4px; font-weight:bold; color:#4CE660;">
+                        <option value="1">Passo: 1 mm</option>
+                        <option value="10">Passo: 10 mm</option>
+                        <option value="50">Passo: 50 mm</option>
+                        <option value="100" selected>Passo: 100 mm</option>
+                        <option value="500">Passo: 500 mm</option>
+                    </select>
+                    <button class="btn btn-danger" style="padding:4px;" onclick="excluirSelecionados()">🗑️ Excluir (Del)</button>
                 </div>
-                <div class="row-2">
-                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="resetarRotacaoEParedeSelecionados()">Alinhar</button>
-                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="descontarCantoParede()">+550 Canto</button>
+            
+                <div class="dpad-cross">
+                    <div></div>
+                    <button class="dpad-btn eixo-y" onclick="moverSelecionados(0, -1, 0)" title="Encostar na Parede (-Y)">▲</button>
+                    <div></div>
+                    <button class="dpad-btn eixo-x" onclick="moverSelecionados(-1, 0, 0)" title="Mover p/ Esquerda (-X)">◀</button>
+                    <button class="dpad-btn" onclick="encostarAutoSnapSelecionados()" title="Auto-Snap Magnético">🧲</button>
+                    <button class="dpad-btn eixo-x" onclick="moverSelecionados(1, 0, 0)" title="Mover p/ Direita (+X)">▶</button>
+                    <div></div>
+                    <button class="dpad-btn eixo-y" onclick="moverSelecionados(0, 1, 0)" title="Afastar da Parede (+Y)">▼</button>
+                    <div></div>
+                </div>
+            
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="margin:0; text-align:center;">Elevação (Z)</label>
+                    <div class="row-2">
+                        <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, 1)">⏫ +Z</button>
+                        <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, -1)">⏬ -Z</button>
+                    </div>
+                    <div class="row-2">
+                        <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(0)">Piso (0)</button>
+                        <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(1450)">Aéreo</button>
+                    </div>
+                </div>
+            
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="margin:0; text-align:center;">Rotação (Giro)</label>
+                        <div class="row-3">
+                        <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(-45)">↺-45°</button>
+                        <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(45)">↻+45°</button>
+                        <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(90)">↻90°</button>
+                    </div>
+                    <div class="row-2">
+                        <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="resetarRotacaoEParedeSelecionados()">Alinhar</button>
+                        <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="descontarCantoParede()">+550 Canto</button>
+                    </div>
+                    
                 </div>
             </div>
         </div>

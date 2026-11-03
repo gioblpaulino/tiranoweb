@@ -552,3 +552,99 @@ textarea {
     opacity: 0.35;
     cursor: not-allowed;
 }
+
+/* =============================================================================
+ * PADRONIZAÇÃO UNIFORME DA BARRA SUPERIOR (TODOS OS BOTÕES DO MESMO TAMANHO)
+ * ============================================================================= */
+.toolbar-top {
+    height: 48px !important;
+    padding: 0 10px !important;
+    gap: 6px;
+    overflow-x: auto;
+}
+
+.toolbar-top .btn {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 9px !important;
+    font-size: 10.5px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+    border-radius: 5px;
+}
+
+.toolbar-top .btn-undo-redo {
+    width: 32px !important;
+    padding: 0 !important;
+}
+
+/* =============================================================================
+ * FAIXA DE EXPLOSÃO E ABERTURAS CENTRALIZADA NO CONTROLE INFERIOR (D-PAD)
+ * ============================================================================= */
+.dpad-hud {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 8px 14px !important;
+}
+
+.dpad-kinematics-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #263238;
+}
+
+.dpad-kinematics-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.dpad-main-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* =============================================================================
+ * MENUS FLUTUANTES ARRASTÁVEIS E REDIMENSIONÁVEIS PROPORCIONALMENTE
+ * ============================================================================= */
+.hud-header {
+    cursor: grab;
+    user-select: none;
+}
+.hud-header:active {
+    cursor: grabbing;
+}
+
+.hud-resize-handle {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 15px;
+    height: 15px;
+    cursor: nwse-resize;
+    color: var(--accent-cyan);
+    font-size: 11px;
+    line-height: 15px;
+    text-align: center;
+    user-select: none;
+    opacity: 0.65;
+    z-index: 50;
+}
+.hud-resize-handle:hover {
+    opacity: 1;
+    color: var(--accent-green);
+}
+
+.part-item.peca-destacada {
+    border: 1px solid var(--accent-cyan) !important;
+    background: #0D2B36 !important;
+    font-weight: 700;
+}

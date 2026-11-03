@@ -221,7 +221,8 @@ class OrquestradorModulo:
         return self._empacotar_payload(
             id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
             mat_caixa, mat_frentes, operacoes_executadas, vao_raiz.to_dict(),
-            alertas_engenharia, todas_pecas, None
+            alertas_engenharia, todas_pecas, None, zonas_materiais, overrides_pecas,
+            tamponamentos_agregados
         )
 
     @staticmethod
@@ -301,7 +302,9 @@ class OrquestradorModulo:
                     p.fitas.direita = bool(fb.get("direita", p.fitas.direita))
                     
     def _empacotar_payload(
-        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore, alertas, pecas, msg_custom, zonas_materiais=None, overrides_pecas=None, tamponamentos_agregados=None
+        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore,
+        alertas, pecas, msg_custom, zonas_materiais=None, overrides_pecas=None,
+        tamponamentos_agregados=None
     ) -> Dict[str, Any]:
         payload = {
             "id_modulo": id_mod,
@@ -320,7 +323,7 @@ class OrquestradorModulo:
                 "perfil_ativo": self.gerenciador_perfis.dados_perfil,
                 "zonas_materiais": zonas_materiais or {},
                 "overrides_pecas": overrides_pecas or {},
-                "tamponamentos_agregados": tamponamentos_agregados or {}     
+                "tamponamentos_agregados": tamponamentos_agregados or {}
             },
             "operacoes_internas": ops,
             "arvore_espacial_vaos": arvore,

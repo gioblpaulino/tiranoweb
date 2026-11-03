@@ -567,14 +567,52 @@ def api_pintar_modulo_ou_peca():
 
     return jsonify({"sucesso": True, "modulo": mod}), 200
 
+def _reconstruir_modulo_preservando_estado(mod: dict, cfg_tamp: dict) -> dict:
+    """Reconstrói o módulo mantendo 100% das cores, frentes, zonas, overrides e posição."""
+    params = mod.get("parametros", {})
+    pos_ant = mod.get("posicionamento_ambiente", {})
+    prompt_orig = mod.get("prompt_original", "")
+    msg_cop = mod.get("resposta_copiloto")
+
+    perfil_salvo = copy.deepcopy(params.get("perfil_ativo") or {})
+    mat_padrao = perfil_salvo.setdefault("materiais_padrao", {})
+    if params.get("material_caixaria"):
+        mat_padrao["material_caixaria"] = params["material_caixaria"]
+    if params.get("material_frentes"):
+        mat_padrao["material_frentes"] = params["material_frentes"]
+
+    zonas = copy.deepcopy(params.get("zonas_materiais") or {})
+    if not zonas.get("cor_caixaria") and params.get("material_caixaria"):
+        zonas["cor_caixaria"] = params["material_caixaria"]
+    if not zonas.get("cor_frentes") and params.get("material_frentes"):
+        zonas["cor_frentes"] = params["material_frentes"]
+
+    if not cfg_tamp.get("material"):
+        cfg_tamp["material"] = zonas.get("cor_frentes") or params.get("material_frentes") or "generico_branco_tx"
+
+    reconstruido = orquestrador.fabricar_modulo(
+        id_modulo=mod["id_modulo"],
+        nome_projeto=mod.get("nome_projeto", "COZINHA_TIRANOGIO"),
+        familia=mod["familia"],
+        largura_x=float(mod["dimensoes_ocupadas"]["largura_x"]),
+        altura_y=float(mod["dimensoes_ocupadas"]["altura_y"]),
+        profundidade_z=float(mod["dimensoes_ocupadas"]["profundidade_z"]),
+        overrides_perfil=perfil_salvo,
+        operacoes_internas=mod.get("operacoes_internas", []),
+        zonas_materiais=zonas,
+        overrides_pecas=copy.deepcopy(params.get("overrides_pecas") or {}),
+        tamponamentos_agregados=cfg_tamp
+    )
+    reconstruido["posicionamento_ambiente"] = pos_ant
+    reconstruido["prompt_original"] = prompt_orig
+    reconstruido["resposta_copiloto"] = msg_cop
+    reconstruido["cliente"] = mod.get("cliente", METADADOS_PROJETO["nome_cliente"])
+    reconstruido["nome_cliente"] = mod.get("nome_cliente", METADADOS_PROJETO["nome_cliente"])
+    return reconstruido
+
+
 @app.route("/api/modulos/tamponamento_inteligente", methods=["POST"])
 def api_tamponamento_inteligente():
-    """
-    Aplica Tamponamento em 1 módulo OU executa o Envelopamento Inteligente em Lote:
-    Quando múltiplos módulos são selecionados, aplica a Lateral Esquerda no 1º módulo,
-    a Lateral Direita no último módulo, e estende a Vista Superior em 'L' (ou Tampo)
-    cobrindo todo o vão entre as duas laterais (respeitando o tamanho da chapa)!
-    """
     dados = request.get_json(silent=True) or {}
     ids_req = [str(i).strip() for i in dados.get("ids_modulos", []) if str(i).strip() in COFRE_MODULOS_ATIVOS]
     if not ids_req:
@@ -584,13 +622,11 @@ def api_tamponamento_inteligente():
     config_base = dados.get("config_tamponamento", {})
     ativar = bool(config_base.get("ativo", True))
 
-    # Ordena os módulos selecionados da esquerda para a direita ao longo da parede
     mods_ordenados = sorted(
         [COFRE_MODULOS_ATIVOS[i] for i in ids_req],
         key=lambda m: float(m.get("posicionamento_ambiente", {}).get("distancia_x_parede", 0.0))
     )
 
-    # Calcula a largura total abrangida do início do 1º módulo até o final do último módulo
     x_ini_primeiro = float(mods_ordenados[0].get("posicionamento_ambiente", {}).get("distancia_x_parede", 0.0))
     mod_ultimo = mods_ordenados[-1]
     x_fim_ultimo = (
@@ -604,14 +640,10 @@ def api_tamponamento_inteligente():
         eh_ultimo = (idx == len(mods_ordenados) - 1)
         eh_unico = (len(mods_ordenados) == 1)
 
-        cfg_mod = dict(config_base)
+        cfg_mod = copy.deepcopy(config_base)
         if not ativar:
             cfg_mod["ativo"] = False
         elif not eh_unico:
-            # No modo Multi-Módulos:
-            # - 1º módulo recebe Lateral Esq, Fechamento Esq e a Vista Superior do conjunto inteiro
-            # - Último módulo recebe Lateral Dir e Fechamento Dir
-            # - Módulos intermediários ficam limpos para não duplicar chapas internas
             cfg_mod["lateral_esquerda"] = bool(config_base.get("lateral_esquerda")) and eh_primeiro
             cfg_mod["fechamento_esquerda"] = bool(config_base.get("fechamento_esquerda")) and eh_primeiro
             cfg_mod["lateral_direita"] = bool(config_base.get("lateral_direita")) and eh_ultimo
@@ -621,35 +653,13 @@ def api_tamponamento_inteligente():
             cfg_mod["largura_conjunto_mm"] = largura_total_conjunto if eh_primeiro else mod["dimensoes_ocupadas"]["largura_x"]
             cfg_mod["conjunto_tem_lat_dir"] = bool(config_base.get("lateral_direita"))
 
-        params = mod.get("parametros", {})
-        pos_ant = mod.get("posicionamento_ambiente", {})
-        prompt_orig = mod.get("prompt_original", "")
-        msg_cop = mod.get("resposta_copiloto")
-
-        reconstruido = orquestrador.fabricar_modulo(
-            id_modulo=mod["id_modulo"],
-            nome_projeto=mod.get("nome_projeto", "COZINHA_TIRANOGIO"),
-            familia=mod["familia"],
-            largura_x=float(mod["dimensoes_ocupadas"]["largura_x"]),
-            altura_y=float(mod["dimensoes_ocupadas"]["altura_y"]),
-            profundidade_z=float(mod["dimensoes_ocupadas"]["profundidade_z"]),
-            overrides_perfil=params.get("perfil_ativo"),
-            operacoes_internas=mod.get("operacoes_internas", []),
-            zonas_materiais=params.get("zonas_materiais"),
-            overrides_pecas=params.get("overrides_pecas"),
-            tamponamentos_agregados=cfg_mod
-        )
-        reconstruido["posicionamento_ambiente"] = pos_ant
-        reconstruido["prompt_original"] = prompt_orig
-        reconstruido["resposta_copiloto"] = msg_cop
-        COFRE_MODULOS_ATIVOS[mod["id_modulo"]] = reconstruido
+        COFRE_MODULOS_ATIVOS[mod["id_modulo"]] = _reconstruir_modulo_preservando_estado(mod, cfg_mod)
 
     return jsonify({"sucesso": True, "modulo": COFRE_MODULOS_ATIVOS[mods_ordenados[0]["id_modulo"]]}), 200
 
 
 @app.route("/api/modulo/redimensionar_peca_tamp", methods=["POST"])
 def api_redimensionar_peca_tamponamento():
-    """Redimensiona ou desloca uma peça específica do tamponamento sem afetar o módulo."""
     dados = request.get_json(silent=True) or {}
     id_mod = str(dados.get("id_modulo", "")).strip()
     nome_peca = str(dados.get("nome_comercial", "")).strip()
@@ -659,7 +669,8 @@ def api_redimensionar_peca_tamponamento():
     registrar_acao_historico()
     mod = COFRE_MODULOS_ATIVOS[id_mod]
     params = mod.get("parametros", {})
-    cfg_tamp = dict(params.get("tamponamentos_agregados") or {})
+    cfg_tamp = copy.deepcopy(params.get("tamponamentos_agregados") or {})
+    cfg_tamp["ativo"] = True
     ov_map = dict(cfg_tamp.get("overrides_pecas_tamp") or {})
 
     if dados.get("resetar"):
@@ -675,25 +686,9 @@ def api_redimensionar_peca_tamponamento():
         }
 
     cfg_tamp["overrides_pecas_tamp"] = ov_map
-    pos_ant = mod.get("posicionamento_ambiente", {})
-
-    reconstruido = orquestrador.fabricar_modulo(
-        id_modulo=id_mod,
-        nome_projeto=mod.get("nome_projeto", "COZINHA_TIRANOGIO"),
-        familia=mod["familia"],
-        largura_x=float(mod["dimensoes_ocupadas"]["largura_x"]),
-        altura_y=float(mod["dimensoes_ocupadas"]["altura_y"]),
-        profundidade_z=float(mod["dimensoes_ocupadas"]["profundidade_z"]),
-        overrides_perfil=params.get("perfil_ativo"),
-        operacoes_internas=mod.get("operacoes_internas", []),
-        zonas_materiais=params.get("zonas_materiais"),
-        overrides_pecas=params.get("overrides_pecas"),
-        tamponamentos_agregados=cfg_tamp
-    )
-    reconstruido["posicionamento_ambiente"] = pos_ant
+    reconstruido = _reconstruir_modulo_preservando_estado(mod, cfg_tamp)
     COFRE_MODULOS_ATIVOS[id_mod] = reconstruido
     return jsonify({"sucesso": True, "modulo": reconstruido}), 200
-@app.route("/api/ambiente/resumo_industrial", methods=["GET"])
 
 def obter_resumo_industrial_bom():
     """

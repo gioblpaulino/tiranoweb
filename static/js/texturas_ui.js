@@ -649,6 +649,7 @@ async function aplicarTamponamentoNoModulo(ativar) {
         subida_topo_mm: parseFloat(document.getElementById("inp_tamp_subida").value),
         largura_aba_l_mm: parseFloat(document.getElementById("inp_tamp_aba_l").value),
         descida_base_mm: parseFloat(document.getElementById("inp_tamp_descida").value),
+        profundidade_lateral_mm: parseFloat(document.getElementById("inp_tamp_prof_lat").value || 0),
         fechamento_esquerda: document.getElementById("chk_fech_esq").checked,
         fechamento_direita: document.getElementById("chk_fech_dir").checked,
         largura_fechamento_mm: parseFloat(document.getElementById("inp_larg_fech").value),
@@ -986,6 +987,7 @@ window.addEventListener("load", () => {
             // 1. Se clicou numa peça no 3D, já alimenta o Pintor de Peça Individual!
             if (pecaClicada) {
                 pecaIndividualSelecionada = pecaClicada;
+                destacarPecaSelecionadaNoPalco3D();
                 const elNomeP = document.getElementById("nome_peca_pintor");
                 if (elNomeP) {
                     elNomeP.innerText = `🪵 ${pecaClicada.nome_comercial} (${pecaClicada.dimensoes_2d_planificadas.largura_x}x${pecaClicada.dimensoes_2d_planificadas.altura_y}mm)`;
@@ -1123,4 +1125,159 @@ window.addEventListener("load", () => {
         document.getElementById("status_desenho_2d").innerText =
             `🔒 Trava Ortogonal: ${dist}mm | ${angGraus}° (Clique p/ fixar, Shift p/ 45°, Botão Direito p/ encerrar)`;
     });
+});
+
+// =============================================================================
+// 8. DESTAQUE 3D EXATO DA PEÇA SELECIONADA E MENUS ARRASTÁVEIS / REDIMENSIONÁVEIS
+// =============================================================================
+function destacarPecaSelecionadaNoPalco3D() {
+    const nomeAlvo = pecaIndividualSelecionada ? pecaIndividualSelecionada.nome_comercial : null;
+    const idModAlvo = (pecaTamponamentoEmEdicao && pecaTamponamentoEmEdicao.idModulo)
+        ? pecaTamponamentoEmEdicao.idModulo
+        : (moduloAtivo ? moduloAtivo.id_modulo : null);
+
+    // 1. Destaca a peça no Palco 3D com Contorno Ciano Brilhante e leve brilho emissivo
+    grupoAmbienteModulos.traverse(obj => {
+        if (obj.isMesh && obj.name === "corpo_mdf" && obj.parent && obj.parent.userData.peca) {
+            const p = obj.parent.userData.peca;
+            const idModPeca = obj.userData.idModulo;
+            const ehPecaAlvo = (nomeAlvo && p.nome_comercial === nomeAlvo && idModPeca === idModAlvo);
+
+            // Atualiza a cor do contorno (LineSegments irmão do mesh)
+            obj.parent.children.forEach(filho => {
+                if (filho.isLineSegments && filho.material) {
+                    if (ehPecaAlvo) {
+                        filho.material.color.setHex(0x00E5FF);
+                    } else {
+                        const modEhAtivo = (moduloAtivo && idModPeca === moduloAtivo.id_modulo);
+                        filho.material.color.setHex(modEhAtivo ? 0x4CE660 : 0x263238);
+                    }
+                }
+            });
+
+            // Aplica leve brilho emissivo nas faces da peça selecionada para certeza visual imediata
+            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+            mats.forEach(m => {
+                if (m && m.emissive) {
+                    m.emissive.setHex(ehPecaAlvo ? 0x003B46 : 0x000000);
+                    m.needsUpdate = true;
+                }
+            });
+        }
+    });
+
+    // 2. Destaca o item correspondente na lista de peças à direita
+    document.querySelectorAll("#lista_pecas_modulo .part-item").forEach(el => {
+        const textoItem = el.innerText || "";
+        const bateu = nomeAlvo && textoItem.includes(nomeAlvo);
+        el.classList.toggle("peca-destacada", !!bateu);
+    });
+}
+
+// Conecta o destaque de peça à seleção na lista e ao ciclo de renderização
+const _selecionarPecaOrig = selecionarPecaParaPintura;
+selecionarPecaParaPintura = function (pecaDict) {
+    _selecionarPecaOrig(pecaDict);
+    destacarPecaSelecionadaNoPalco3D();
+};
+
+const _renderFinalOrig = renderizarCenaCompleta;
+renderizarCenaCompleta = function () {
+    _renderFinalOrig();
+    destacarPecaSelecionadaNoPalco3D();
+};
+
+// Torna todos os Menus Flutuantes (.hud-panel e .floating-modal) Arrastáveis e Redimensionáveis Proporcionalmente!
+function inicializarMenusArrastaveisERedimensionaveis() {
+    const paineis = document.querySelectorAll(".hud-panel, .floating-modal");
+
+    paineis.forEach(painel => {
+        const cabecalho = painel.querySelector(".hud-header") || painel.firstElementChild;
+
+        // A) ARRASTAR PELO CABEÇALHO
+        if (cabecalho) {
+            cabecalho.style.cursor = "grab";
+            let arrastandoMenu = false;
+            let offsetMouseX = 0, offsetMouseY = 0;
+
+            cabecalho.addEventListener("pointerdown", (e) => {
+                if (["INPUT", "SELECT", "BUTTON", "SPAN"].includes(e.target.tagName) && e.target.classList.contains("hud-close")) return;
+                e.stopPropagation();
+                arrastandoMenu = true;
+                cabecalho.style.cursor = "grabbing";
+
+                const rect = painel.getBoundingClientRect();
+                const parentRect = painel.offsetParent ? painel.offsetParent.getBoundingClientRect() : { left: 0, top: 0 };
+
+                // Converte posicionamento 'right' ou 'transform' em 'left/top' explícitos ao iniciar o arraste
+                painel.style.left = `${rect.left - parentRect.left}px`;
+                painel.style.top = `${rect.top - parentRect.top}px`;
+                painel.style.right = "auto";
+                painel.style.transform = "none";
+
+                offsetMouseX = e.clientX - rect.left;
+                offsetMouseY = e.clientY - rect.top;
+            });
+
+            window.addEventListener("pointermove", (e) => {
+                if (!arrastandoMenu) return;
+                const parentRect = painel.offsetParent ? painel.offsetParent.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+                let novoLeft = e.clientX - parentRect.left - offsetMouseX;
+                let novoTop = e.clientY - parentRect.top - offsetMouseY;
+
+                novoLeft = Math.max(4, Math.min(window.innerWidth - 120, novoLeft));
+                novoTop = Math.max(4, Math.min(window.innerHeight - 100, novoTop));
+
+                painel.style.left = `${novoLeft}px`;
+                painel.style.top = `${novoTop}px`;
+            });
+
+            window.addEventListener("pointerup", () => {
+                if (arrastandoMenu) {
+                    arrastandoMenu = false;
+                    cabecalho.style.cursor = "grab";
+                }
+            });
+        }
+
+        // B) ALÇA DE REDIMENSIONAMENTO PROPORCIONAL (CANTO INFERIOR DIREITO ◢)
+        const alca = document.createElement("div");
+        alca.className = "hud-resize-handle";
+        alca.innerText = "◢";
+        alca.title = "Arraste para redimensionar proporcionalmente (Duplo clique p/ 100%)";
+        painel.appendChild(alca);
+
+        let redimensionando = false;
+        let xInicialResize = 0;
+        let escalaAtual = 1.0;
+
+        alca.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            redimensionando = true;
+            xInicialResize = e.clientX;
+        });
+
+        alca.addEventListener("dblclick", (e) => {
+            e.stopPropagation();
+            escalaAtual = 1.0;
+            painel.style.zoom = "1";
+        });
+
+        window.addEventListener("pointermove", (e) => {
+            if (!redimensionando) return;
+            const deltaX = e.clientX - xInicialResize;
+            xInicialResize = e.clientX;
+            escalaAtual = Math.max(0.72, Math.min(1.35, escalaAtual + (deltaX / 320.0)));
+            painel.style.zoom = String(escalaAtual.toFixed(2));
+        });
+
+        window.addEventListener("pointerup", () => {
+            redimensionando = false;
+        });
+    });
+}
+
+window.addEventListener("load", () => {
+    inicializarMenusArrastaveisERedimensionaveis();
 });
