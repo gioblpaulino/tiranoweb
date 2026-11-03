@@ -691,45 +691,63 @@ function atualizarListaPecasUI(modulo) {
 
 function adicionarFitasBorda3D(grupoFitas, p, dx, dy, dz) {
     if (!p.fitas_borda) return;
-    const matFita = new THREE.MeshBasicMaterial({ color: 0xFF1744 });
-    const espFita = 1.4;
+
+    // Define a cor da fita de borda segundo a Zona ou Override Individual da peça!
+    // (No modo Raio-X, mantém destaque vermelho para inspeção técnica)
+    const idCorFita = p.cor_fita_borda || p.material || "generico_branco_tx";
+    if (idCorFita === "SEM_FITA") return;
+
+    const hexFita = modoRaioX ? 0xFF1744 : (MAPA_HEX_MATERIAIS[idCorFita] || 0xECEFF1);
+    const matFita = new THREE.MeshStandardMaterial({
+        color: hexFita,
+        roughness: 0.35,
+        metalness: 0.05
+    });
+    const espFita = 1.6;
 
     if (p.orientacao_3d === "HORIZONTAL_XY") {
         if (p.fitas_borda.base) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(dx, dz, espFita), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(dx, dz + 0.4, espFita), matFita);
             m.position.set(0, 0, dy / 2.0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "H" };
             grupoFitas.add(m);
         }
     } else if (p.orientacao_3d === "VERTICAL_YZ") {
         if (p.fitas_borda.esquerda) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.5, dz, espFita), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.6, dz, espFita), matFita);
             m.position.set(0, 0, dy / 2.0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "V" };
             grupoFitas.add(m);
         }
         if (p.fitas_borda.topo) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.5, espFita, dy), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.6, espFita, dy), matFita);
             m.position.set(0, dz / 2.0, 0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "H" };
             grupoFitas.add(m);
         }
     } else {
         if (p.fitas_borda.topo) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(dx, espFita, dy + 0.5), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.4, espFita, dy + 0.6), matFita);
             m.position.set(0, dz / 2.0, 0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "H" };
             grupoFitas.add(m);
         }
         if (p.fitas_borda.base) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(dx, espFita, dy + 0.5), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(dx + 0.4, espFita, dy + 0.6), matFita);
             m.position.set(0, -dz / 2.0, 0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "H" };
             grupoFitas.add(m);
         }
         if (p.fitas_borda.esquerda) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz, dy + 0.5), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz + 0.4, dy + 0.6), matFita);
             m.position.set(-dx / 2.0, 0, 0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "V" };
             grupoFitas.add(m);
         }
         if (p.fitas_borda.direita) {
-            const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz, dy + 0.5), matFita);
+            const m = new THREE.Mesh(new THREE.BoxGeometry(espFita, dz + 0.4, dy + 0.6), matFita);
             m.position.set(dx / 2.0, 0, 0);
+            m.userData = { ehFitaBorda: true, idCorFita: idCorFita, orientacaoFita: "V" };
             grupoFitas.add(m);
         }
     }
@@ -902,7 +920,7 @@ function configurarEventosMouseETeclado() {
                             espessura: parseFloat(document.getElementById("inp_esp_parede").value)
                         })
                     });
-                    pontoInicialParede2D = null;
+                    if (!primeiroVerticeSala2D) primeiroVerticeSala2D = {...pontoInicialParede2D}; pontoInicialParede2D = { x: xGrid, y: yGrid };
                     document.getElementById("status_desenho_2d").innerText = "✅ Parede criada!";
                     await carregarEstadoAmbiente();
                 }

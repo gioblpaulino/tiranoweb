@@ -1,12 +1,12 @@
 /* =============================================================================
  * ARQUIVO: static/css/estudio.css
- * RESPONSABILIDADE: Identidade visual Cyber-Rex (padronizada com o TiranoCut),
- * layout de painéis laterais, controles flutuantes (D-Pad 3D) e seleções.
+ * RESPONSABILIDADE: Layout HUD 100% Imersivo (Palco 3D em Tela Cheia), separação
+ * entre Construtor Vendedor, Modal de Engenharia de Fábrica e Abas Unificadas.
  * ============================================================================= */
 
 :root {
     --bg-dark: #07090C;
-    --panel-bg: #101419;
+    --panel-bg: rgba(16, 20, 25, 0.94);
     --card-bg: #171C24;
     --accent-green: #4CE660;
     --btn-green: #389E48;
@@ -32,46 +32,188 @@ body {
     background: var(--bg-dark);
     color: var(--text-main);
     display: flex;
+    flex-direction: column;
+    width: 100vw;
     height: 100vh;
     overflow: hidden;
 }
 
 /* =============================================================================
- * PAINEL ESQUERDO: CONSTRUTORES E OPÇÕES DE CHÃO DE FÁBRICA
+ * BARRA SUPERIOR UNIFICADA (TOP COMMAND DOCK)
  * ============================================================================= */
-.sidebar-left {
-    width: 395px;
-    background: var(--panel-bg);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    overflow-y: auto;
-    gap: 8px;
-}
-
-.brand-header {
-    padding: 6px 4px 10px 4px;
+.toolbar-top {
+    height: 54px;
+    background: #0D1116;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    padding: 0 14px;
+    z-index: 40;
+    flex-shrink: 0;
+}
+
+.brand-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .brand-title-main {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 900;
-    letter-spacing: 3px;
+    letter-spacing: 2.5px;
     color: #FFFFFF;
 }
 
 .brand-title-sub {
-    font-size: 8.5px;
-    letter-spacing: 1.5px;
+    font-size: 8px;
+    letter-spacing: 1.2px;
     color: var(--text-muted);
     font-weight: 600;
 }
 
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.divider-v {
+    width: 1px;
+    height: 26px;
+    background: #263238;
+    margin: 0 4px;
+}
+
+/* =============================================================================
+ * PALCO CENTRAL 3D EM TELA CHEIA (CORREÇÃO DEFINITIVA DO FLEXBOX/CANVAS)
+ * ============================================================================= */
+.stage-center {
+    flex: 1;
+    width: 100%;
+    height: calc(100vh - 54px);
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-dark);
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#canvas-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* =============================================================================
+ * GAVETAS E MODAIS FLUTUANTES (HUD PANELS)
+ * ============================================================================= */
+.hud-panel {
+    position: absolute;
+    top: 12px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 25;
+    max-height: calc(100vh - 82px);
+    overflow-y: auto;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.75);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.hud-panel.oculto {
+    display: none !important;
+}
+
+.hud-left-vendedor {
+    left: 12px;
+    width: 355px;
+    border-top: 2px solid var(--accent-green);
+}
+
+.hud-modal-engenharia {
+    left: 378px;
+    width: 410px;
+    border: 1px solid var(--accent-orange);
+    border-top: 3px solid var(--accent-orange);
+    z-index: 30;
+}
+
+.hud-right-dock {
+    right: 12px;
+    width: 365px;
+    border-top: 2px solid var(--accent-blue);
+}
+
+.hud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hud-close {
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: bold;
+    font-size: 13px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.hud-close:hover {
+    background: #263238;
+    color: #FFFFFF;
+}
+
+/* ABAS DO PAINEL DIREITO (AMBIENTE vs MATERIAIS) */
+.dock-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    background: #0B0E12;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #263238;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.tab-btn.ativa {
+    background: var(--card-bg);
+    color: var(--accent-green);
+    border: 1px solid #37474F;
+}
+
+/* CARDS E INPUTS */
 .card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -83,7 +225,7 @@ body {
 }
 
 .card-title {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--accent-orange);
@@ -118,12 +260,10 @@ input:focus, select:focus, textarea:focus {
 
 textarea {
     resize: vertical;
-    min-height: 46px;
+    min-height: 48px;
 }
 
-/* =============================================================================
- * BOTÕES E CHIPS DE PRESET
- * ============================================================================= */
+/* BOTÕES */
 .btn {
     border: none;
     border-radius: 5px;
@@ -187,50 +327,17 @@ textarea {
     color: #FFFFFF;
 }
 
-/* =============================================================================
- * PALCO CENTRAL 3D / 2D E HUD DIRECIONAL (D-PAD)
- * ============================================================================= */
-.stage-center {
-    flex: 1;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-dark);
-}
-
-.toolbar-top {
-    height: 50px;
-    background: rgba(16, 20, 25, 0.96);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    z-index: 10;
-}
-
-.toolbar-group {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-}
-
-#canvas-container {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
+/* MODAIS AUXILIARES E D-PAD */
 .floating-modal {
     display: none;
     position: absolute;
-    top: 60px;
-    background: rgba(16, 20, 25, 0.96);
+    top: 12px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
     border-radius: 8px;
     padding: 12px;
-    z-index: 25;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
+    z-index: 35;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
 }
 
 .dpad-hud {
@@ -241,18 +348,18 @@ textarea {
     background: rgba(16, 20, 25, 0.95);
     border: 1px solid var(--accent-blue);
     border-radius: 10px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     z-index: 20;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8);
 }
 
 .dpad-cross {
     display: grid;
-    grid-template-columns: 36px 36px 36px;
-    grid-template-rows: 30px 30px 30px;
+    grid-template-columns: 34px 34px 34px;
+    grid-template-rows: 28px 28px 28px;
     gap: 4px;
 }
 
@@ -261,13 +368,12 @@ textarea {
     border: 1px solid #455A64;
     color: #FFFFFF;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: 0.12s;
 }
 .dpad-btn:hover {
     background: var(--accent-blue);
@@ -281,13 +387,14 @@ textarea {
     position: absolute;
     bottom: 14px;
     left: 14px;
-    background: rgba(16, 20, 25, 0.92);
+    background: rgba(16, 20, 25, 0.90);
     border: 1px solid var(--border-color);
-    padding: 8px 12px;
+    padding: 7px 11px;
     border-radius: 8px;
-    font-size: 11px;
-    max-width: 310px;
+    font-size: 10.5px;
+    max-width: 290px;
     pointer-events: none;
+    z-index: 15;
 }
 
 .legend-pill {
@@ -298,25 +405,11 @@ textarea {
     margin-right: 3px;
 }
 
-/* =============================================================================
- * PAINEL DIREITO: POSICIONAMENTO, FILA MULTI-SELEÇÃO E PEÇAS
- * ============================================================================= */
-.sidebar-right {
-    width: 350px;
-    background: var(--panel-bg);
-    border-left: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    overflow-y: auto;
-    gap: 8px;
-}
-
 .list-container {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    max-height: 180px;
+    max-height: 175px;
     overflow-y: auto;
 }
 
@@ -333,7 +426,7 @@ textarea {
     gap: 6px;
 }
 
-.module-item.active {
+.module-item.active, .part-item.active {
     border-color: var(--accent-green);
     background: #14281D;
 }
@@ -356,8 +449,106 @@ textarea {
     font-size: 10px;
 }
 
-/* MODO PALCO AMPLO (OCULTA BARRAS LATERAIS PARA MAXIMIZAR O 3D) */
-body.palco-amplo .sidebar-left,
-body.palco-amplo .sidebar-right {
+/* =============================================================================
+ * TELA INICIAL (SPLASH LAUNCHER IDENTICO AO TIRANOCUT)
+ * ============================================================================= */
+.splash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000000;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    transition: opacity 0.25s ease;
+}
+
+.splash-overlay.oculto {
     display: none !important;
+}
+
+.splash-logo-img {
+    width: 310px;
+    max-width: 80vw;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(76, 230, 96, 0.2));
+}
+
+.splash-subtitle {
+    color: #90A4AE;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-top: -8px;
+}
+
+.splash-actions-grid {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin-top: 10px;
+}
+
+.splash-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.splash-col-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #78909C;
+    text-transform: uppercase;
+}
+
+.splash-divider {
+    width: 1px;
+    height: 130px;
+    background: #263238;
+}
+
+.btn-splash {
+    width: 220px;
+    padding: 11px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 5px;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.12s, filter 0.12s;
+}
+.btn-splash:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.12);
+}
+
+.splash-dialog {
+    background: #1C2228;
+    border: 1px solid #37474F;
+    border-radius: 8px;
+    padding: 18px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9);
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-undo-redo:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }

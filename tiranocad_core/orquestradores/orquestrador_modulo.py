@@ -18,6 +18,7 @@ from tiranocad_core.construtores.porta_tempero import ConstrutorPortaTempero
 from tiranocad_core.construtores.paineis import ConstrutorPaineis
 from tiranocad_core.construtores.avulsos import ConstrutorAvulsos
 from tiranocad_core.orquestradores.orquestrador_usinagens import OrquestradorUsinagens
+from tiranocad_core.construtores.tamponamentos import ConstrutorTamponamento
 
 
 class OrquestradorModulo:
@@ -60,7 +61,8 @@ class OrquestradorModulo:
         operacoes_internas: Optional[List[Dict[str, Any]]] = None,
         opcoes_especiais: Optional[Dict[str, Any]] = None,
         zonas_materiais: Optional[Dict[str, Any]] = None,
-        overrides_pecas: Optional[Dict[str, Any]] = None
+        overrides_pecas: Optional[Dict[str, Any]] = None,
+        tamponamentos_agregados: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         familia = familia.strip().upper()
         opcoes_esp = opcoes_especiais or {}
@@ -197,6 +199,19 @@ class OrquestradorModulo:
                 todas_pecas.extend(pecas_basc)
 
         o_usinagens.aplicar_todas_usinagens(mapa_estrutural, vao_raiz)
+        
+        # Gera os Tamponamentos Agregados e a Vista em "L" (se ativos no módulo)
+        if tamponamentos_agregados and tamponamentos_agregados.get("ativo"):
+            c_tamp = ConstrutorTamponamento(self.gerenciador_perfis)
+            pecas_tamp = c_tamp.construir_tamponamentos_agregados(
+                id_modulo=id_modulo,
+                largura_mod=largura_x,
+                altura_mod=altura_y,
+                profundidade_mod=profundidade_z,
+                config_tamp=tamponamentos_agregados
+            )
+            todas_pecas.extend(pecas_tamp)
+            
         self.aplicar_matriz_materiais(todas_pecas, zonas_materiais, overrides_pecas)
 
         alertas_engenharia: List[str] = []
@@ -286,7 +301,7 @@ class OrquestradorModulo:
                     p.fitas.direita = bool(fb.get("direita", p.fitas.direita))
                     
     def _empacotar_payload(
-        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore, alertas, pecas, msg_custom, zonas_materiais=None, overrides_pecas=None
+        self, id_mod, nome_proj, familia, lx, ay, pz, mat_c, mat_f, ops, arvore, alertas, pecas, msg_custom, zonas_materiais=None, overrides_pecas=None, tamponamentos_agregados=None
     ) -> Dict[str, Any]:
         payload = {
             "id_modulo": id_mod,
@@ -304,7 +319,8 @@ class OrquestradorModulo:
                 "id_perfil_ativo": self.gerenciador_perfis.id_perfil_ativo,
                 "perfil_ativo": self.gerenciador_perfis.dados_perfil,
                 "zonas_materiais": zonas_materiais or {},
-                "overrides_pecas": overrides_pecas or {}        
+                "overrides_pecas": overrides_pecas or {},
+                "tamponamentos_agregados": tamponamentos_agregados or {}     
             },
             "operacoes_internas": ops,
             "arvore_espacial_vaos": arvore,

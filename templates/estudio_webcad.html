@@ -9,269 +9,555 @@
 </head>
 <body>
 
-    <!-- COLUNA ESQUERDA: CONSTRUTORES E ENGENHARIA -->
-    <div class="sidebar-left">
-        <div class="brand-header">
-            <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 28 24 A 38 38 0 0 1 78 28" stroke="#4CE660" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M 28 76 A 38 38 0 0 0 78 72" stroke="#4CE660" stroke-width="3.5" stroke-linecap="round"/>
-                <line x1="6" y1="44" x2="26" y2="44" stroke="#4CE660" stroke-width="2.5"/>
-                <circle cx="28" cy="44" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
-                <line x1="12" y1="53" x2="34" y2="53" stroke="#4CE660" stroke-width="2.5"/>
-                <circle cx="36" cy="53" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
-                <line x1="16" y1="62" x2="28" y2="62" stroke="#4CE660" stroke-width="2.5"/>
-                <circle cx="30" cy="62" r="3" stroke="#4CE660" stroke-width="2" fill="#07090C"/>
-                <path d="M 38 38 L 48 28 L 66 28 L 84 36 L 84 48 L 62 48 L 56 54 L 76 56 L 72 64 L 50 64 L 44 74" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-                <polygon points="55,35 64,35 61,39 53,39" fill="#4CE660"/>
-            </svg>
-            <div>
-                <div class="brand-title-main">TIRANO-<span style="color:#4CE660;">GIO</span></div>
-                <div class="brand-title-sub">AUTOMAÇÃO DE SISTEMAS | CAD 3D & CNC</div>
+    <!-- =====================================================================
+         TELA INICIAL (SPLASH LAUNCHER ESTILO TIRANOCUT)
+         ===================================================================== -->
+    <div id="tela_inicial_splash" class="splash-overlay oculto">
+        <img src="/static/img/logo.png" alt="Tirano-Gio Logo" class="splash-logo-img" onerror="this.style.display='none'">
+
+        <div class="splash-subtitle">Sistema Web CAD 3D &amp; Construtor Paramétrico de Ambientes</div>
+
+        <!-- GRADE PRINCIPAL DE AÇÕES DA TELA INICIAL -->
+        <div class="splash-actions-grid" id="splash_menu_principal">
+            <div class="splash-col">
+                <span class="splash-col-title">COMEÇAR NOVO PROJETO</span>
+                <button class="btn-splash" style="background:#389E48;" onclick="abrirDialogoNovoProjeto()">
+                    ➕ Novo Projeto do Zero
+                </button>
+            </div>
+
+            <div class="splash-divider"></div>
+
+            <div class="splash-col">
+                <span class="splash-col-title">GERENCIAR &amp; INTEGRAR</span>
+                <button class="btn-splash" style="background:#8E24AA;" onclick="fecharTelaInicial()">
+                    🚀 Continuar Ambiente Atual
+                </button>
+                <button class="btn-splash" style="background:#1E88E5;" onclick="abrirDialogoProjetosSalvos()">
+                    📂 Abrir Projeto Salvo
+                </button>
+                <button class="btn-splash" style="background:#455A64;" onclick="exportarProjetoJSONArquivo()">
+                    💾 Baixar Backup (.JSON)
+                </button>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">1. Família Construtiva & Dimensões (mm)</div>
-            <div class="row-3">
-                <div><label>ID Item</label><input type="text" id="inp_id_modulo" value="001"></div>
-                <div><label>Construtor / Família</label>
-                    <select id="sel_familia" onchange="alternarFamiliaUI()">
-                        <option value="MODULO_INFERIOR">Balcão Inferior</option>
-                        <option value="MODULO_AEREO">Módulo Aéreo</option>
-                        <option value="MODULO_TORRE">Torre / Alto</option>
-                        <option value="MODULO_PAINEL">🪵 Painel / Tampo / Engrosso</option>
-                        <option value="MODULO_AVULSO">🔩 Peça / Gaveta / Porta Avulsa</option>
-                    </select>
-                </div>
-                <div><label>Fixação Caixa</label>
-                    <select id="sel_sistema_fixacao" onchange="fabricarModuloAtual(false)">
-                        <option value="Parafuso_Soberbo">Soberbo 4.5mm</option>
-                        <option value="Soberbo_Mais_Cavilha">Soberbo + Cavilha</option>
-                        <option value="Minifix_Cavilha">Minifix 15mm</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row-3">
-                <div><label>Largura (X)</label><input type="number" id="inp_largura" value="800" step="10"></div>
-                <div><label>Altura (Z)</label><input type="number" id="inp_altura" value="700" step="10"></div>
-                <div><label>Profund. (Y)</label><input type="number" id="inp_profundidade" value="550" step="10"></div>
-            </div>
-            <div class="row-2">
-                <div>
-                    <label>MDF Caixaria / Base</label>
-                    <select id="sel_mat_caixa">
-                        <option value="generico_branco_tx">Branco TX</option>
-                        <option value="arauco_louro_freijo">Louro Freijó</option>
-                        <option value="duratex_carvalho_hanover">Carvalho Hanover</option>
-                    </select>
-                </div>
-                <div>
-                    <label>MDF Frentes / Painel</label>
-                    <select id="sel_mat_frentes">
-                        <option value="generico_branco_tx">Branco TX</option>
-                        <option value="arauco_louro_freijo">Louro Freijó</option>
-                        <option value="duratex_carvalho_hanover">Carvalho Hanover</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- CARD ESPECIAL A: PAINÉIS -->
-        <div class="card" id="card_opcoes_painel" style="display:none; border-color:#FFB74D;">
-            <div class="card-title">🪵 Opções do Painel / Tamponamento / Tampo</div>
-            <div class="row-2">
-                <div>
-                    <label>Tipo de Engrosso</label>
-                    <select id="sel_modo_painel">
-                        <option value="SIMPLES">Simples (1 Chapa)</option>
-                        <option value="DUPLADO">Duplado (2 Chapas)</option>
-                        <option value="ENGROSSADO_SARRAFO">Engrossado c/ Sarrafos</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Posição no Ambiente</label>
-                    <select id="sel_orient_painel">
-                        <option value="HORIZONTAL">Horizontal (Tampo)</option>
-                        <option value="VERTICAL_LATERAL">Vertical Lateral</option>
-                        <option value="VERTICAL_FRONTAL">Vertical Frontal</option>
-                    </select>
-                </div>
+        <!-- CAIXA DE DIÁLOGO: NOVO PROJETO DO ZERO (CLIENTE & AMBIENTE) -->
+        <div class="splash-dialog" id="dialogo_novo_projeto">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #263238; padding-bottom:8px;">
+                <strong style="color:#4CE660; font-size:13px;">🦖 Novo Projeto do Zero</strong>
+                <span class="hud-close" onclick="voltarMenuSplash()">✕</span>
             </div>
             <div>
-                <label>Nome na Etiqueta</label>
-                <input type="text" id="inp_nome_painel" value="Tampo Engrossado Balcão">
+                <label>Digite o Nome do Cliente:</label>
+                <input type="text" id="inp_splash_cliente" placeholder="Ex: João Silva / Apto 402" value="Cliente TiranoGio">
             </div>
-        </div>
-
-        <!-- CARD ESPECIAL B: AVULSOS -->
-        <div class="card" id="card_opcoes_avulso" style="display:none; border-color:#00E5FF;">
-            <div class="card-title">🔩 Opções de Peças & Subconjuntos Avulsos</div>
-            <div class="row-2">
-                <div>
-                    <label>Item Avulso p/ Fabricar</label>
-                    <select id="sel_subtipo_avulso">
-                        <option value="GAVETA_COMPLETA">Gaveta Solta c/ Corpo Completo</option>
-                        <option value="PAR_PORTAS">Par de Portas c/ Canecos 35mm</option>
-                        <option value="PORTA_ESQUERDA">Porta Avulsa Esquerda</option>
-                        <option value="PORTA_DIREITA">Porta Avulsa Direita</option>
-                        <option value="FRENTE_GAVETA_SOLTA">Frente de Gaveta Solta</option>
-                        <option value="PRATELEIRA_AVULSA">Prateleira / Base Solta</option>
-                        <option value="LATERAL_AVULSA">Lateral / Divisória Solta</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Qtd. (p/ Gaveteiro)</label>
-                    <input type="number" id="inp_qtd_avulso" value="1" min="1" max="8">
-                </div>
+            <div>
+                <label>Nome do Ambiente:</label>
+                <input type="text" id="inp_splash_ambiente" placeholder="Ex: Cozinha Planejada" value="Cozinha Planejada">
             </div>
-        </div>
-
-        <!-- CARD 2: OPÇÕES DE CAIXARIA & CHÃO DE FÁBRICA -->
-        <div class="card" id="card_caixaria_fabrica">
-            <div class="card-title">🏗️ 2. Opções de Caixaria & Chão de Fábrica</div>
             <div class="row-3">
                 <div>
-                    <label>Esp. Caixa</label>
-                    <select id="sel_esp_caixa" onchange="fabricarModuloAtual(false)">
-                        <option value="15.0">15.0 mm</option>
-                        <option value="18.0">18.0 mm</option>
-                        <option value="25.0">25.0 mm</option>
+                    <label>Planta Inicial</label>
+                    <select id="sel_splash_formato">
+                        <option value="L" selected>Canto em "L"</option>
+                        <option value="I">Parede Reta "I"</option>
+                        <option value="U">Cozinha em "U"</option>
                     </select>
                 </div>
                 <div>
-                    <label>Esp. Frente</label>
-                    <select id="sel_esp_frente" onchange="fabricarModuloAtual(false)">
-                        <option value="15.0">15.0 mm</option>
-                        <option value="18.0">18.0 mm</option>
-                    </select>
+                    <label>Parede A (mm)</label>
+                    <input type="number" id="inp_splash_larg_a" value="3600" step="100">
                 </div>
                 <div>
-                    <label>Montagem Base</label>
-                    <select id="sel_modo_base" onchange="fabricarModuloAtual(false)">
-                        <option value="BASE_PASSANTE">Base Passante</option>
-                        <option value="LATERAL_PASSANTE">Lateral Passante</option>
-                    </select>
+                    <label>Pé-Direito (mm)</label>
+                    <input type="number" id="inp_splash_pe_dir" value="2700" step="50">
                 </div>
             </div>
-
-            <div class="row-3">
-                <div>
-                    <label>Topo do Balcão</label>
-                    <select id="sel_topo_balcao" onchange="fabricarModuloAtual(false)">
-                        <option value="DEITADO">Sarrafo Deitado</option>
-                        <option value="EM_PE">Sarrafo Em Pé</option>
-                        <option value="SEM_TRAVESSA_TRASEIRA">Sem Travessa Traseira</option>
-                        <option value="TAMPO_INTEIRO">Tampo Inteiro</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Sistema de Fundo</label>
-                    <select id="sel_modo_fundo" onchange="fabricarModuloAtual(false)">
-                        <option value="ENCAIXADO_RASGO">Com Rasgo (Encaixado)</option>
-                        <option value="SOBREPOSTO">Sobreposto (Sem Rasgo)</option>
-                        <option value="SEM_FUNDO">Sem Fundo (Aberto)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Frentes / Portas</label>
-                    <select id="sel_modo_frente" onchange="fabricarModuloAtual(false)">
-                        <option value="SOBREPOSTA">Sobreposta</option>
-                        <option value="EMBUTIDA">Embutida</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row-2">
-                <div>
-                    <label>Fixação Parede (Aéreo)</label>
-                    <select id="sel_fixacao_aereo" onchange="fabricarModuloAtual(false)">
-                        <option value="REGUA_MAO_AMIGA_45">Mão Amiga 45° (Dupla)</option>
-                        <option value="TRAVESSA_INTERNA_EM_PE">Travessa Interna em Pé</option>
-                        <option value="DIRETO_SEM_REGUA">Direto s/ Régua</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Reforço Traseiro (Torre)</label>
-                    <select id="sel_reforco_torre" onchange="fabricarModuloAtual(false)">
-                        <option value="TRAVESSA_DUPLO_REFORCO">Travessa Duplo Reforço</option>
-                        <option value="TRAVESSA_SIMPLES_TOPO">Travessa Simples Topo</option>
-                        <option value="SEM_TRAVESSA_REFORCO">Sem Travessa Reforço</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row-4">
-                <div><label>Gap Esq</label><input type="number" id="inp_gap_esq" value="3.0" step="0.5"></div>
-                <div><label>Gap Dir</label><input type="number" id="inp_gap_dir" value="3.0" step="0.5"></div>
-                <div><label>Gap Sup/Inf</label><input type="number" id="inp_gap_vert" value="3.0" step="0.5"></div>
-                <div><label>Gap Entre</label><input type="number" id="inp_gap_entre" value="4.0" step="0.5"></div>
-            </div>
-            <div class="row-4">
-                <div><label>Larg. Sarrafo</label><input type="number" id="inp_larg_sarrafo" value="70.0" step="5"></div>
-                <div><label>Folga Trilho</label><input type="number" id="inp_folga_corredica" value="13.0" step="0.5"></div>
-                <div><label>Recuo Prat.</label><input type="number" id="inp_recuo_prat" value="20.0" step="1"></div>
-                <div><label>Recuo Fundo</label><input type="number" id="inp_recuo_fundo" value="15.0" step="1"></div>
-            </div>
-            <div class="row-4">
-                <div><label>Canal (L)</label><input type="number" id="inp_larg_canal" value="7.0" step="0.5"></div>
-                <div><label>Canal (Prof)</label><input type="number" id="inp_prof_canal" value="8.0" step="0.5"></div>
-                <div><label>Broca Estrut.</label><input type="number" id="inp_broca_estrut" value="4.5" step="0.5"></div>
-                <div><label>Cota Caneco</label><input type="number" id="inp_cota_caneco" value="22.5" step="0.5"></div>
+            <div class="row-2" style="margin-top:4px;">
+                <button class="btn btn-primary" style="padding:10px;" onclick="confirmarCriacaoNovoProjeto()">✔️ Criar Ambiente</button>
+                <button class="btn btn-secondary" style="padding:10px;" onclick="voltarMenuSplash()">Cancelar</button>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">🤖 3. Copiloto & Fabricação</div>
-            <textarea id="inp_prompt">Coloque 2 prateleiras e 2 portas</textarea>
-            <div class="preset-chips">
-                <span class="chip" onclick="usarPreset('Coloque 4 gavetas')">4 Gavetas Ext.</span>
-                <span class="chip" onclick="usarPreset('Coloque 3 gavetas internas e 2 portas')">3 Gav. Internas + Portas</span>
-                <span class="chip" onclick="usarPreset('Coloque 2 sapateiras e 2 portas')">2 Sapateiras + Portas</span>
-                <span class="chip" onclick="usarPreset('Coloque 1 prateleira e 1 porta basculante')">Aéreo Basculante</span>
-                <span class="chip" onclick="usarPreset('Coloque porta-tempero de 200mm na esquerda e 1 prateleira na direita e 2 portas na direita')">🍾 Porta-Tempero + 2 Portas</span>
-                <span class="chip" onclick="usarPreset('Torre quente com 3 gavetas embaixo, nicho de 450mm no meio e 1 prateleira em cima e 2 portas em cima')">🔥 Torre Quente</span>
+        <!-- CAIXA DE DIÁLOGO: ABRIR PROJETO SALVO -->
+        <div class="splash-dialog" id="dialogo_abrir_projeto" style="width:520px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #263238; padding-bottom:8px;">
+                <strong style="color:#00E5FF; font-size:13px;">📂 Projetos Salvos no Servidor</strong>
+                <span class="hud-close" onclick="voltarMenuSplash()">✕</span>
             </div>
-            <button class="btn btn-primary" onclick="fabricarModuloAtual(false)">🚀 FABRICAR / ATUALIZAR ITEM ATUAL</button>
-            <button class="btn btn-purple" onclick="criarNovoSlotModulo()">➕ ADICIONAR NOVO ITEM C/ AUTO-SNAP</button>
+            <div id="lista_projetos_salvos_ui" class="list-container" style="max-height:240px;"></div>
+            <button class="btn btn-secondary" onclick="voltarMenuSplash()">Voltar</button>
         </div>
     </div>
 
-    <!-- PALCO CENTRAL 3D / 2D -->
-    <div class="stage-center">
-        <div class="toolbar-top">
-            <div class="toolbar-group">
-                <button class="btn btn-mode" id="btn_modo_isolado" onclick="mudarModoCamera('ISOLADO')">🔍 Módulo Isolado</button>
-                <button class="btn btn-mode ativo" id="btn_modo_ambiente3d" onclick="mudarModoCamera('AMBIENTE_3D')">🏠 Ambiente 3D</button>
-                <button class="btn btn-mode" id="btn_modo_planta2d" onclick="mudarModoCamera('PLANTA_2D')">📐 Planta Baixa 2D (Paredes)</button>
-                <button class="btn btn-secondary" id="btn_palco_amplo" onclick="alternarPalcoAmplo()" title="Ocultar painéis laterais">⛶ Palco Amplo</button>
-                <button class="btn btn-purple" id="btn_menu_materiais" onclick="alternarMenuMateriais()">🎨 Materiais & Peças</button>
-                <label style="margin:0 0 0 6px; color:#FFF; font-weight:bold;">💥</label>
-                <input type="range" id="rng_explosao" min="0" max="220" value="0" style="width:70px;" oninput="atualizarCinematica3D()">
-
-                <label style="margin:0; color:#80D8FF; font-weight:bold;">🚪</label>
-                <input type="range" id="rng_abertura" min="0" max="100" value="0" style="width:70px;" oninput="atualizarCinematica3D()">
-
-                <button class="btn btn-secondary ativo" id="btn_usinagens" onclick="alternarCamadaUsinagens()">🔩 Furos</button>
-                <button class="btn btn-secondary ativo" id="btn_fitas" onclick="alternarCamadaFitas()">📼 Fitas</button>
-                <button class="btn btn-secondary" id="btn_vaos" onclick="alternarVaosEspaciais()">📐 Vãos</button>
-                <button class="btn btn-secondary" id="btn_raiox" onclick="alternarRaioX()">👁️ Raio-X</button>
+    <!-- BARRA DE COMANDO SUPERIOR UNIFICADA (TOP DOCK) -->
+    <div class="toolbar-top">
+        <div class="brand-compact">
+            <img src="/static/img/logo.png" alt="Logo" style="height:38px; width:auto; cursor:pointer;" onclick="abrirTelaInicial()" title="Abrir Tela Inicial de Projetos" onerror="this.style.display='none'">
+            <div>
+                <div class="brand-title-main" style="cursor:pointer;" onclick="abrirTelaInicial()">
+                    TIRANO-<span style="color:#4CE660;">GIO</span>
+                    <small id="lbl_cliente_ativo" style="font-size:10px; color:#FFB74D; letter-spacing:0.5px; margin-left:6px;"></small>
+                </div>
+                <div class="brand-title-sub" id="lbl_resumo_topo">CARREGANDO AMBIENTE...</div>
             </div>
-            <div class="toolbar-group">
-                <span id="lbl_resumo_topo" style="font-size:11px; color:var(--accent-green); font-weight:bold;"></span>
+            <div class="divider-v"></div>
+            <button class="btn btn-secondary" onclick="abrirTelaInicial()" title="Tela Inicial / Trocar Projeto">🏠 Início</button>
+            <button class="btn btn-primary" onclick="salvarProjetoAtual()" title="Salvar Projeto (Atalho: Ctrl+S)">💾 Salvar</button>
+            <button class="btn btn-secondary btn-undo-redo" id="btn_undo" onclick="acionarUndo()" title="Desfazer (Atalho: Ctrl+Z)">↩️</button>
+            <button class="btn btn-secondary btn-undo-redo" id="btn_redo" onclick="acionarRedo()" title="Refazer (Atalho: Ctrl+Y)">↪️</button>
+        </div>
+
+        <!-- MODOS DE CÂMERA E JANELAS FLUTUANTES (VENDEDOR vs ENGENHEIRO) -->
+        <div class="toolbar-group">
+            <button class="btn btn-mode" id="btn_modo_isolado" onclick="mudarModoCamera('ISOLADO')">🔍 Isolado</button>
+            <button class="btn btn-mode ativo" id="btn_modo_ambiente3d" onclick="mudarModoCamera('AMBIENTE_3D')">🏠 Ambiente 3D</button>
+            <button class="btn btn-mode" id="btn_modo_planta2d" onclick="mudarModoCamera('PLANTA_2D')">📐 Planta 2D</button>
+
+            <div class="divider-v"></div>
+
+            <button class="btn btn-secondary ativo" id="btn_hud_construtor" onclick="alternarJanelaHUD('hud_construtor', 'btn_hud_construtor')">➕ Construtor</button>
+            <button class="btn btn-secondary" id="btn_hud_engenharia" onclick="alternarJanelaHUD('hud_engenharia', 'btn_hud_engenharia')" title="Opções avançadas de caixaria e chão de fábrica">⚙️ Engenharia Fábrica</button>
+            <button class="btn btn-secondary" id="btn_hud_tamponamento" onclick="alternarJanelaHUD('hud_tamponamento', 'btn_hud_tamponamento')" title="Tamponamentos Laterais e Vista Superior em L">🛡️ Tamponamentos</button>
+            <button class="btn btn-secondary ativo" id="btn_arrastar_modulo" onclick="alternarModoArrastar3D()" title="Arrastar módulos na parede com Snap e Colisão">✋ Arrastar c/ Snap</button>
+            <button class="btn btn-purple" id="btn_menu_materiais" onclick="abrirAbaDireita('MATERIAIS')">🎨 Materiais & Peças</button>
+            <button class="btn btn-secondary ativo" id="btn_hud_direita" onclick="alternarJanelaHUD('hud_direita', 'btn_hud_direita')">📦 Fila & Inspetor</button>
+            <button class="btn btn-secondary" id="btn_palco_amplo" onclick="alternarPalcoAmplo()" title="Ocultar ou Mostrar todos os painéis flutuantes">⛶ Palco Limpo</button>
+        </div>
+
+        <!-- CAMADAS VISUAIS 3D E CONTROLES DE ABERTURA SEPARADOS -->
+        <div class="toolbar-group">
+            <label style="margin:0; color:#FFF; font-weight:bold;" title="Explosão 3D">💥</label>
+            <input type="range" id="rng_explosao" min="0" max="220" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
+
+            <label style="margin:0; color:#FFB74D; font-weight:bold;" title="Abrir Portas (Giro e Basculantes)">🚪</label>
+            <input type="range" id="rng_abertura_portas" min="0" max="100" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
+
+            <label style="margin:0; color:#80D8FF; font-weight:bold;" title="Abrir Gavetas, Sapateiras e Porta-Tempero">🗄️</label>
+            <input type="range" id="rng_abertura_gavetas" min="0" max="100" value="0" style="width:52px;" oninput="atualizarCinematica3D()">
+
+            <button class="btn btn-secondary" id="btn_ocultar_frentes" onclick="alternarOcultarFrentes()" title="Ocultar Portas e Frentes Externas">🙈 S/ Frentes</button>
+            <button class="btn btn-secondary ativo" id="btn_usinagens" onclick="alternarCamadaUsinagens()">🔩 Furos</button>
+            <button class="btn btn-secondary" id="btn_fitas" onclick="alternarCamadaFitas()" title="Alternar destaque técnico das fitas de borda">📼 Mapa Fitas</button>
+            <button class="btn btn-secondary" id="btn_vaos" onclick="alternarVaosEspaciais()">📐 Vãos</button>
+            <button class="btn btn-secondary" id="btn_raiox" onclick="alternarRaioX()">👁️ Raio-X</button>
+            <button class="btn btn-primary" id="btn_resumo_bom" onclick="abrirModalResumoIndustrial()">📊 Resumo BOM</button>
+        </div>
+    </div>
+
+    <!-- PALCO CENTRAL 3D EM TELA CHEIA COM MENUS FLUTUANTES SOBREPOSTOS -->
+    <div class="stage-center">
+        <div id="canvas-container"></div>
+
+        <!-- =================================================================
+             JANELA FLUTUANTE 1 (ESQUERDA): CONSTRUTOR VENDEDOR & COPILOTO IA
+             ================================================================= -->
+        <div id="hud_construtor" class="hud-panel hud-left-vendedor">
+            <div class="hud-header">
+                <strong style="color:#4CE660; font-size:12px;">➕ Construtor Rápido & Copiloto IA</strong>
+                <span class="hud-close" onclick="alternarJanelaHUD('hud_construtor', 'btn_hud_construtor')">✕</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">1. Módulo & Dimensões Externas (mm)</div>
+                <div class="row-2">
+                    <div><label>ID Item</label><input type="text" id="inp_id_modulo" value="001"></div>
+                    <div><label>Família Construtiva</label>
+                        <select id="sel_familia" onchange="alternarFamiliaUI()">
+                            <option value="MODULO_INFERIOR">Balcão Inferior</option>
+                            <option value="MODULO_AEREO">Módulo Aéreo</option>
+                            <option value="MODULO_TORRE">Torre / Alto</option>
+                            <option value="MODULO_PAINEL">🪵 Painel / Tampo / Engrosso</option>
+                            <option value="MODULO_AVULSO">🔩 Peça / Gaveta / Porta Avulsa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div><label>Largura (X)</label><input type="number" id="inp_largura" value="800" step="10"></div>
+                    <div><label>Altura (Z)</label><input type="number" id="inp_altura" value="700" step="10"></div>
+                    <div><label>Profund. (Y)</label><input type="number" id="inp_profundidade" value="550" step="10"></div>
+                </div>
+                <div class="row-2">
+                    <div><label>MDF Caixaria Padrão</label><select id="sel_mat_caixa" class="combo-mdf"></select></div>
+                    <div><label>MDF Frentes Padrão</label><select id="sel_mat_frentes" class="combo-mdf"></select></div>
+                </div>
+            </div>
+
+            <!-- OPÇÕES ESPECIAIS: PAINÉIS -->
+            <div class="card" id="card_opcoes_painel" style="display:none; border-color:#FFB74D;">
+                <div class="card-title">🪵 Configuração do Painel / Tampo</div>
+                <div class="row-2">
+                    <div>
+                        <label>Tipo de Engrosso</label>
+                        <select id="sel_modo_painel">
+                            <option value="SIMPLES">Simples (1 Chapa)</option>
+                            <option value="DUPLADO">Duplado (2 Chapas)</option>
+                            <option value="ENGROSSADO_SARRAFO">Engrossado c/ Sarrafos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Orientação 3D</label>
+                        <select id="sel_orient_painel">
+                            <option value="HORIZONTAL">Horizontal (Tampo)</option>
+                            <option value="VERTICAL_LATERAL">Vertical Lateral</option>
+                            <option value="VERTICAL_FRONTAL">Vertical Frontal</option>
+                        </select>
+                    </div>
+                </div>
+                <div><label>Nome na Etiqueta</label><input type="text" id="inp_nome_painel" value="Tampo Engrossado Balcão"></div>
+            </div>
+
+            <!-- OPÇÕES ESPECIAIS: AVULSOS -->
+            <div class="card" id="card_opcoes_avulso" style="display:none; border-color:#00E5FF;">
+                <div class="card-title">🔩 Subconjuntos & Peças Avulsas</div>
+                <div class="row-2">
+                    <div>
+                        <label>Item Avulso</label>
+                        <select id="sel_subtipo_avulso">
+                            <option value="GAVETA_COMPLETA">Gaveta Solta c/ Corpo Completo</option>
+                            <option value="PAR_PORTAS">Par de Portas c/ Canecos 35mm</option>
+                            <option value="PORTA_ESQUERDA">Porta Avulsa Esquerda</option>
+                            <option value="PORTA_DIREITA">Porta Avulsa Direita</option>
+                            <option value="FRENTE_GAVETA_SOLTA">Frente de Gaveta Solta</option>
+                            <option value="PRATELEIRA_AVULSA">Prateleira / Base Solta</option>
+                            <option value="LATERAL_AVULSA">Lateral / Divisória Solta</option>
+                        </select>
+                    </div>
+                    <div><label>Quantidade</label><input type="number" id="inp_qtd_avulso" value="1" min="1" max="8"></div>
+                </div>
+            </div>
+
+            <!-- COPILOTO IA -->
+            <div class="card">
+                <div class="card-title">🤖 2. Copiloto IA & Modulações Rápidas</div>
+                <textarea id="inp_prompt">Coloque 2 prateleiras e 2 portas</textarea>
+                <div class="preset-chips">
+                    <span class="chip" onclick="usarPreset('Coloque 4 gavetas')">4 Gavetas Ext.</span>
+                    <span class="chip" onclick="usarPreset('Coloque 3 gavetas internas e 2 portas')">3 Gav. Internas + Portas</span>
+                    <span class="chip" onclick="usarPreset('Coloque 2 sapateiras e 2 portas')">2 Sapateiras + Portas</span>
+                    <span class="chip" onclick="usarPreset('Coloque 1 prateleira e 1 porta basculante')">Aéreo Basculante</span>
+                    <span class="chip" onclick="usarPreset('Coloque porta-tempero de 200mm na esquerda e 1 prateleira na direita e 2 portas na direita')">🍾 Porta-Tempero + 2 Portas</span>
+                    <span class="chip" onclick="usarPreset('Torre quente com 3 gavetas embaixo, nicho de 450mm no meio e 1 prateleira em cima e 2 portas em cima')">🔥 Torre Quente</span>
+                </div>
+                <button class="btn btn-primary" onclick="fabricarModuloAtual(false)">🚀 FABRICAR / ATUALIZAR ITEM ATUAL</button>
+                <button class="btn btn-purple" onclick="criarNovoSlotModulo()">➕ ADICIONAR NOVO C/ AUTO-SNAP</button>
             </div>
         </div>
 
-        <div id="canvas-container"></div>
+        <!-- =================================================================
+             JANELA FLUTUANTE 2 (MODAL TÉCNICO OCULTO POR PADRÃO):
+             ENGENHARIA DE CAIXARIA & CHÃO DE FÁBRICA
+             ================================================================= -->
+        <div id="hud_engenharia" class="hud-panel hud-modal-engenharia oculto">
+            <div class="hud-header">
+                <strong style="color:#FF9800; font-size:12px;">⚙️ Engenharia de Caixaria & Chão de Fábrica</strong>
+                <span class="hud-close" onclick="alternarJanelaHUD('hud_engenharia', 'btn_hud_engenharia')">✕</span>
+            </div>
+
+            <div class="card" id="card_caixaria_fabrica">
+                <div class="card-title">1. Sistema Construtivo da Caixa</div>
+                <div class="row-3">
+                    <div>
+                        <label>Fixação Caixa</label>
+                        <select id="sel_sistema_fixacao" onchange="fabricarModuloAtual(false)">
+                            <option value="Parafuso_Soberbo">Soberbo 4.5mm</option>
+                            <option value="Soberbo_Mais_Cavilha">Soberbo + Cavilha</option>
+                            <option value="Minifix_Cavilha">Minifix 15mm</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Esp. Caixa</label>
+                        <select id="sel_esp_caixa" onchange="fabricarModuloAtual(false)">
+                            <option value="15.0">15.0 mm</option>
+                            <option value="18.0">18.0 mm</option>
+                            <option value="25.0">25.0 mm</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Esp. Frente</label>
+                        <select id="sel_esp_frente" onchange="fabricarModuloAtual(false)">
+                            <option value="15.0">15.0 mm</option>
+                            <option value="18.0">18.0 mm</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-3">
+                    <div>
+                        <label>Montagem Base</label>
+                        <select id="sel_modo_base" onchange="fabricarModuloAtual(false)">
+                            <option value="BASE_PASSANTE">Base Passante</option>
+                            <option value="LATERAL_PASSANTE">Lateral Passante</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Topo do Balcão</label>
+                        <select id="sel_topo_balcao" onchange="fabricarModuloAtual(false)">
+                            <option value="DEITADO">Sarrafo Deitado</option>
+                            <option value="EM_PE">Sarrafo Em Pé</option>
+                            <option value="SEM_TRAVESSA_TRASEIRA">Sem Travessa</option>
+                            <option value="TAMPO_INTEIRO">Tampo Inteiro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Sistema de Fundo</label>
+                        <select id="sel_modo_fundo" onchange="fabricarModuloAtual(false)">
+                            <option value="ENCAIXADO_RASGO">Com Rasgo</option>
+                            <option value="SOBREPOSTO">Sobreposto</option>
+                            <option value="SEM_FUNDO">Sem Fundo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-3">
+                    <div>
+                        <label>Frentes / Portas</label>
+                        <select id="sel_modo_frente" onchange="fabricarModuloAtual(false)">
+                            <option value="SOBREPOSTA">Sobreposta</option>
+                            <option value="EMBUTIDA">Embutida</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Fixação (Aéreo)</label>
+                        <select id="sel_fixacao_aereo" onchange="fabricarModuloAtual(false)">
+                            <option value="REGUA_MAO_AMIGA_45">Mão Amiga 45°</option>
+                            <option value="TRAVESSA_INTERNA_EM_PE">Travessa em Pé</option>
+                            <option value="DIRETO_SEM_REGUA">Direto s/ Régua</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Reforço (Torre)</label>
+                        <select id="sel_reforco_torre" onchange="fabricarModuloAtual(false)">
+                            <option value="TRAVESSA_DUPLO_REFORCO">Duplo Reforço</option>
+                            <option value="TRAVESSA_SIMPLES_TOPO">Simples Topo</option>
+                            <option value="SEM_TRAVESSA_REFORCO">Sem Reforço</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card-title" style="margin-top:4px;">2. Gaps, Recuos & Parâmetros de Usinagem (CNC)</div>
+                <div class="row-4">
+                    <div><label>Gap Esq</label><input type="number" id="inp_gap_esq" value="3.0" step="0.5"></div>
+                    <div><label>Gap Dir</label><input type="number" id="inp_gap_dir" value="3.0" step="0.5"></div>
+                    <div><label>Gap Sup/Inf</label><input type="number" id="inp_gap_vert" value="3.0" step="0.5"></div>
+                    <div><label>Gap Entre</label><input type="number" id="inp_gap_entre" value="4.0" step="0.5"></div>
+                </div>
+                <div class="row-4">
+                    <div><label>Larg. Sarrafo</label><input type="number" id="inp_larg_sarrafo" value="70.0" step="5"></div>
+                    <div><label>Folga Trilho</label><input type="number" id="inp_folga_corredica" value="13.0" step="0.5"></div>
+                    <div><label>Recuo Prat.</label><input type="number" id="inp_recuo_prat" value="20.0" step="1"></div>
+                    <div><label>Recuo Fundo</label><input type="number" id="inp_recuo_fundo" value="15.0" step="1"></div>
+                </div>
+                <div class="row-4">
+                    <div><label>Canal (L)</label><input type="number" id="inp_larg_canal" value="7.0" step="0.5"></div>
+                    <div><label>Canal (Prof)</label><input type="number" id="inp_prof_canal" value="8.0" step="0.5"></div>
+                    <div><label>Broca Estrut.</label><input type="number" id="inp_broca_estrut" value="4.5" step="0.5"></div>
+                    <div><label>Cota Caneco</label><input type="number" id="inp_cota_caneco" value="22.5" step="0.5"></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:4px;" onclick="fabricarModuloAtual(false)">🔄 Aplicar Engenharia no Módulo</button>
+            </div>
+        </div>
+
+        <!-- JANELA FLUTUANTE: CONSTRUTOR DE TAMPONAMENTOS, VISTA EM "L" & FECHAMENTOS -->
+        <div id="hud_tamponamento" class="hud-panel oculto" style="left:378px; width:385px; border-top:3px solid #00E5FF; z-index:32;">
+            <div class="hud-header">
+                <strong style="color:#00E5FF; font-size:12px;">🛡️ Tamponamento Inteligente &amp; Fechamentos (<span id="lbl_mod_tamp">#001</span>)</strong>
+                <span class="hud-close" onclick="alternarJanelaHUD('hud_tamponamento', 'btn_hud_tamponamento')">✕</span>
+            </div>
+            <div class="card">
+                <div class="card-title">1. Tamponamentos &amp; Vista em "L" (Fita 1 Lado Frontal)</div>
+                <div class="row-2" style="gap:6px; margin:2px 0;">
+                    <label style="font-size:11px; color:#FFF;"><input type="checkbox" id="chk_tamp_esq" checked> Lateral Esquerda</label>
+                    <label style="font-size:11px; color:#FFF;"><input type="checkbox" id="chk_tamp_dir" checked> Lateral Direita</label>
+                    <label style="font-size:11px; color:#4CE660; font-weight:bold;"><input type="checkbox" id="chk_tamp_vista_l" checked> Vista Sup. em "L"</label>
+                    <label style="font-size:11px; color:#FFF;"><input type="checkbox" id="chk_tamp_topo"> Tampo Sup. Cheio</label>
+                </div>
+
+                <div class="row-3">
+                    <div>
+                        <label>Espessura (mm)</label>
+                        <select id="sel_esp_tamp">
+                            <option value="15.0">15.0 mm</option>
+                            <option value="18.0" selected>18.0 mm</option>
+                            <option value="25.0">25.0 mm</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Avanço Frontal (+Y)</label>
+                        <input type="number" id="inp_tamp_avanco" value="18.0" step="1">
+                    </div>
+                    <div>
+                        <label>Subida Vista L (+Z)</label>
+                        <input type="number" id="inp_tamp_subida" value="70.0" step="5">
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div><label>Aba Deitada do "L"</label><input type="number" id="inp_tamp_aba_l" value="60.0" step="5"></div>
+                    <div><label>Descida Base (-Z)</label><input type="number" id="inp_tamp_descida" value="0.0" step="5"></div>
+                </div>
+
+                <div class="card-title" style="margin-top:6px; color:#FFB74D;">2. Fechamento / Afastador de Parede (Mesma Altura)</div>
+                <div class="row-2" style="gap:6px; margin:2px 0;">
+                    <label style="font-size:11px; color:#FFF;"><input type="checkbox" id="chk_fech_esq"> Fechamento Parede Esq</label>
+                    <label style="font-size:11px; color:#FFF;"><input type="checkbox" id="chk_fech_dir"> Fechamento Parede Dir</label>
+                </div>
+                <div class="row-2">
+                    <div><label>Largura Fechamento (mm)</label><input type="number" id="inp_larg_fech" value="50.0" step="5"></div>
+                    <div><label>Espessura Fech. (mm)</label><input type="number" id="inp_esp_fech" value="18.0" step="3"></div>
+                </div>
+
+                <div style="font-size:10px; color:#80D8FF; margin-top:2px;">
+                    💡 Selecione múltiplos módulos (Shift+Clique) para envelopar o conjunto inteiro!
+                </div>
+                <div class="row-2" style="margin-top:4px;">
+                    <button class="btn btn-primary" onclick="aplicarTamponamentoNoModulo(true)">🛡️ Aplicar nos Selecionados</button>
+                    <button class="btn btn-danger" onclick="aplicarTamponamentoNoModulo(false)">🗑️ Remover Tamp.</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL FLUTUANTE: REDIMENSIONAMENTO DE PEÇA INDIVIDUAL DO TAMPONAMENTO -->
+        <div id="modal_redimensionar_tamp" class="floating-modal" style="left:380px; top:220px; width:345px; border:1px solid #00E5FF; z-index:38;">
+            <div class="hud-header" style="margin-bottom:6px;">
+                <strong style="color:#00E5FF; font-size:12px;">📐 Redimensionar Peça de Tamponamento</strong>
+                <span class="hud-close" onclick="fecharModalRedimensionarTamp()">✕</span>
+            </div>
+            <div id="lbl_nome_peca_tamp_edit" style="font-size:11px; font-weight:bold; color:#4CE660; margin-bottom:6px;"></div>
+            <div class="row-3" style="margin-bottom:6px;">
+                <div><label>Cota X 3D (mm)</label><input type="number" id="inp_tamp_edit_dx" step="1"></div>
+                <div><label>Prof. Y 3D (mm)</label><input type="number" id="inp_tamp_edit_dy" step="1"></div>
+                <div><label>Altura Z 3D (mm)</label><input type="number" id="inp_tamp_edit_dz" step="1"></div>
+            </div>
+            <div class="row-3" style="margin-bottom:8px;">
+                <div><label>Desloc. X (mm)</label><input type="number" id="inp_tamp_off_x" value="0" step="5"></div>
+                <div><label>Desloc. Y (mm)</label><input type="number" id="inp_tamp_off_y" value="0" step="5"></div>
+                <div><label>Desloc. Z (mm)</label><input type="number" id="inp_tamp_off_z" value="0" step="5"></div>
+            </div>
+            <div class="row-2">
+                <button class="btn btn-primary" onclick="salvarRedimensionamentoPecaTamp(false)">✔️ Aplicar Medidas</button>
+                <button class="btn btn-secondary" onclick="salvarRedimensionamentoPecaTamp(true)">🔄 Original</button>
+            </div>
+        </div>
+        <!-- =================================================================
+             JANELA FLUTUANTE 3 (DIREITA COM ABAS):
+             ABA 1: FILA DO AMBIENTE & PEÇAS | ABA 2: MATRIZ DE 8 ZONAS & PINTOR
+             ================================================================= -->
+        <div id="hud_direita" class="hud-panel hud-right-dock">
+            <div class="dock-tabs">
+                <button class="tab-btn ativa" id="tab_btn_ambiente" onclick="abrirAbaDireita('AMBIENTE')">📦 Ambiente & Peças</button>
+                <button class="tab-btn" id="tab_btn_materiais" onclick="abrirAbaDireita('MATERIAIS')">🎨 Materiais (8 Zonas)</button>
+            </div>
+
+            <!-- CONTEÚDO DA ABA 1: COORDENADAS, FILA MULTI-SELEÇÃO E LISTA DE PEÇAS -->
+            <div id="aba_conteudo_ambiente" style="display:flex; flex-direction:column; gap:8px;">
+                <div class="card" style="border-color:#1E88E5;">
+                    <div class="card-title">📍 Coordenadas Exatas do Item Ativo</div>
+                    <div class="row-2">
+                        <div><label>Parede Alvo</label><select id="sel_parede_modulo" onchange="trocarParedeSelecionados(this.value)"></select></div>
+                        <div><label>Giro Próprio (°)</label><input type="number" id="inp_rot_offset" value="0" step="15" onchange="posicionarModuloManual(false)"></div>
+                    </div>
+                    <div class="row-3">
+                        <div><label>Cota X (Parede)</label><input type="number" id="inp_dist_x_parede" value="0" step="50" onchange="posicionarModuloManual(false)"></div>
+                        <div><label>Afastam. Y</label><input type="number" id="inp_afast_y" value="0" step="50" onchange="posicionarModuloManual(false)"></div>
+                        <div><label>Elevação Z</label><input type="number" id="inp_elevacao_z" value="0" step="50" onchange="posicionarModuloManual(false)"></div>
+                    </div>
+                    <div id="lbl_sobra_parede" style="font-size:10px; color:#80D8FF; text-align:center;"></div>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="card-title">📦 Fila do Ambiente</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn btn-secondary" style="padding:2px 6px; font-size:9px;" onclick="selecionarTodosModulos()">☑️ Todos</button>
+                            <button class="btn btn-secondary" style="padding:2px 6px; font-size:9px;" onclick="limparSelecaoMultipla()">🔲 Limpar</button>
+                        </div>
+                    </div>
+                    <div class="list-container" id="lista_modulos_ambiente"></div>
+                    <div class="row-2">
+                        <button class="btn btn-danger" onclick="excluirSelecionados()">🗑️ Excluir Marcados</button>
+                        <button class="btn btn-secondary" onclick="limparAmbiente()">🧹 Zerar Projeto</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🪵 Peças do Item (<span id="qtd_pecas_mod">0</span>) — <small style="color:#00E5FF;">Clique p/ Pintar</small></div>
+                    <div class="list-container" id="lista_pecas_modulo" style="max-height:190px;"></div>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO DA ABA 2: MATRIZ DE 8 ZONAS + PINTOR DE PEÇA INDIVIDUAL -->
+            <div id="painel_flutuante_materiais" style="display:none; flex-direction:column; gap:8px;">
+                <div class="card">
+                    <div class="card-title" style="color:#4CE660;">1. Chapas MDF por Zona (<span id="lbl_mod_mat">#001</span>)</div>
+                    <div class="row-2">
+                        <div><label>Caixaria (Externa)</label><select id="mat_zona_caixaria" class="combo-mdf"></select></div>
+                        <div><label>Frentes & Portas</label><select id="mat_zona_frentes" class="combo-mdf"></select></div>
+                    </div>
+                    <div class="row-3">
+                        <div><label>Internos (15/18)</label><select id="mat_zona_internos" class="combo-mdf"></select></div>
+                        <div><label>Fundo Gav. (6mm)</label><select id="mat_zona_fgav" class="combo-mdf"></select></div>
+                        <div><label>Fundo Costa</label><select id="mat_zona_fcosta" class="combo-mdf"></select></div>
+                    </div>
+
+                    <div class="card-title" style="color:#FF9800; margin-top:4px;">2. Fitas de Borda por Zona</div>
+                    <div class="row-3">
+                        <div><label>Fita Frontal Caixa</label><select id="fita_zona_caixaria" class="combo-mdf"></select></div>
+                        <div><label>Fita das Frentes</label><select id="fita_zona_frentes" class="combo-mdf"></select></div>
+                        <div><label>Fita dos Internos</label><select id="fita_zona_internos" class="combo-mdf"></select></div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; margin-top:4px;" onclick="aplicarZonasMateriaisModulo()">✅ Aplicar Zonas no Módulo</button>
+                </div>
+
+                <div class="card" style="border-color:#00E5FF;">
+                    <div class="card-title" style="color:#00E5FF;">🎯 3. Pintor de Peça Individual</div>
+                    <div id="nome_peca_pintor" style="font-size:11px; font-weight:bold; color:#FFF;">Clique numa peça na Aba 1 ou no 3D</div>
+                    <div class="row-2">
+                        <div><label>MDF Exclusivo da Peça</label><select id="mat_peca_ind" class="combo-mdf"></select></div>
+                        <div><label>Cor Fita da Peça</label><select id="fita_peca_ind" class="combo-mdf"></select></div>
+                    </div>
+                    <div class="row-4">
+                        <label><input type="checkbox" id="chk_fita_base"> Base</label>
+                        <label><input type="checkbox" id="chk_fita_topo"> Topo</label>
+                        <label><input type="checkbox" id="chk_fita_esq"> Esq</label>
+                        <label><input type="checkbox" id="chk_fita_dir"> Dir</label>
+                    </div>
+                    <div class="row-2">
+                        <button class="btn btn-purple" onclick="aplicarPinturaPecaIndividual()">🖌️ Pintar Só Esta Peça</button>
+                        <button class="btn btn-secondary" onclick="resetarPinturasIndividuais()">🔄 Resetar Peças</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- PAINEL FLUTUANTE DO CONSTRUTOR DE PAREDES (MODO PLANTA 2D) -->
-        <div id="painel_construtor_paredes" class="floating-modal" style="left:14px; width:350px; border:1px solid #FFB74D;">
+        <div id="painel_construtor_paredes" class="floating-modal" style="left:380px; width:350px; border:1px solid #FFB74D;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <strong style="color:#FFB74D; font-size:12px;">🧱 Construtor de Paredes (Planta 2D)</strong>
                 <span style="font-size:10px; background:#E65100; padding:2px 6px; border-radius:4px;">Estilo Promob</span>
             </div>
-            <div style="font-size:10px; color:#BDBDBD; margin-bottom:8px;">
-                Clique em 2 pontos no piso para desenhar uma parede ou adicione por medida e ângulo:
+
+            <div class="row-2" style="margin-top:6px; border-top:1px solid #263238; padding-top:6px;">
+                <div>
+                    <label>Acabamento do Piso 3D</label>
+                    <select id="sel_estilo_piso" onchange="aplicarAcabamentoAmbiente3D()">
+                        <option value="GRADE_TECNICA">Grade Técnica CAD</option>
+                        <option value="PORCELANATO_CLARO">Porcelanato Polido Claro</option>
+                        <option value="MADEIRA_VINILICO">Piso Vinílico Amadeirado</option>
+                        <option value="CIMENTO_QUEIMADO">Cimento Queimado</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pintura das Paredes</label>
+                    <select id="sel_cor_parede" onchange="aplicarAcabamentoAmbiente3D()">
+                        <option value="#263238">Cinza Chumbo (Padrão)</option>
+                        <option value="#E0E0E0">Branco Neve Arquitetônico</option>
+                        <option value="#D7CCC8">Areia / Fendi Suave</option>
+                        <option value="#37474F">Grafite Urbano</option>
+                    </select>
+                </div>
             </div>
+
             <div class="row-3" style="margin-bottom:6px;">
                 <div><label>Formato Rápido</label>
                     <select id="sel_preset_parede" onchange="aplicarPresetParedes()">
@@ -300,17 +586,17 @@
                 </div>
             </div>
             <div class="row-2">
-                <button class="btn btn-secondary" onclick="removerUltimaParedeUI()">↩️ Desfazer Última Parede</button>
+                <button class="btn btn-secondary" onclick="removerUltimaParedeUI()">↩️ Desfazer Última</button>
                 <button class="btn btn-danger" onclick="limparTodasParedesUI()">🗑️ Limpar Paredes</button>
             </div>
             <div id="status_desenho_2d" style="margin-top:6px; font-size:11px; color:#4CE660; font-weight:bold;"></div>
         </div>
 
         <!-- MENU FLUTUANTE DE INTERAÇÃO DIRETA COM O NÓ ESPACIAL 3D -->
-        <div id="painel_interacao_vao" class="floating-modal" style="right:16px; width:305px; border:1px solid #00E5FF;">
+        <div id="painel_interacao_vao" class="floating-modal" style="right:390px; width:305px; border:1px solid #00E5FF;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <strong id="titulo_vao_clicado" style="color:#00E5FF; font-size:12px;">📐 Vão Selecionado</strong>
-                <span style="cursor:pointer; color:#9E9E9E; font-weight:bold;" onclick="fecharPainelVao()">✕</span>
+                <span class="hud-close" onclick="fecharPainelVao()">✕</span>
             </div>
             <div id="medidas_vao_clicado" style="font-size:11px; color:#BDBDBD; margin-bottom:10px;"></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
@@ -325,52 +611,7 @@
                 <button class="btn btn-blue" style="background:#E65100; grid-column: span 2;" onclick="aplicarOperacaoNoVao('PORTAS_BASCULANTES', {quantidade: 1})">⏫ Porta Basculante (Pistão)</button>
             </div>
         </div>
-        <!-- MENU FLUTUANTE DE MATERIAIS (8 ZONAS DO MÓDULO + PINTOR DE PEÇA INDIVIDUAL) -->
-        <div id="painel_flutuante_materiais" class="floating-modal" style="right:16px; top:60px; width:365px; border:1px solid #8E24AA;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <strong style="color:#E1BEE7; font-size:12px;">🎨 Matriz de Materiais & Fitas (<span id="lbl_mod_mat">#001</span>)</strong>
-                <span style="cursor:pointer; color:#9E9E9E; font-weight:bold;" onclick="alternarMenuMateriais()">✕</span>
-            </div>
 
-            <div class="card-title" style="color:#4CE660;">1. Chapas MDF por Zona do Módulo</div>
-            <div class="row-2" style="margin-bottom:4px;">
-                <div><label>Caixaria (Externa)</label><select id="mat_zona_caixaria" class="combo-mdf"></select></div>
-                <div><label>Frentes & Portas</label><select id="mat_zona_frentes" class="combo-mdf"></select></div>
-            </div>
-            <div class="row-3" style="margin-bottom:6px;">
-                <div><label>Internos (15/18mm)</label><select id="mat_zona_internos" class="combo-mdf"></select></div>
-                <div><label>Fundo Gaveta (6mm)</label><select id="mat_zona_fgav" class="combo-mdf"></select></div>
-                <div><label>Fundo Costa (3/6mm)</label><select id="mat_zona_fcosta" class="combo-mdf"></select></div>
-            </div>
-
-            <div class="card-title" style="color:#FF9800;">2. Fitas de Borda por Zona</div>
-            <div class="row-3" style="margin-bottom:8px;">
-                <div><label>Fita Frontal Caixa</label><select id="fita_zona_caixaria" class="combo-mdf"></select></div>
-                <div><label>Fita das Frentes</label><select id="fita_zona_frentes" class="combo-mdf"></select></div>
-                <div><label>Fita dos Internos</label><select id="fita_zona_internos" class="combo-mdf"></select></div>
-            </div>
-            <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="aplicarZonasMateriaisModulo()">✅ Aplicar Zonas no Módulo</button>
-
-            <!-- SEÇÃO DE PEÇA INDIVIDUAL (SEM AFETAR ENGENHARIA) -->
-            <div style="border-top:1px solid #263238; padding-top:8px;">
-                <div class="card-title" style="color:#00E5FF;">🎯 3. Pintor de Peça Individual (Clique na Peça)</div>
-                <div id="nome_peca_pintor" style="font-size:11px; font-weight:bold; color:#FFF; margin:4px 0;">Nenhuma peça individual clicada</div>
-                <div class="row-2" style="margin-bottom:6px;">
-                    <div><label>MDF Exclusivo da Peça</label><select id="mat_peca_ind" class="combo-mdf"></select></div>
-                    <div><label>Cor Fita da Peça</label><select id="fita_peca_ind" class="combo-mdf"></select></div>
-                </div>
-                <div class="row-4" style="margin-bottom:8px;">
-                    <label><input type="checkbox" id="chk_fita_base"> Fita Base</label>
-                    <label><input type="checkbox" id="chk_fita_topo"> Fita Topo</label>
-                    <label><input type="checkbox" id="chk_fita_esq"> Fita Esq</label>
-                    <label><input type="checkbox" id="chk_fita_dir"> Fita Dir</label>
-                </div>
-                <div class="row-2">
-                    <button class="btn btn-purple" onclick="aplicarPinturaPecaIndividual()">🖌️ Pintar Só Esta Peça</button>
-                    <button class="btn btn-secondary" onclick="resetarPinturasIndividuais()">🔄 Resetar Peças</button>
-                </div>
-            </div>
-        </div>
         <!-- LEGENDA INFERIOR ESQUERDA -->
         <div class="hud-bottom-left">
             <div style="margin-bottom:3px;">
@@ -383,18 +624,17 @@
         </div>
 
         <!-- CONTROLE DIRECIONAL CAD 3D (D-PAD) -->
-        <div class="dpad-hud">
-            <div style="display:flex; flex-direction:column; gap:4px; min-width:115px;">
+        <div class="dpad-hud" id="hud_dpad">
+            <div style="display:flex; flex-direction:column; gap:4px; min-width:110px;">
                 <span id="lbl_selecao_dpad" style="font-size:11px; font-weight:800; color:#00E5FF;">🎯 1 Selecionado</span>
-                <label style="margin:0;">Passo Movimento:</label>
                 <select id="sel_passo_dpad" style="padding:4px; font-weight:bold; color:#4CE660;">
-                    <option value="1">1 mm (Fino)</option>
-                    <option value="10">10 mm (1 cm)</option>
-                    <option value="50">50 mm (5 cm)</option>
-                    <option value="100" selected>100 mm (10 cm)</option>
-                    <option value="500">500 mm (50 cm)</option>
+                    <option value="1">Passo: 1 mm</option>
+                    <option value="10">Passo: 10 mm</option>
+                    <option value="50">Passo: 50 mm</option>
+                    <option value="100" selected>Passo: 100 mm</option>
+                    <option value="500">Passo: 500 mm</option>
                 </select>
-                <button class="btn btn-danger" style="padding:5px; margin-top:2px;" onclick="excluirSelecionados()">🗑️ Excluir (Del)</button>
+                <button class="btn btn-danger" style="padding:4px;" onclick="excluirSelecionados()">🗑️ Excluir (Del)</button>
             </div>
 
             <div class="dpad-cross">
@@ -412,82 +652,41 @@
             <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="margin:0; text-align:center;">Elevação (Z)</label>
                 <div class="row-2">
-                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, 1)">⏫ +Z</button>
-                    <button class="dpad-btn eixo-z" style="padding:5px 8px;" onclick="moverSelecionados(0, 0, -1)">⏬ -Z</button>
+                    <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, 1)">⏫ +Z</button>
+                    <button class="dpad-btn eixo-z" style="padding:4px 7px;" onclick="moverSelecionados(0, 0, -1)">⏬ -Z</button>
                 </div>
                 <div class="row-2">
-                    <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(0)">Piso (0)</button>
-                    <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(1450)">Aéreo</button>
+                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(0)">Piso (0)</button>
+                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="definirZAbsolutoSelecionados(1450)">Aéreo</button>
                 </div>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="margin:0; text-align:center;">Rotação (Giro)</label>
                 <div class="row-3">
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(-45)">↺-45°</button>
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(45)">↻+45°</button>
-                    <button class="dpad-btn" style="padding:5px 7px;" onclick="girarSelecionados(90)">↻90°</button>
+                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(-45)">↺-45°</button>
+                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(45)">↻+45°</button>
+                    <button class="dpad-btn" style="padding:4px 6px;" onclick="girarSelecionados(90)">↻90°</button>
                 </div>
                 <div class="row-2">
-                    <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="resetarRotacaoEParedeSelecionados()">Alinhar Parede</button>
-                    <button class="btn btn-secondary" style="padding:4px 6px; font-size:10px;" onclick="descontarCantoParede()">+550 Canto</button>
+                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="resetarRotacaoEParedeSelecionados()">Alinhar</button>
+                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="descontarCantoParede()">+550 Canto</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- COLUNA DIREITA: COORDENADAS EXATAS, MULTI-SELEÇÃO E PEÇAS -->
-    <div class="sidebar-right">
-        <div class="card" style="border-color:#1E88E5;">
-            <div class="card-title">📍 Coordenadas Exatas do Item Ativo</div>
-            <div class="row-2">
-                <div>
-                    <label>Parede Alvo</label>
-                    <select id="sel_parede_modulo" onchange="trocarParedeSelecionados(this.value)"></select>
-                </div>
-                <div>
-                    <label>Giro Próprio (°)</label>
-                    <input type="number" id="inp_rot_offset" value="0" step="15" onchange="posicionarModuloManual(false)">
-                </div>
-            </div>
-            <div class="row-3">
-                <div>
-                    <label>Cota X (Parede)</label>
-                    <input type="number" id="inp_dist_x_parede" value="0" step="50" onchange="posicionarModuloManual(false)">
-                </div>
-                <div>
-                    <label>Afastam. Y (mm)</label>
-                    <input type="number" id="inp_afast_y" value="0" step="50" onchange="posicionarModuloManual(false)">
-                </div>
-                <div>
-                    <label>Elevação Z (mm)</label>
-                    <input type="number" id="inp_elevacao_z" value="0" step="50" onchange="posicionarModuloManual(false)">
-                </div>
-            </div>
-            <div id="lbl_sobra_parede" style="font-size:10px; color:#80D8FF; text-align:center;"></div>
-        </div>
-
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="card-title">📦 Fila do Ambiente (Multi-Seleção)</span>
-                <div style="display:flex; gap:4px;">
-                    <button class="btn btn-secondary" style="padding:2px 6px; font-size:9px;" onclick="selecionarTodosModulos()">☑️ Todos</button>
-                    <button class="btn btn-secondary" style="padding:2px 6px; font-size:9px;" onclick="limparSelecaoMultipla()">🔲 Limpar</button>
-                </div>
-            </div>
-            <div class="list-container" id="lista_modulos_ambiente"></div>
-            <div class="row-2">
-                <button class="btn btn-danger" onclick="excluirSelecionados()">🗑️ Excluir Marcados</button>
-                <button class="btn btn-secondary" onclick="limparAmbiente()">🧹 Zerar Projeto</button>
             </div>
         </div>
 
-        <div class="card" style="flex:1; overflow:hidden;">
-            <div class="card-title">🪵 Peças do Item Ativo (<span id="qtd_pecas_mod">0</span>)</div>
-            <div class="list-container" id="lista_pecas_modulo" style="max-height:100%; flex:1;"></div>
+        <!-- MODAL FLUTUANTE: RESUMO INDUSTRIAL (CHAPAS, FITAS E FERRAGENS) -->
+        <div id="modal_resumo_bom" class="floating-modal" style="left:50%; top:30px; transform:translateX(-50%); width:660px; max-height:calc(100vh - 110px); overflow-y:auto; border:1px solid #4CE660;">
+            <div class="hud-header" style="margin-bottom:10px;">
+                <strong style="color:#4CE660; font-size:13px;">📊 Resumo Industrial para Compra & Almoxarifado (BOM)</strong>
+                <span class="hud-close" onclick="fecharModalResumoIndustrial()">✕</span>
+            </div>
+            <div id="conteudo_resumo_bom" style="display:flex; flex-direction:column; gap:10px; font-size:11.5px;"></div>
         </div>
+        
     </div>
 
     <script src="/static/js/estudio_3d.js"></script>
+    <script src="/static/js/texturas_ui.js"></script>
 </body>
 </html>
