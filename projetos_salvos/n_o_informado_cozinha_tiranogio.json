@@ -1,0 +1,4498 @@
+{
+  "metadados": {
+    "nome_cliente": "Não Informado",
+    "nome_ambiente": "COZINHA_TIRANOGIO",
+    "arquivo_salvo": "n_o_informado_cozinha_tiranogio.json",
+    "estilo_piso": "GRADE_TECNICA",
+    "cor_parede": "#263238"
+  },
+  "ambiente": {
+    "pe_direito_padrao": 2700.0,
+    "espessura_padrao": 150.0,
+    "total_paredes": 2,
+    "paredes": [
+      {
+        "id_parede": "par_e76937",
+        "nome": "Parede A",
+        "x1": 0.0,
+        "y1": 0.0,
+        "x2": 3600.0,
+        "y2": 0.0,
+        "comprimento": 3600.0,
+        "angulo_graus": 0.0,
+        "pe_direito": 2700.0,
+        "espessura": 150.0,
+        "vetor_direcao": {
+          "ux": 1.0,
+          "uy": 0.0
+        },
+        "vetor_normal_interno": {
+          "nx": -0.0,
+          "ny": 1.0
+        },
+        "aberturas": []
+      },
+      {
+        "id_parede": "par_4dab75",
+        "nome": "Parede B",
+        "x1": 3600.0,
+        "y1": 0.0,
+        "x2": 3600.0,
+        "y2": 2600.0,
+        "comprimento": 2600.0,
+        "angulo_graus": 90.0,
+        "pe_direito": 2700.0,
+        "espessura": 150.0,
+        "vetor_direcao": {
+          "ux": 0.0,
+          "uy": 1.0
+        },
+        "vetor_normal_interno": {
+          "nx": -1.0,
+          "ny": 0.0
+        },
+        "aberturas": []
+      }
+    ]
+  },
+  "modulos": {
+    "001": {
+      "id_modulo": "001",
+      "guid": "ff823b0c-4068-4401-b0cd-b3e3e5164c18",
+      "nome_projeto": "Não Informado - COZINHA_TIRANOGIO",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 800.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "id_perfil": "padrao_convencional_15mm",
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "tipo_montagem_caixa": "Parafuso_Soberbo",
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15.0,
+            "espessura_fundo_mm": 6.0,
+            "espessura_frente_mm": 15.0,
+            "espessura_fita_borda_mm": 0.45,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm"
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750.0,
+            "largura_max_mdf": 1830.0,
+            "refilo_seguranca": 20.0,
+            "largura_max_vao_livre_sem_apoio": 850.0
+          },
+          "geometria_caixaria": {
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "altura_total_mao_amiga": 120.0,
+            "folga_encaixe_mao_amiga": 2.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "altura_travessa_reforco_torre": 100.0,
+            "largura_sarrafo": 70.0,
+            "largura_regua_afastador": 60.0,
+            "altura_cava_puxador": 35.0,
+            "recuo_frontal_prateleira": 20.0,
+            "recuo_traseiro_prateleira": 22.0,
+            "recuo_frontal_divisoria": 0.0,
+            "recuo_traseiro_divisoria": 22.0,
+            "recuo_canal_fundo": 15.0,
+            "folga_encaixe_fundo": 1.0
+          },
+          "folgas_frentes": {
+            "tipo_montagem_frente": "SOBREPOSTA",
+            "recuo_frente_embutida": 2.0,
+            "gap_superior": 3.0,
+            "gap_inferior": 3.0,
+            "gap_lateral_esquerda": 3.0,
+            "gap_lateral_direita": 3.0,
+            "gap_entre_frentes": 4.0,
+            "afastamento_frontal_caixa": 1.5
+          },
+          "regras_gaveta": {
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "folga_corredica_cada_lado": 13.0,
+            "recuo_trilho_frontal": 37.0,
+            "folga_profundidade_traseira": 10.0,
+            "folga_altura_caixote": 30.0,
+            "rebaixo_contra_frente_traseira": 5.0,
+            "elevacao_base_caixote_z": 15.0,
+            "offset_eixo_corredica_z": 45.0,
+            "recuo_canal_fundo_gaveta": 15.0,
+            "recuo_frontal_gaveta_interna": 35.0,
+            "espessura_engrosso_gaveta_interna": 25.0,
+            "profundidade_engrosso_gaveta_interna": 450.0,
+            "vao_puxador_gaveta_interna": 28.0,
+            "altura_lateral_sapateira": 80.0,
+            "recuo_frontal_sapateira": 30.0
+          },
+          "parametros_usinagem": {
+            "largura_canal_fundo": 7.0,
+            "profundidade_canal_fundo": 8.0,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_marcacao_guia": 3.0,
+            "profundidade_marcacao_guia": 2.0,
+            "broca_cavilha": 8.0,
+            "profundidade_cavilha": 12.0,
+            "offset_cavilha_parafuso": 32.0,
+            "broca_tambor_minifix": 15.0,
+            "profundidade_tambor_minifix": 12.5,
+            "distancia_centro_minifix_borda": 34.0,
+            "broca_caneco_dobradica": 35.0,
+            "profundidade_caneco_dobradica": 11.5,
+            "distancia_centro_caneco_borda": 22.5,
+            "recuo_dobradica_topo_base": 100.0,
+            "cota_pistao_gas_topo": 80.0,
+            "cota_pistao_gas_frente": 55.0,
+            "recuo_furo_estrutural_frontal": 50.0,
+            "recuo_furo_estrutural_traseiro": 50.0,
+            "recuo_furo_gaveta": 30.0,
+            "distancia_max_entre_furos": 250.0
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900.0,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500.0,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000.0,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000.0,
+              "quantidade": 5
+            }
+          ],
+          "nomenclatura": {
+            "base_inferior": "Base Inferior",
+            "base_superior": "Base Superior / Teto",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_direita": "Lateral Direita",
+            "divisoria_vertical": "Divisória Vertical",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "fundo_costa": "Fundo Costa",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "porta_giro_direita": "Porta Direita",
+            "porta_basculante": "Porta Basculante",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "traseira_gaveta": "Traseira Gaveta",
+            "fundo_gaveta": "Fundo Gaveta",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "traseira_sapateira": "Traseira Sapateira",
+            "fundo_sapateira": "Fundo Sapateira"
+          }
+        },
+        "zonas_materiais": {},
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "GAVETEIRO",
+          "quantidade": 4,
+          "id_vao": "raiz"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": true,
+        "ocupacao_interna": "GAVETEIRO",
+        "tem_portas": false,
+        "tipo_divisao": null,
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 770.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "978a17a7-6a60-4217-9f7a-2afc08e1d053",
+          "direita": "898bccf3-f951-430d-8d7d-901407d887cd",
+          "base": "012f2e3f-ba68-4f74-a17f-6e4e67651cf8",
+          "topo": "954bde6b-2e90-42e5-948b-39f88a2b37ef"
+        },
+        "filhos": []
+      },
+      "alertas_engenharia": [],
+      "lista_de_pecas": [
+        {
+          "id_peca": "012f2e3f-ba68-4f74-a17f-6e4e67651cf8",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 800.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 800.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "199cf870-8203-4052-9995-7d471178ac39",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "0e02cd37-e45b-4ce2-9a9d-f614246a413c",
+                "x": 792.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "d6829ce6-15ac-4a79-af49-5e9eb7316568",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "36867cff-a354-4fa8-8964-dadf8ba46fb0",
+                "x": 792.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "98f92ac9-82e0-430c-81bd-178c17593429",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "f7aecf7d-4e26-4808-904b-5d83ebd85445",
+                "x": 792.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 800.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 800.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "978a17a7-6a60-4217-9f7a-2afc08e1d053",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "5396b8c8-71c5-4d17-9fbd-ce18eaec502e",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "3f5e2d1c-3b3c-4ea5-9ab1-c96037a4703f",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "011b832a-e626-4f96-8278-c732aedc987f",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "85d600d6-7b38-4762-aeb9-ad87277852af",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "ae0bb4b7-7f9e-44cc-bc9b-90ef5df8e21d",
+                "x": 74.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "23f33d38-6d24-4b53-93ce-1cde8378c461",
+                "x": 262.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a72dda6a-acd1-4a37-a189-fa4bba299f0b",
+                "x": 450.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7e8351f9-6777-4f93-9fdf-75345a4fa421",
+                "x": 74.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "5a547312-baf0-4545-943c-ea04c0305d2e",
+                "x": 262.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "bf49ba26-4011-4dc3-961d-12358bdd1cb9",
+                "x": 450.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "07ce0e61-5a89-4f79-ab9a-8d1f8149807e",
+                "x": 74.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "392a5a0c-4d97-4ca9-a7c7-7738dbf8d908",
+                "x": 262.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "39eebaa5-b777-489c-b342-dd0d48498493",
+                "x": 450.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6bc38f5f-626f-4388-9f1f-5d6d0eb462c2",
+                "x": 74.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "470bfc1a-6e23-4c11-a31e-35a35e6bf6da",
+                "x": 262.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "32c19cfb-e8f6-48cf-a362-bf44dd02390a",
+                "x": 450.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "898bccf3-f951-430d-8d7d-901407d887cd",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 785.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "3fd27f9b-0e8d-4059-af6a-794b2b2b14f0",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "2087c319-54b4-4405-82ce-c090c7b36b53",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a3a0bd93-f813-4434-9aef-2080f11ae5ae",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7a07ecf9-1f63-49c4-9151-845bb630a1c1",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a7cfa8ec-33ef-47c2-943e-73356da342c9",
+                "x": 74.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 74.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "992e01bd-54e0-4fee-8840-02c8813aa682",
+                "x": 262.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 262.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a3b06893-ec3c-44af-ac7a-49c3a18e9340",
+                "x": 450.0,
+                "y": 45.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 450.0,
+                  "z": 60.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6c11d2cb-a93a-4463-addd-714efe9a023e",
+                "x": 74.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 74.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "566802c6-19a9-44e2-a7f5-ccf8745f9639",
+                "x": 262.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 262.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7fed482c-b6c8-41b3-88a4-92262ce65322",
+                "x": 450.0,
+                "y": 212.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 450.0,
+                  "z": 227.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "029182d9-cfbc-4d10-bbcb-bee86d7841a5",
+                "x": 74.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 74.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d9bfcda0-c1ab-4cd2-a194-b81b515f745e",
+                "x": 262.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 262.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "38528f52-15a7-42f3-b37b-169a37038e91",
+                "x": 450.0,
+                "y": 380.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 450.0,
+                  "z": 395.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "89f86d01-f2a6-4293-bb3c-d85c83cc3b76",
+                "x": 74.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 74.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "84c21b91-3d75-4374-b666-964d576f20ba",
+                "x": 262.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 262.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "c79bc99a-b0e4-41ef-b48e-86d78207f961",
+                "x": 450.0,
+                "y": 547.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 450.0,
+                  "z": 562.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 785.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "954bde6b-2e90-42e5-948b-39f88a2b37ef",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "6b3ed215-bb9c-4460-8606-040183da8c27",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "948b3406-aa5a-4be4-b669-f614e01d052d",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 784.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 784.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "379dab59-b6ca-4383-ab00-3c3359f5cd8a",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "frente_gaveta",
+          "nome_comercial": "Frente Gaveta 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 794.0,
+            "y": 15.0,
+            "z": 170.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 794.0,
+            "altura_y": 170.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "c634ad5b-9d03-49d0-be5f-aa9cbbdd6b5b",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral de Gaveta (Esq) 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 37.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c3f7e9b9-1174-437b-b4ff-3f847c07dce2",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 64.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d08935d3-0c2c-46e0-a327-0c86425019ab",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 64.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e4d016b7-7bc6-45a8-9be5-fe36ab02218d",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 137.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7510cd91-289a-40fd-89bf-5bc04d916231",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 137.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 35.0,
+                  "pos_y": 37.0,
+                  "pos_z": 45.0,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "c6cc75cd-5958-45c1-a2e2-2b0689701e02",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral de Gaveta (Dir) 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 757.0,
+            "pos_y": 37.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "6f0ae95b-2741-4c39-a65a-c2252868c848",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 64.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "04be52df-3898-49bf-b766-9978d5b05fb8",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 64.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "2708a057-f409-4a4e-9805-c328ed4b5589",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 137.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "79e10bf7-5b77-4d2a-ba2c-d01840b5d3bc",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 137.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 757.0,
+                  "pos_y": 37.0,
+                  "pos_z": 45.0,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "34246d30-13e1-45e9-99b0-ac12b17de66f",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "contra_frente_gaveta",
+          "nome_comercial": "Contra-Frente Gaveta 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 37.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 44.0,
+                  "pos_z": 45.0,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "5f2d858b-66df-49c6-b200-22946c9968f0",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "traseira_gaveta",
+          "nome_comercial": "Traseira Gaveta 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 472.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 472.0,
+                  "pos_z": 45.0,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "abd4ce70-c357-4c12-9bcd-3072d5567110",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_gaveta",
+          "nome_comercial": "Fundo Gaveta 1",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 728.0,
+            "y": 434.0,
+            "z": 6.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 728.0,
+            "altura_y": 434.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 36.0,
+            "pos_y": 45.0,
+            "pos_z": 45.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "ab45030f-f962-45f5-b1dd-71eb9b15c367",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "frente_gaveta",
+          "nome_comercial": "Frente Gaveta 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 794.0,
+            "y": 15.0,
+            "z": 170.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 794.0,
+            "altura_y": 170.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 177.5
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "1783c5fa-13f9-4569-a044-fe8366a40dee",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral de Gaveta (Esq) 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 37.0,
+            "pos_z": 197.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c99ce4cc-b510-49de-b81a-9ceb10e894a7",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 231.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7a420275-6f98-440a-917b-4c0946ed6f48",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 231.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6238d5c9-19da-423a-a822-434970c39d36",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 305.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "154e1a4f-a009-4a04-840e-ddaeb4d083af",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 305.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 35.0,
+                  "pos_y": 37.0,
+                  "pos_z": 212.5,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "50ec3b30-4371-43a4-a7b2-844d6af88c42",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral de Gaveta (Dir) 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 757.0,
+            "pos_y": 37.0,
+            "pos_z": 197.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "71201917-b55f-4f34-bbcd-f812f8d29472",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 231.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "038eada9-f878-4ac9-975d-b472a61a493a",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 231.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e8e68cc9-f05e-49c5-bdf3-334a5aa79c23",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 305.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "1bce4bca-a7eb-49d3-840b-08d1d56509c2",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 305.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 757.0,
+                  "pos_y": 37.0,
+                  "pos_z": 212.5,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "df958b74-5b8a-4e92-af54-69e5186843fb",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "contra_frente_gaveta",
+          "nome_comercial": "Contra-Frente Gaveta 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 37.0,
+            "pos_z": 197.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 44.0,
+                  "pos_z": 212.5,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "a33e1a35-8177-41fb-a5db-6d8a7232820d",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "traseira_gaveta",
+          "nome_comercial": "Traseira Gaveta 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 472.0,
+            "pos_z": 197.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 472.0,
+                  "pos_z": 212.5,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "4cec4d54-2d9f-4ff2-b0a5-7505923df3e6",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_gaveta",
+          "nome_comercial": "Fundo Gaveta 2",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 728.0,
+            "y": 434.0,
+            "z": 6.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 728.0,
+            "altura_y": 434.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 36.0,
+            "pos_y": 45.0,
+            "pos_z": 212.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "1acef213-1134-4135-84c4-53c0b94eb24e",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "frente_gaveta",
+          "nome_comercial": "Frente Gaveta 3",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 794.0,
+            "y": 15.0,
+            "z": 170.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 794.0,
+            "altura_y": 170.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 352.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "f781406c-ef8c-4e45-a269-d84e9881ebd3",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral de Gaveta (Esq) 3",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 37.0,
+            "pos_z": 365.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c7d069f4-8151-43ed-bdb2-21fa86a27331",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 399.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "1c2ee040-1270-4a5d-a550-c1135551d921",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 399.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f0c25425-6215-4c50-88f9-694c87dcc8b8",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 472.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "29415a0c-8355-49fb-a50d-8b031f53fcdc",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 472.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 35.0,
+                  "pos_y": 37.0,
+                  "pos_z": 380.0,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "ea010ff1-5913-48d1-a0ec-bf9a6bf8e709",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral de Gaveta (Dir) 3",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 757.0,
+            "pos_y": 37.0,
+            "pos_z": 365.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "1bdd0044-01dc-4cdb-8eed-371425a21efe",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 399.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "57a0f2b3-f17a-41fd-bf9f-990cd385f670",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 399.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "ac48c073-b5fb-42ad-b8b9-3fec8cf27446",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 472.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d1d9848f-f07f-43fc-8dd8-49d8be03ae72",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 472.5,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 757.0,
+                  "pos_y": 37.0,
+                  "pos_z": 380.0,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "1c9c9d72-5481-4e63-b7bd-2d3ad3ae3f8a",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "contra_frente_gaveta",
+          "nome_comercial": "Contra-Frente Gaveta 3",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 37.0,
+            "pos_z": 365.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 44.0,
+                  "pos_z": 380.0,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "32bb2640-07b7-4ef3-9e7f-ec6f0c3573ff",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "traseira_gaveta",
+          "nome_comercial": "Traseira Gaveta 3",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 472.0,
+            "pos_z": 365.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 472.0,
+                  "pos_z": 380.0,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "a2f01f0c-9049-4677-b57f-f897e5b97fe4",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_gaveta",
+          "nome_comercial": "Fundo Gaveta 3",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 728.0,
+            "y": 434.0,
+            "z": 6.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 728.0,
+            "altura_y": 434.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 36.0,
+            "pos_y": 45.0,
+            "pos_z": 380.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "8fd9b998-8f59-4891-a3d9-f47d02f60227",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "frente_gaveta",
+          "nome_comercial": "Frente Gaveta 4",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 794.0,
+            "y": 15.0,
+            "z": 170.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 794.0,
+            "altura_y": 170.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 526.5
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "7a5a7781-6ae4-4bed-b2b7-6c4e3e03ec1f",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral de Gaveta (Esq) 4",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 37.0,
+            "pos_z": 532.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "4c200312-a14a-4059-b3aa-fb6ae295828f",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 566.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "74ad47b3-ecee-43e1-8789-1d719b7c01b4",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 566.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "db183c02-6598-4501-a229-9f86184447a2",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 44.5,
+                  "z": 640.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "0f93860c-85d5-4c58-a117-911c3e081e7b",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 35.5,
+                  "y": 479.5,
+                  "z": 640.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 35.0,
+                  "pos_y": 37.0,
+                  "pos_z": 547.5,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "73d21482-f43d-4602-91ec-25c69f70c610",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral de Gaveta (Dir) 4",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 450.0,
+            "z": 137.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 450.0,
+            "altura_y": 137.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 757.0,
+            "pos_y": 37.0,
+            "pos_z": 532.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c529c6a1-3104-47a4-96f2-fb456481d71b",
+                "x": 7.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 566.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "11ebbbe4-2e96-4733-9793-1da9c59ce8ba",
+                "x": 442.5,
+                "y": 34.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 566.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9f798573-5cd5-4642-93ff-313274566c93",
+                "x": 7.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 44.5,
+                  "z": 640.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6be709bf-3827-44ae-9098-a711aabca7d8",
+                "x": 442.5,
+                "y": 107.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 764.5,
+                  "y": 479.5,
+                  "z": 640.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 450.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 757.0,
+                  "pos_y": 37.0,
+                  "pos_z": 547.5,
+                  "dx": 8.0,
+                  "dy": 450.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "dd5c50ce-5864-4e4d-85d0-655914752f28",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "contra_frente_gaveta",
+          "nome_comercial": "Contra-Frente Gaveta 4",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 37.0,
+            "pos_z": 532.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 44.0,
+                  "pos_z": 547.5,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "029e55a6-06af-41aa-a29b-8054dc0dd5e9",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "traseira_gaveta",
+          "nome_comercial": "Traseira Gaveta 4",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 714.0,
+            "y": 15.0,
+            "z": 132.5
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 714.0,
+            "altura_y": 132.5,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 472.0,
+            "pos_z": 532.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 15.0,
+                "pos_x": 0.0,
+                "pos_y": 15.0,
+                "largura": 7.0,
+                "comprimento": 714.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 43.0,
+                  "pos_y": 472.0,
+                  "pos_z": 547.5,
+                  "dx": 714.0,
+                  "dy": 8.0,
+                  "dz": 7.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "eddc21f5-5fa1-4195-a984-1707b5e916df",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_gaveta",
+          "nome_comercial": "Fundo Gaveta 4",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 728.0,
+            "y": 434.0,
+            "z": 6.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 728.0,
+            "altura_y": 434.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 36.0,
+            "pos_y": 45.0,
+            "pos_z": 547.5
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "🤖 Copiloto executou: 4 gavetas no Vão Principal.",
+      "posicionamento_ambiente": {
+        "id_parede": "par_e76937",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 0.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 0.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 2800.0
+      },
+      "cliente": "Não Informado",
+      "nome_cliente": "Não Informado"
+    },
+    "002": {
+      "id_modulo": "002",
+      "guid": "e5cb78fc-0bad-4092-a3dd-e523abc9ee25",
+      "nome_projeto": "Não Informado - COZINHA_TIRANOGIO",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 1200.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "id_perfil": "padrao_convencional_15mm",
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "tipo_montagem_caixa": "Parafuso_Soberbo",
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15.0,
+            "espessura_fundo_mm": 6.0,
+            "espessura_frente_mm": 15.0,
+            "espessura_fita_borda_mm": 0.45,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm"
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750.0,
+            "largura_max_mdf": 1830.0,
+            "refilo_seguranca": 20.0,
+            "largura_max_vao_livre_sem_apoio": 850.0
+          },
+          "geometria_caixaria": {
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "altura_total_mao_amiga": 120.0,
+            "folga_encaixe_mao_amiga": 2.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "altura_travessa_reforco_torre": 100.0,
+            "largura_sarrafo": 70.0,
+            "largura_regua_afastador": 60.0,
+            "altura_cava_puxador": 35.0,
+            "recuo_frontal_prateleira": 20.0,
+            "recuo_traseiro_prateleira": 22.0,
+            "recuo_frontal_divisoria": 0.0,
+            "recuo_traseiro_divisoria": 22.0,
+            "recuo_canal_fundo": 15.0,
+            "folga_encaixe_fundo": 1.0
+          },
+          "folgas_frentes": {
+            "tipo_montagem_frente": "SOBREPOSTA",
+            "recuo_frente_embutida": 2.0,
+            "gap_superior": 3.0,
+            "gap_inferior": 3.0,
+            "gap_lateral_esquerda": 3.0,
+            "gap_lateral_direita": 3.0,
+            "gap_entre_frentes": 4.0,
+            "afastamento_frontal_caixa": 1.5
+          },
+          "regras_gaveta": {
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "folga_corredica_cada_lado": 13.0,
+            "recuo_trilho_frontal": 37.0,
+            "folga_profundidade_traseira": 10.0,
+            "folga_altura_caixote": 30.0,
+            "rebaixo_contra_frente_traseira": 5.0,
+            "elevacao_base_caixote_z": 15.0,
+            "offset_eixo_corredica_z": 45.0,
+            "recuo_canal_fundo_gaveta": 15.0,
+            "recuo_frontal_gaveta_interna": 35.0,
+            "espessura_engrosso_gaveta_interna": 25.0,
+            "profundidade_engrosso_gaveta_interna": 450.0,
+            "vao_puxador_gaveta_interna": 28.0,
+            "altura_lateral_sapateira": 80.0,
+            "recuo_frontal_sapateira": 30.0
+          },
+          "parametros_usinagem": {
+            "largura_canal_fundo": 7.0,
+            "profundidade_canal_fundo": 8.0,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_marcacao_guia": 3.0,
+            "profundidade_marcacao_guia": 2.0,
+            "broca_cavilha": 8.0,
+            "profundidade_cavilha": 12.0,
+            "offset_cavilha_parafuso": 32.0,
+            "broca_tambor_minifix": 15.0,
+            "profundidade_tambor_minifix": 12.5,
+            "distancia_centro_minifix_borda": 34.0,
+            "broca_caneco_dobradica": 35.0,
+            "profundidade_caneco_dobradica": 11.5,
+            "distancia_centro_caneco_borda": 22.5,
+            "recuo_dobradica_topo_base": 100.0,
+            "cota_pistao_gas_topo": 80.0,
+            "cota_pistao_gas_frente": 55.0,
+            "recuo_furo_estrutural_frontal": 50.0,
+            "recuo_furo_estrutural_traseiro": 50.0,
+            "recuo_furo_gaveta": 30.0,
+            "distancia_max_entre_furos": 250.0
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900.0,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500.0,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000.0,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000.0,
+              "quantidade": 5
+            }
+          ],
+          "nomenclatura": {
+            "base_inferior": "Base Inferior",
+            "base_superior": "Base Superior / Teto",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_direita": "Lateral Direita",
+            "divisoria_vertical": "Divisória Vertical",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "fundo_costa": "Fundo Costa",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "porta_giro_direita": "Porta Direita",
+            "porta_basculante": "Porta Basculante",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "traseira_gaveta": "Traseira Gaveta",
+            "fundo_gaveta": "Fundo Gaveta",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "traseira_sapateira": "Traseira Sapateira",
+            "fundo_sapateira": "Fundo Sapateira"
+          }
+        },
+        "zonas_materiais": {},
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "DIVISORIA_VERTICAL",
+          "id_vao": "raiz",
+          "posicao_x": 200.0
+        },
+        {
+          "tipo": "PORTA_TEMPERO",
+          "id_vao": "raiz.0"
+        },
+        {
+          "tipo": "PRATELEIRAS",
+          "quantidade": 1,
+          "fixas": false,
+          "id_vao": "raiz.1"
+        },
+        {
+          "tipo": "PORTAS_GIRO",
+          "abertura": "DUPLA",
+          "id_vao": "raiz.1"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": false,
+        "ocupacao_interna": null,
+        "tem_portas": false,
+        "tipo_divisao": "VERTICAL",
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 1170.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "28f11ad0-ca79-427c-a479-9bb4275908ef",
+          "direita": "27f66ecc-52d1-4356-8186-c08692f4bd6e",
+          "base": "4d6ae9fa-0dfa-4eeb-89fb-0d2c160dfdf7",
+          "topo": "d5d320a3-fb85-4d23-b53f-d65e75f65401"
+        },
+        "filhos": [
+          {
+            "id_vao": "raiz.0",
+            "nome_vao": "Vão Principal [Esq]",
+            "eh_folha": true,
+            "ocupacao_interna": "PORTA_TEMPERO",
+            "tem_portas": false,
+            "tipo_divisao": null,
+            "geometria_3d": {
+              "x": 15.0,
+              "y": 0.0,
+              "z": 15.0,
+              "largura": 200.0,
+              "profundidade": 529.0,
+              "altura": 670.0
+            },
+            "id_vizinhos": {
+              "esquerda": "28f11ad0-ca79-427c-a479-9bb4275908ef",
+              "direita": "fda6996d-405f-4c82-b1db-45fdd698a5f3",
+              "base": "4d6ae9fa-0dfa-4eeb-89fb-0d2c160dfdf7",
+              "topo": "d5d320a3-fb85-4d23-b53f-d65e75f65401"
+            },
+            "filhos": []
+          },
+          {
+            "id_vao": "raiz.1",
+            "nome_vao": "Vão Principal [Dir]",
+            "eh_folha": true,
+            "ocupacao_interna": null,
+            "tem_portas": true,
+            "tipo_divisao": null,
+            "geometria_3d": {
+              "x": 230.0,
+              "y": 0.0,
+              "z": 15.0,
+              "largura": 955.0,
+              "profundidade": 529.0,
+              "altura": 670.0
+            },
+            "id_vizinhos": {
+              "esquerda": "fda6996d-405f-4c82-b1db-45fdd698a5f3",
+              "direita": "27f66ecc-52d1-4356-8186-c08692f4bd6e",
+              "base": "4d6ae9fa-0dfa-4eeb-89fb-0d2c160dfdf7",
+              "topo": "d5d320a3-fb85-4d23-b53f-d65e75f65401"
+            },
+            "filhos": []
+          }
+        ]
+      },
+      "alertas_engenharia": [
+        "⚠️ Risco de Empenamento: 'Prateleira Livre' com 955mm de vão livre."
+      ],
+      "lista_de_pecas": [
+        {
+          "id_peca": "4d6ae9fa-0dfa-4eeb-89fb-0d2c160dfdf7",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 1200.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 1200.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "52e78f5f-68d6-4418-8170-2e2859a923a7",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "3d1e7d1d-2581-4b1c-b911-1ab91dcc6cdd",
+                "x": 1192.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "553bbfa4-763b-49a6-9819-a71f6fe4679c",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "76d56d80-34b2-4a74-aa67-560e15dba913",
+                "x": 1192.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "4095be60-316d-47a8-9a15-85f1fb3acb2a",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "b0ffb0be-5199-4656-a85e-caf871335fb3",
+                "x": 1192.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "48a1b41e-8f64-4120-9ee0-35c8595186e0",
+                "x": 222.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "5a34dcfa-265b-4a06-8a4d-6019a94a0988",
+                "x": 222.5,
+                "y": 253.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 253.5,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "70a8535d-3da2-4648-811d-413912e586c7",
+                "x": 222.5,
+                "y": 457.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 457.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 1200.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 1200.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "28f11ad0-ca79-427c-a479-9bb4275908ef",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "fe9c2c86-7f02-49d8-b78e-0519dac75970",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "5f822c0c-679d-40bc-886b-bcd42fbd50a3",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7ffe20cf-cbba-4a7f-8a00-e47dd0f004e6",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7ce50c88-c192-4fe8-9ed3-81e2180a2253",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "b72aeb33-9186-4145-a3ac-3f1de6a4f17d",
+                "x": 74.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e6acb2a6-36a6-49a8-9ff0-e607ef878a9a",
+                "x": 262.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "5340f064-9ce1-4461-bc45-1f482d4a73d9",
+                "x": 450.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "552c7bb8-9380-4e06-8158-2151388716a6",
+                "x": 74.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 74.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "c57bbe11-73c6-450c-b1f9-1ca1dc8e4b7d",
+                "x": 262.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 262.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e1b13688-e1e9-4f44-b956-7f9c9bf28fa5",
+                "x": 450.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 450.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "27f66ecc-52d1-4356-8186-c08692f4bd6e",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 1185.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "d166ef98-53cc-4957-8dce-7f915f562ce3",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "2885a980-8ff6-4a65-918c-d6d88cce4fac",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "b6b663f8-0443-4371-8d7d-1f4d82eab694",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "c86ff5be-72d0-44c5-8aa2-e2eafbc8c922",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e12eb822-6492-420b-bcf1-66800a8e5c42",
+                "x": 70.0,
+                "y": 327.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 70.0,
+                  "z": 342.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "2bea315e-ca4b-4f86-9044-84b2fd36d216",
+                "x": 457.0,
+                "y": 327.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 457.0,
+                  "z": 342.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "37751d5e-95ae-4785-93d5-a932aeb4cc6b",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "470783a4-8957-4a3e-beb2-377a1aa275f7",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 1192.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 1185.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "d5d320a3-fb85-4d23-b53f-d65e75f65401",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 1170.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 1170.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "ef398cae-e14a-4bf0-b557-2f0b08415bf9",
+                "x": 207.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "f5550b10-7a4e-49cf-9c8e-e0b60713f20d",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 1170.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 1170.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "be8c6510-955b-4d9d-9728-f2e4fe203678",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "generico_branco_tx_6mm",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 1184.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 1184.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "fda6996d-405f-4c82-b1db-45fdd698a5f3",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "divisoria_vertical",
+          "nome_comercial": "Divisória Vertical",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 507.0,
+            "z": 670.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 507.0,
+            "altura_y": 670.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 215.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "a1aabb37-ef89-4f70-9f17-2fab3dc8b02b",
+                "x": 74.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 74.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f26c7f6d-8a3e-478f-a80c-d8bf22e67aaf",
+                "x": 262.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 262.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a02e919c-037a-4387-8129-d1f99b7247cd",
+                "x": 450.0,
+                "y": 60.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 450.0,
+                  "z": 75.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "875c294e-ae64-441a-aff2-a473f30f8c2f",
+                "x": 74.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 74.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f29b4d7d-e22a-4486-b202-0d921521fcb9",
+                "x": 262.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 262.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "fe18c43c-287f-4102-a51d-cd4d082cadc6",
+                "x": 450.0,
+                "y": 367.2,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 450.0,
+                  "z": 382.2,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "0cdf079c-3542-4a62-92ef-cb5cf0efeedb",
+                "x": 70.0,
+                "y": 327.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 70.0,
+                  "z": 342.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "616d668a-ad57-48ba-a222-4bc679228818",
+                "x": 457.0,
+                "y": 327.5,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 457.0,
+                  "z": 342.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "cb883533-4554-4b41-8c2c-f0a390800839",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "bfdf4279-b7f1-4c01-837b-35608542ae5f",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 222.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "76ab8d66-1beb-4f2d-8111-abb9f001b509",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "frente_porta_tempero",
+          "nome_comercial": "Frente Porta-Tempero",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 217.5,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 217.5,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "3f1bf6fe-16f1-4aa3-ab52-ea6a9736c1d7",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "contra_frente_tempero",
+          "nome_comercial": "Contra-Frente Porta-Tempero",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 174.0,
+            "y": 15.0,
+            "z": 640.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 174.0,
+            "altura_y": 640.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 37.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "e231758b-4557-4a86-ab62-8dd696f727af",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "traseira_porta_tempero",
+          "nome_comercial": "Traseira Porta-Tempero",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 174.0,
+            "y": 15.0,
+            "z": 640.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 174.0,
+            "altura_y": 640.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 472.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "d59877fc-6e0a-4b5e-9ce1-d72241bb8afc",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_porta_tempero",
+          "nome_comercial": "Base Nível Porta-Tempero 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 144.0,
+            "y": 420.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 144.0,
+            "altura_y": 420.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 52.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "b2157b17-0b7a-4709-ad2a-b985da77f01a",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral Porta-Tempero (Esq) 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 420.0,
+            "z": 95.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 420.0,
+            "altura_y": 95.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 52.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "1c039fca-123b-4533-946f-25dcbd5e0744",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral Porta-Tempero (Dir) 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 420.0,
+            "z": 95.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 420.0,
+            "altura_y": 95.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 187.0,
+            "pos_y": 52.0,
+            "pos_z": 30.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "2d8c1fab-7e2d-4045-84b2-38ff90cc5d7b",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_porta_tempero",
+          "nome_comercial": "Base Nível Porta-Tempero 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 144.0,
+            "y": 420.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 144.0,
+            "altura_y": 420.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 43.0,
+            "pos_y": 52.0,
+            "pos_z": 337.2
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "1f9d2210-fe6a-4321-82ad-ef56c77f0679",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_esquerda",
+          "nome_comercial": "Lateral Porta-Tempero (Esq) 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 420.0,
+            "z": 95.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 420.0,
+            "altura_y": 95.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 28.0,
+            "pos_y": 52.0,
+            "pos_z": 337.2
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "0f05ba5d-ee22-480e-b4ff-2f13ad84d9b1",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_gaveta_direita",
+          "nome_comercial": "Lateral Porta-Tempero (Dir) 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 420.0,
+            "z": 95.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 420.0,
+            "altura_y": 95.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 187.0,
+            "pos_y": 52.0,
+            "pos_z": 337.2
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": true,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "d337a1ee-24f2-4229-b225-a1932ef4001c",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 955.0,
+            "y": 487.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 955.0,
+            "altura_y": 487.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 230.0,
+            "pos_y": 20.0,
+            "pos_z": 342.5
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "ccc87d8d-dd46-4908-9c22-440e1682a92c",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_esquerda",
+          "nome_comercial": "Porta Esquerda 1",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 484.25,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 484.25,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 224.5,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "374b0614-43b6-49fb-b4bd-3eaaa52e968c",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 247.0,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "703f2e68-a263-4d5d-84a6-3f98a05acd85",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 247.0,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "f601372b-2100-4b64-b769-b9350b40eeb7",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_direita",
+          "nome_comercial": "Porta Direita 2",
+          "material": "generico_branco_tx",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 484.25,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 484.25,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 712.75,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "generico_branco_tx",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "395cd0c1-6a7c-43ee-96f0-6545cb36871d",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 1174.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "136317c9-bc02-4363-8c76-9c782518b38c",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 1174.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "🤖 Copiloto executou: Divisória Vertical posicionada em X=200mm | Porta-Tempero extraível no Vão Esquerdo/Inferior | 1 prateleira(s) no Vão Direito/Superior | Porta (DUPLA) no Vão Direito/Superior.",
+      "posicionamento_ambiente": {
+        "id_parede": "par_e76937",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 800.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 800.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 1600.0
+      },
+      "cliente": "Não Informado",
+      "nome_cliente": "Não Informado"
+    }
+  },
+  "data_salvamento": "04/11/2026 12:55"
+}

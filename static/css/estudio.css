@@ -554,30 +554,87 @@ textarea {
 }
 
 /* =============================================================================
- * PADRONIZAÇÃO UNIFORME DA BARRA SUPERIOR (TODOS OS BOTÕES DO MESMO TAMANHO)
+ * CABEÇALHO DE DOIS ANDARES (DUAL-DECK HEADER: ZERO ROLAGEM E 100% VISÍVEL)
  * ============================================================================= */
-.toolbar-top {
-    height: 48px !important;
-    padding: 0 10px !important;
-    gap: 6px;
-    overflow-x: auto;
+.header-dual-deck {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: #0D1116;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 40;
+    flex-shrink: 0;
 }
 
-.toolbar-top .btn {
-    height: 32px !important;
-    min-height: 32px !important;
-    padding: 0 9px !important;
-    font-size: 10.5px !important;
-    white-space: nowrap !important;
+.deck-row-info {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid #1C242B;
+    background: #090C10;
+}
+
+.deck-row-tools {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    background: #10151C;
+}
+
+.brand-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     flex-shrink: 0;
+}
+
+.brand-title-main {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #FFFFFF;
+}
+
+.brand-title-sub {
+    font-size: 10px;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.divider-v {
+    width: 1px;
+    height: 22px;
+    background: #263238;
+    margin: 0 4px;
+}
+
+.header-dual-deck .btn {
+    height: 29px !important;
+    min-height: 29px !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
     border-radius: 5px;
 }
 
-.toolbar-top .btn-undo-redo {
-    width: 32px !important;
+.header-dual-deck .btn-undo-redo {
+    width: 30px !important;
     padding: 0 !important;
 }
 
+.stage-center {
+    height: calc(100vh - 81px) !important;
+}
 /* =============================================================================
  * FAIXA DE EXPLOSÃO E ABERTURAS CENTRALIZADA NO CONTROLE INFERIOR (D-PAD)
  * ============================================================================= */

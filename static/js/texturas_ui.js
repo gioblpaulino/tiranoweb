@@ -343,293 +343,6 @@ renderizarCenaCompleta = function () {
 };
 
 // =============================================================================
-// 4. MODAL DO RESUMO INDUSTRIAL (CHAPAS, METROS DE FITA E FERRAGENS - BOM)
-// =============================================================================
-async function abrirModalResumoIndustrial() {
-    const resp = await fetch("/api/ambiente/resumo_industrial");
-    const dados = await resp.json();
-    if (!dados.sucesso) return;
-
-    const container = document.getElementById("conteudo_resumo_bom");
-    let htmlChapas = `<div class="card"><div class="card-title" style="color:#4CE660;">1. Totalizador de Chapas MDF (Padrão 2750x1850mm + 15% Margem)</div>`;
-    dados.chapas.forEach(c => {
-        htmlChapas += `
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #263238; padding:4px 0;">
-                <span><b>${c.nome_material}</b> (${c.espessura_mm}mm) — ${c.qtd_pecas} pçs</span>
-                <span style="color:#4CE660; font-weight:bold;">${c.area_liquida_m2} m² ➔ ~${c.chapas_inteiras_estimadas} Chapa(s)</span>
-            </div>`;
-    });
-    htmlChapas += `</div>`;
-
-    let htmlFitas = `<div class="card"><div class="card-title" style="color:#FF9800;">2. Totalizador de Fitas de Borda (Metros Lineares c/ Destopo)</div>`;
-    if (dados.fitas.length === 0) {
-        htmlFitas += `<div>Nenhuma fita de borda aplicada.</div>`;
-    } else {
-        dados.fitas.forEach(f => {
-            htmlFitas += `
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #263238; padding:4px 0;">
-                    <span>Fita <b>${f.nome_cor}</b> (Largura ${f.largura_fita_mm}mm)</span>
-                    <span style="color:#FFB74D; font-weight:bold;">${f.metros_lineares} metros</span>
-                </div>`;
-        });
-    }
-    htmlFitas += `</div>`;
-
-    const fer = dados.ferragens;
-    let htmlCorredicas = "";
-    Object.entries(fer.corredicas_por_tamanho || {}).forEach(([nome, qtd]) => {
-        htmlCorredicas += `<div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• ${nome}</span><b style="color:#00E5FF;">${qtd} par(es)</b></div>`;
-    });
-
-    const htmlFerragens = `
-        <div class="card">
-            <div class="card-title" style="color:#00E5FF;">3. Checklist de Ferragens & Fixadores (Almoxarifado)</div>
-            <div class="row-2" style="gap:12px;">
-                <div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Dobradiças Caneco Ø35mm:</span><b>${fer.dobradicas_35mm} un.</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Parafusos Estruturais 4.5mm:</span><b>${fer.parafusos_estruturais_4_5mm} un.</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Tambores Minifix 15mm:</span><b>${fer.tambores_minifix_15mm} un.</b></div>
-                </div>
-                <div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Cavilhas de Madeira 8mm:</span><b>${fer.cavilhas_madeira_8mm} un.</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Pistões a Gás (Basculantes):</span><b>${fer.pistoes_gas_basculante} un.</b></div>
-                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Suportes Prateleira (Pitão):</span><b>${fer.suportes_prateleira_pitao} un.</b></div>
-                </div>
-            </div>
-            ${htmlCorredicas ? `<div style="margin-top:6px; border-top:1px solid #263238; padding-top:4px;">${htmlCorredicas}</div>` : ""}
-        </div>`;
-
-    container.innerHTML = htmlChapas + htmlFitas + htmlFerragens;
-    document.getElementById("modal_resumo_bom").style.display = "block";
-}
-
-function fecharModalResumoIndustrial() {
-    document.getElementById("modal_resumo_bom").style.display = "none";
-}
-
-// =============================================================================
-// 5. TELA INICIAL (SPLASH), SALVAR/ABRIR PROJETO E HISTÓRICO (CTRL+Z / CTRL+Y)
-// =============================================================================
-let malhaPisoArquitetonico = null;
-
-function abrirTelaInicial() {
-    voltarMenuSplash();
-    document.getElementById("tela_inicial_splash").classList.remove("oculto");
-}
-
-function fecharTelaInicial() {
-    document.getElementById("tela_inicial_splash").classList.add("oculto");
-}
-
-function voltarMenuSplash() {
-    document.getElementById("splash_menu_principal").style.display = "flex";
-    document.getElementById("dialogo_novo_projeto").style.display = "none";
-    document.getElementById("dialogo_abrir_projeto").style.display = "none";
-}
-
-function abrirDialogoNovoProjeto() {
-    document.getElementById("splash_menu_principal").style.display = "none";
-    document.getElementById("dialogo_novo_projeto").style.display = "flex";
-    document.getElementById("inp_splash_cliente").focus();
-}
-
-async function confirmarCriacaoNovoProjeto() {
-    const payload = {
-        nome_cliente: document.getElementById("inp_splash_cliente").value,
-        nome_ambiente: document.getElementById("inp_splash_ambiente").value,
-        formato_planta: document.getElementById("sel_splash_formato").value,
-        larg_a: parseFloat(document.getElementById("inp_splash_larg_a").value),
-        pe_direito: parseFloat(document.getElementById("inp_splash_pe_dir").value)
-    };
-
-    const resp = await fetch("/api/projeto/novo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
-    const dados = await resp.json();
-    if (dados.sucesso) {
-        idsSelecionados.clear();
-        moduloAtivo = null;
-        fecharTelaInicial();
-        await carregarEstadoAmbiente();
-    }
-}
-
-async function salvarProjetoAtual() {
-    const estiloPiso = document.getElementById("sel_estilo_piso") ? document.getElementById("sel_estilo_piso").value : "GRADE_TECNICA";
-    const corParede = document.getElementById("sel_cor_parede") ? document.getElementById("sel_cor_parede").value : "#263238";
-
-    const resp = await fetch("/api/projeto/salvar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estilo_piso: estiloPiso, cor_parede: corParede })
-    });
-    const dados = await resp.json();
-    if (dados.sucesso) {
-        document.getElementById("txt_resposta_copiloto").innerText =
-            `💾 Projeto salvo em '${dados.arquivo}' às ${dados.data}!`;
-        await carregarEstadoAmbiente();
-    }
-}
-
-async function abrirDialogoProjetosSalvos() {
-    document.getElementById("splash_menu_principal").style.display = "none";
-    document.getElementById("dialogo_abrir_projeto").style.display = "flex";
-
-    const resp = await fetch("/api/projeto/listar");
-    const dados = await resp.json();
-    const container = document.getElementById("lista_projetos_salvos_ui");
-    container.innerHTML = "";
-
-    if (!dados.projetos || dados.projetos.length === 0) {
-        container.innerHTML = `<div style="padding:12px; color:#90A4AE; text-align:center;">Nenhum projeto salvo ainda.</div>`;
-        return;
-    }
-
-    dados.projetos.forEach(proj => {
-        const div = document.createElement("div");
-        div.className = "module-item";
-        div.innerHTML = `
-            <div style="flex:1;" onclick="carregarProjetoDoServidor('${proj.arquivo}')">
-                <strong style="color:#4CE660;">👤 ${proj.nome_cliente}</strong> — ${proj.nome_ambiente}<br>
-                <small style="color:#90A4AE;">🕒 ${proj.data_salvamento} | 📦 ${proj.qtd_modulos} mód. (${proj.total_pecas} pçs)</small>
-            </div>
-            <button class="btn btn-primary" onclick="carregarProjetoDoServidor('${proj.arquivo}')">Abrir</button>
-            <button class="btn btn-danger" onclick="excluirProjetoDoServidor('${proj.arquivo}', event)">🗑️</button>
-        `;
-        container.appendChild(div);
-    });
-}
-
-async function carregarProjetoDoServidor(nomeArquivo) {
-    const resp = await fetch("/api/projeto/carregar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ arquivo: nomeArquivo })
-    });
-    const dados = await resp.json();
-    if (dados.sucesso) {
-        idsSelecionados.clear();
-        moduloAtivo = null;
-        fecharTelaInicial();
-        await carregarEstadoAmbiente();
-    }
-}
-
-async function excluirProjetoDoServidor(nomeArquivo, event) {
-    event.stopPropagation();
-    await fetch("/api/projeto/excluir", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ arquivo: nomeArquivo })
-    });
-    await abrirDialogoProjetosSalvos();
-}
-
-function exportarProjetoJSONArquivo() {
-    window.open("/api/ambiente", "_blank");
-}
-
-// MÁQUINA DO TEMPO: UNDO (CTRL+Z) E REDO (CTRL+Y)
-async function acionarUndo() {
-    const resp = await fetch("/api/historico/undo", { method: "POST" });
-    const dados = await resp.json();
-    if (dados.sucesso) {
-        moduloAtivo = null;
-        idsSelecionados.clear();
-        await carregarEstadoAmbiente();
-    }
-}
-
-async function acionarRedo() {
-    const resp = await fetch("/api/historico/redo", { method: "POST" });
-    const dados = await resp.json();
-    if (dados.sucesso) {
-        moduloAtivo = null;
-        idsSelecionados.clear();
-        await carregarEstadoAmbiente();
-    }
-}
-
-// Intercepta carregarEstadoAmbiente para atualizar o nome do cliente no topo e o estado dos botões Undo/Redo
-const _carregarEstadoOriginal = carregarEstadoAmbiente;
-carregarEstadoAmbiente = async function () {
-    const resp = await fetch("/api/ambiente");
-    const dados = await resp.json();
-
-    if (dados.metadados) {
-        const lblCli = document.getElementById("lbl_cliente_ativo");
-        if (lblCli) {
-            lblCli.innerText = `[👤 ${dados.metadados.nome_cliente} • ${dados.metadados.nome_ambiente}]`;
-        }
-    }
-    if (dados.historico) {
-        const bUndo = document.getElementById("btn_undo");
-        const bRedo = document.getElementById("btn_redo");
-        if (bUndo) bUndo.disabled = !dados.historico.pode_desfazer;
-        if (bRedo) bRedo.disabled = !dados.historico.pode_refazer;
-    }
-
-    await _carregarEstadoOriginal();
-    aplicarAcabamentoAmbiente3D();
-};
-
-function aplicarAcabamentoAmbiente3D() {
-    const selPiso = document.getElementById("sel_estilo_piso");
-    const selPar = document.getElementById("sel_cor_parede");
-    const estiloPiso = selPiso ? selPiso.value : "GRADE_TECNICA";
-    const corParedeHex = selPar ? selPar.value : "#263238";
-
-    // Atualiza a pintura das paredes 3D
-    grupoParedes3D.children.forEach(meshPar => {
-        if (meshPar.isMesh && meshPar.material) {
-            meshPar.material.color.set(corParedeHex);
-        }
-    });
-
-    // Gerencia o piso arquitetônico 3D
-    if (malhaPisoArquitetonico) {
-        scene.remove(malhaPisoArquitetonico);
-        malhaPisoArquitetonico = null;
-    }
-
-    if (estiloPiso !== "GRADE_TECNICA") {
-        let corPiso = 0xE5E5E5;
-        let ehMadeira = false;
-        if (estiloPiso === "MADEIRA_VINILICO") { corPiso = 0x9C6B43; ehMadeira = true; }
-        else if (estiloPiso === "CIMENTO_QUEIMADO") { corPiso = 0x616161; }
-
-        const texPiso = gerarCanvasTexturaProcedural(corPiso, ehMadeira, false, false);
-        texPiso.repeat.set(8, 8);
-
-        const geomPiso = new THREE.PlaneGeometry(8000, 8000);
-        const matPiso = new THREE.MeshStandardMaterial({
-            map: texPiso,
-            roughness: estiloPiso === "PORCELANATO_CLARO" ? 0.18 : 0.65
-        });
-        malhaPisoArquitetonico = new THREE.Mesh(geomPiso, matPiso);
-        malhaPisoArquitetonico.rotation.x = -Math.PI / 2;
-        malhaPisoArquitetonico.position.set(2000, -1, 1500);
-        scene.add(malhaPisoArquitetonico);
-    }
-}
-
-// Registra os atalhos globais Ctrl+Z, Ctrl+Y e Ctrl+S
-window.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-        e.preventDefault();
-        acionarUndo();
-    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-        e.preventDefault();
-        acionarRedo();
-    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        salvarProjetoAtual();
-    }
-});
-
-// =============================================================================
 // 6. TAMPONAMENTO INTELIGENTE (INDIVIDUAL / LOTE) & REDIMENSIONAMENTO DE PEÇA
 // =============================================================================
 let pecaTamponamentoEmEdicao = null;
@@ -1000,9 +713,12 @@ window.addEventListener("load", () => {
                     document.getElementById("chk_fita_dir").checked = !!fb.direita;
                 }
 
-                // Se a peça clicada for de Tamponamento ou Fechamento, abre o menu flutuante de Redimensionamento!
+                // Se a peça clicada for de Tamponamento ou Fechamento, abre o menu;
+                // caso contrário (clicou numa porta, lateral ou gaveta), fecha o menu na hora!
                 if (pecaClicada.categoria_industrial === "painel_tamponamento" && idMod) {
                     abrirModalRedimensionarTamp(pecaClicada, idMod);
+                } else {
+                    fecharModalRedimensionarTamp();
                 }
             }
 
@@ -1032,7 +748,7 @@ window.addEventListener("load", () => {
                     }
                 }
             }
-        }
+        } else { fecharModalRedimensionarTamp(); }
     });
 
     // C) MOVIMENTO DO MOUSE: PREVIEW ORTOGONAL DE PAREDE 2D + ARRASTE DE MÓDULO 3D COM SNAP E COLISÃO
@@ -1281,3 +997,506 @@ function inicializarMenusArrastaveisERedimensionaveis() {
 window.addEventListener("load", () => {
     inicializarMenusArrastaveisERedimensionaveis();
 });
+
+// =============================================================================
+// 9. RESUMO INDUSTRIAL (BOM), TELA INICIAL, SALVAR/ABRIR E CTRL+Z / CTRL+Y
+// =============================================================================
+let malhaPisoArquitetonico = null;
+
+async function abrirModalResumoIndustrial() {
+    const resp = await fetch("/api/ambiente/resumo_industrial");
+    const dados = await resp.json();
+    if (!dados.sucesso) return;
+
+    const container = document.getElementById("conteudo_resumo_bom");
+    let htmlChapas = `<div class="card"><div class="card-title" style="color:#4CE660;">1. Totalizador de Chapas MDF (Padrão 2750x1850mm + 15% Margem)</div>`;
+    dados.chapas.forEach(c => {
+        htmlChapas += `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #263238; padding:4px 0;">
+                <span><b>${c.nome_material}</b> (${c.espessura_mm}mm) — ${c.qtd_pecas} pçs</span>
+                <span style="color:#4CE660; font-weight:bold;">${c.area_liquida_m2} m² ➔ ~${c.chapas_inteiras_estimadas} Chapa(s)</span>
+            </div>`;
+    });
+    htmlChapas += `</div>`;
+
+    let htmlFitas = `<div class="card"><div class="card-title" style="color:#FF9800;">2. Totalizador de Fitas de Borda (Metros Lineares c/ Destopo)</div>`;
+    if (dados.fitas.length === 0) {
+        htmlFitas += `<div>Nenhuma fita de borda aplicada.</div>`;
+    } else {
+        dados.fitas.forEach(f => {
+            htmlFitas += `
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #263238; padding:4px 0;">
+                    <span>Fita <b>${f.nome_cor}</b> (Largura ${f.largura_fita_mm}mm)</span>
+                    <span style="color:#FFB74D; font-weight:bold;">${f.metros_lineares} metros</span>
+                </div>`;
+        });
+    }
+    htmlFitas += `</div>`;
+
+    const fer = dados.ferragens;
+    let htmlCorredicas = "";
+    Object.entries(fer.corredicas_por_tamanho || {}).forEach(([nome, qtd]) => {
+        htmlCorredicas += `<div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• ${nome}</span><b style="color:#00E5FF;">${qtd} par(es)</b></div>`;
+    });
+
+    const htmlFerragens = `
+        <div class="card">
+            <div class="card-title" style="color:#00E5FF;">3. Checklist de Ferragens & Fixadores (Almoxarifado)</div>
+            <div class="row-2" style="gap:12px;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Dobradiças Caneco Ø35mm:</span><b>${fer.dobradicas_35mm} un.</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Parafusos Estruturais 4.5mm:</span><b>${fer.parafusos_estruturais_4_5mm} un.</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Tambores Minifix 15mm:</span><b>${fer.tambores_minifix_15mm} un.</b></div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Cavilhas de Madeira 8mm:</span><b>${fer.cavilhas_madeira_8mm} un.</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Pistões a Gás (Basculantes):</span><b>${fer.pistoes_gas_basculante} un.</b></div>
+                    <div style="display:flex; justify-content:space-between; padding:2px 0;"><span>• Suportes Prateleira (Pitão):</span><b>${fer.suportes_prateleira_pitao} un.</b></div>
+                </div>
+            </div>
+            ${htmlCorredicas ? `<div style="margin-top:6px; border-top:1px solid #263238; padding-top:4px;">${htmlCorredicas}</div>` : ""}
+        </div>`;
+
+    container.innerHTML = htmlChapas + htmlFitas + htmlFerragens;
+    document.getElementById("modal_resumo_bom").style.display = "block";
+}
+
+function fecharModalResumoIndustrial() {
+    document.getElementById("modal_resumo_bom").style.display = "none";
+}
+
+function abrirTelaInicial() {
+    voltarMenuSplash();
+    document.getElementById("tela_inicial_splash").classList.remove("oculto");
+}
+
+function fecharTelaInicial() {
+    document.getElementById("tela_inicial_splash").classList.add("oculto");
+}
+
+function voltarMenuSplash() {
+    document.getElementById("splash_menu_principal").style.display = "flex";
+    document.getElementById("dialogo_novo_projeto").style.display = "none";
+    document.getElementById("dialogo_abrir_projeto").style.display = "none";
+}
+
+function abrirDialogoNovoProjeto() {
+    document.getElementById("splash_menu_principal").style.display = "none";
+    document.getElementById("dialogo_novo_projeto").style.display = "flex";
+    document.getElementById("inp_splash_cliente").focus();
+}
+
+async function confirmarCriacaoNovoProjeto() {
+    const payload = {
+        nome_cliente: document.getElementById("inp_splash_cliente").value,
+        nome_ambiente: document.getElementById("inp_splash_ambiente").value,
+        formato_planta: document.getElementById("sel_splash_formato").value,
+        larg_a: parseFloat(document.getElementById("inp_splash_larg_a").value),
+        pe_direito: parseFloat(document.getElementById("inp_splash_pe_dir").value)
+    };
+
+    const resp = await fetch("/api/projeto/novo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        idsSelecionados.clear();
+        moduloAtivo = null;
+        fecharModalRedimensionarTamp();
+        fecharTelaInicial();
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function salvarProjetoAtual() {
+    const estiloPiso = document.getElementById("sel_estilo_piso") ? document.getElementById("sel_estilo_piso").value : "GRADE_TECNICA";
+    const corParede = document.getElementById("sel_cor_parede") ? document.getElementById("sel_cor_parede").value : "#263238";
+
+    const resp = await fetch("/api/projeto/salvar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estilo_piso: estiloPiso, cor_parede: corParede })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        document.getElementById("txt_resposta_copiloto").innerText =
+            `💾 Projeto salvo em '${dados.arquivo}' às ${dados.data}!`;
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function abrirDialogoProjetosSalvos() {
+    document.getElementById("splash_menu_principal").style.display = "none";
+    document.getElementById("dialogo_abrir_projeto").style.display = "flex";
+
+    const resp = await fetch("/api/projeto/listar");
+    const dados = await resp.json();
+    const container = document.getElementById("lista_projetos_salvos_ui");
+    container.innerHTML = "";
+
+    if (!dados.projetos || dados.projetos.length === 0) {
+        container.innerHTML = `<div style="padding:12px; color:#90A4AE; text-align:center;">Nenhum projeto salvo ainda.</div>`;
+        return;
+    }
+
+    dados.projetos.forEach(proj => {
+        const div = document.createElement("div");
+        div.className = "module-item";
+        div.innerHTML = `
+            <div style="flex:1;" onclick="carregarProjetoDoServidor('${proj.arquivo}')">
+                <strong style="color:#4CE660;">👤 ${proj.nome_cliente}</strong> — ${proj.nome_ambiente}<br>
+                <small style="color:#90A4AE;">🕒 ${proj.data_salvamento} | 📦 ${proj.qtd_modulos} mód. (${proj.total_pecas} pçs)</small>
+            </div>
+            <button class="btn btn-primary" onclick="carregarProjetoDoServidor('${proj.arquivo}')">Abrir</button>
+            <button class="btn btn-danger" onclick="excluirProjetoDoServidor('${proj.arquivo}', event)">🗑️</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function carregarProjetoDoServidor(nomeArquivo) {
+    const resp = await fetch("/api/projeto/carregar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ arquivo: nomeArquivo })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        idsSelecionados.clear();
+        moduloAtivo = null;
+        fecharModalRedimensionarTamp();
+        fecharTelaInicial();
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function excluirProjetoDoServidor(nomeArquivo, event) {
+    event.stopPropagation();
+    await fetch("/api/projeto/excluir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ arquivo: nomeArquivo })
+    });
+    await abrirDialogoProjetosSalvos();
+}
+
+function exportarProjetoJSONArquivo() {
+    window.open("/api/ambiente", "_blank");
+}
+
+async function acionarUndo() {
+    const resp = await fetch("/api/historico/undo", { method: "POST" });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = null;
+        idsSelecionados.clear();
+        fecharModalRedimensionarTamp();
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function acionarRedo() {
+    const resp = await fetch("/api/historico/redo", { method: "POST" });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = null;
+        idsSelecionados.clear();
+        fecharModalRedimensionarTamp();
+        await carregarEstadoAmbiente();
+    }
+}
+
+function aplicarAcabamentoAmbiente3D() {
+    const selPiso = document.getElementById("sel_estilo_piso");
+    const selPar = document.getElementById("sel_cor_parede");
+    const estiloPiso = selPiso ? selPiso.value : "GRADE_TECNICA";
+    const corParedeHex = selPar ? selPar.value : "#263238";
+
+    grupoParedes3D.children.forEach(meshPar => {
+        if (meshPar.isMesh && meshPar.material) {
+            meshPar.material.color.set(corParedeHex);
+        }
+    });
+
+    if (malhaPisoArquitetonico) {
+        scene.remove(malhaPisoArquitetonico);
+        malhaPisoArquitetonico = null;
+    }
+
+    if (estiloPiso !== "GRADE_TECNICA") {
+        let corPiso = 0xE5E5E5;
+        let ehMadeira = false;
+        if (estiloPiso === "MADEIRA_VINILICO") { corPiso = 0x9C6B43; ehMadeira = true; }
+        else if (estiloPiso === "CIMENTO_QUEIMADO") { corPiso = 0x616161; }
+
+        const texPiso = gerarCanvasTexturaProcedural(corPiso, ehMadeira, false, false);
+        texPiso.repeat.set(8, 8);
+
+        const geomPiso = new THREE.PlaneGeometry(8000, 8000);
+        const matPiso = new THREE.MeshStandardMaterial({
+            map: texPiso,
+            roughness: estiloPiso === "PORCELANATO_CLARO" ? 0.18 : 0.65
+        });
+        malhaPisoArquitetonico = new THREE.Mesh(geomPiso, matPiso);
+        malhaPisoArquitetonico.rotation.x = -Math.PI / 2;
+        malhaPisoArquitetonico.position.set(2000, -1, 1500);
+        scene.add(malhaPisoArquitetonico);
+    }
+}
+
+const _carregarEstadoBase = carregarEstadoAmbiente;
+carregarEstadoAmbiente = async function () {
+    const resp = await fetch("/api/ambiente");
+    const dados = await resp.json();
+
+    if (dados.metadados) {
+        const lblCli = document.getElementById("lbl_cliente_ativo");
+        if (lblCli) {
+            lblCli.innerText = `[👤 ${dados.metadados.nome_cliente} • ${dados.metadados.nome_ambiente}]`;
+        }
+    }
+    if (dados.historico) {
+        const bUndo = document.getElementById("btn_undo");
+        const bRedo = document.getElementById("btn_redo");
+        if (bUndo) bUndo.disabled = !dados.historico.pode_desfazer;
+        if (bRedo) bRedo.disabled = !dados.historico.pode_refazer;
+    }
+
+    await _carregarEstadoBase();
+    aplicarAcabamentoAmbiente3D();
+};
+
+window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        acionarUndo();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        acionarRedo();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        salvarProjetoAtual();
+    }
+});
+
+// =============================================================================
+// 10. CONSTRUTOR DE BANCADAS DE PEDRA (MARMORARIA 3D) & RODAPÉS DEDICADOS
+// =============================================================================
+Object.assign(MAPA_HEX_MATERIAIS, {
+    "pedra_preto_sao_gabriel": 0x1A1D20,
+    "pedra_quartzo_branco": 0xF5F7F8,
+    "pedra_cinza_absoluto": 0x54595F,
+    "pedra_travertino": 0xD8C8B0,
+    "inox_escovado": 0xB0BEC5
+});
+
+let modoPedraFantasma = false;
+
+function alternarPedraFantasma() {
+    modoPedraFantasma = !modoPedraFantasma;
+    const btn = document.getElementById("btn_fantasma_pedra");
+    if (btn) btn.classList.toggle("ativo", modoPedraFantasma);
+    renderizarCenaCompleta();
+}
+
+function obterLimitesModulosSelecionados() {
+    const ids = obterListaIdsAlvo();
+    const validos = modulosCache.filter(
+        m => ids.includes(m.id_modulo) && !["MODULO_BANCADA_PEDRA", "MODULO_RODAPE", "MODULO_AEREO"].includes(m.familia)
+    );
+    if (validos.length === 0) return null;
+
+    let minX = Infinity, maxX = -Infinity, maxZTopo = 0, maxProf = 550, idParede = null;
+    validos.forEach(m => {
+        const pos = m.posicionamento_ambiente || {};
+        const xIni = floatOrZero(pos.distancia_x_parede);
+        const xFim = xIni + m.dimensoes_ocupadas.largura_x;
+        const zTopo = floatOrZero(pos.elevacao_z) + m.dimensoes_ocupadas.altura_y;
+        if (xIni < minX) minX = xIni;
+        if (xFim > maxX) maxX = xFim;
+        if (zTopo > maxZTopo) maxZTopo = zTopo;
+        if (m.dimensoes_ocupadas.profundidade_z > maxProf) maxProf = m.dimensoes_ocupadas.profundidade_z;
+        if (!idParede && pos.id_parede) idParede = pos.id_parede;
+    });
+
+    return {
+        ids: validos.map(v => v.id_modulo),
+        xInicio: minX,
+        larguraTotal: Math.round(maxX - minX),
+        zTopoModulos: Math.round(maxZTopo),
+        profundidadeBase: maxProf,
+        idParede: idParede
+    };
+}
+
+function floatOrZero(v) {
+    const n = parseFloat(v);
+    return isNaN(n) ? 0.0 : n;
+}
+
+async function gerarBancadaPedra(cobrirSelecionados = false) {
+    let larg = parseFloat(document.getElementById("inp_banc_larg").value) || 2000;
+    let prof = parseFloat(document.getElementById("inp_banc_prof").value) || 600;
+    let cotaZ = parseFloat(document.getElementById("inp_banc_z").value) || 860;
+    const altSaia = parseFloat(document.getElementById("inp_banc_saia").value) || 40;
+    let xPosParede = 0.0;
+    let idParedeAlvo = document.getElementById("sel_parede_modulo").value || null;
+
+    if (cobrirSelecionados) {
+        const lim = obterLimitesModulosSelecionados();
+        if (!lim) {
+            alert("Selecione pelo menos 1 balcão inferior para cobrir automaticamente com a bancada!");
+            return;
+        }
+        larg = lim.larguraTotal;
+        prof = lim.profundidadeBase + 35.0; // Pingadeira de 35mm além do balcão
+        // A saia da pedra desce abraçando o topo do módulo ou apoia o tampo exatamente em lim.zTopoModulos
+        cotaZ = lim.zTopoModulos - altSaia + 20.0;
+        xPosParede = lim.xInicio;
+        if (lim.idParede) idParedeAlvo = lim.idParede;
+
+        document.getElementById("inp_banc_larg").value = larg;
+        document.getElementById("inp_banc_prof").value = prof;
+        document.getElementById("inp_banc_z").value = cotaZ;
+    }
+
+    let maiorNum = 0;
+    modulosCache.forEach(m => {
+        const n = parseInt(m.id_modulo);
+        if (!isNaN(n) && n > maiorNum) maiorNum = n;
+    });
+    const novoId = String(maiorNum + 1).padStart(3, "0");
+
+    const opcoesBancada = {
+        espessura_pedra_mm: 20.0,
+        altura_saia_frontal_mm: altSaia,
+        altura_frontao_traseiro_mm: parseFloat(document.getElementById("inp_banc_frontao").value) || 0,
+        cascata_esquerda: document.getElementById("chk_banc_casc_esq").checked,
+        cascata_direita: document.getElementById("chk_banc_casc_dir").checked,
+        altura_instalacao_z: cotaZ,
+        material_pedra: document.getElementById("sel_mat_pedra").value,
+        possui_cuba: document.getElementById("chk_banc_cuba").checked,
+        pos_x_cuba_mm: parseFloat(document.getElementById("inp_cuba_x").value) || (larg * 0.35),
+        possui_cooktop: document.getElementById("chk_banc_cooktop").checked,
+        pos_x_cooktop_mm: parseFloat(document.getElementById("inp_cooktop_x").value) || (larg * 0.7)
+    };
+
+    const resp = await fetch("/api/fabricar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_modulo: novoId,
+            familia: "MODULO_BANCADA_PEDRA",
+            largura_x: larg,
+            altura_y: altSaia,
+            profundidade_z: prof,
+            opcoes_especiais: opcoesBancada,
+            id_parede: idParedeAlvo,
+            distancia_x_parede: xPosParede,
+            elevacao_z: cotaZ,
+            usar_autosnap: false
+        })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = dados.modulo;
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function gerarRodapeDedicado(sobSelecionados = false) {
+    let larg = parseFloat(document.getElementById("inp_rod_larg").value) || 2000;
+    const altRodape = parseFloat(document.getElementById("inp_rod_alt").value) || 150;
+    const recuoFront = parseFloat(document.getElementById("inp_rod_recuo").value) || 50;
+    const modeloRod = document.getElementById("sel_modelo_rodape").value;
+    const espMdf = parseFloat(document.getElementById("sel_esp_rodape").value) || 15.0;
+
+    let profBase = 550.0;
+    let xPosParede = 0.0;
+    let idParedeAlvo = document.getElementById("sel_parede_modulo").value || null;
+
+    if (sobSelecionados) {
+        const lim = obterLimitesModulosSelecionados();
+        if (!lim) {
+            alert("Selecione os balcões inferiores para criar o rodapé embaixo deles!");
+            return;
+        }
+        larg = lim.larguraTotal;
+        profBase = lim.profundidadeBase;
+        xPosParede = lim.xInicio;
+        if (lim.idParede) idParedeAlvo = lim.idParede;
+        document.getElementById("inp_rod_larg").value = larg;
+
+        // Sobe automaticamente os balcões selecionados para a altura exata do rodapé!
+        await fetch("/api/modulos/transformar_lote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids_modulos: lim.ids, z_absoluto: altRodape })
+        });
+    }
+
+    let maiorNum = 0;
+    modulosCache.forEach(m => {
+        const n = parseInt(m.id_modulo);
+        if (!isNaN(n) && n > maiorNum) maiorNum = n;
+    });
+    const novoId = String(maiorNum + 1).padStart(3, "0");
+
+    const opcoesRodape = {
+        modelo_rodape: modeloRod,
+        espessura_mdf_mm: espMdf,
+        recuo_frontal_mm: recuoFront,
+        recuo_traseiro_mm: 20.0,
+        material_rodape: modeloRod === "PEDRA_GRANITO"
+            ? document.getElementById("sel_mat_pedra").value
+            : (document.getElementById("sel_mat_caixa").value || "generico_branco_tx")
+    };
+
+    const resp = await fetch("/api/fabricar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_modulo: novoId,
+            familia: "MODULO_RODAPE",
+            largura_x: larg,
+            altura_y: altRodape,
+            profundidade_z: profBase,
+            opcoes_especiais: opcoesRodape,
+            id_parede: idParedeAlvo,
+            distancia_x_parede: xPosParede,
+            elevacao_z: 0.0,
+            usar_autosnap: false
+        })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = dados.modulo;
+        await carregarEstadoAmbiente();
+    }
+}
+
+// Aplica brilho polido de pedra/inox e transparência "Fantasma" nas bancadas quando ativa
+const _renderCenaAntesBancada = renderizarCenaCompleta;
+renderizarCenaCompleta = function () {
+    _renderCenaAntesBancada();
+
+    grupoAmbienteModulos.traverse(obj => {
+        if (obj.isMesh && obj.name === "corpo_mdf" && obj.parent && obj.parent.userData.peca) {
+            const p = obj.parent.userData.peca;
+            const cat = (p.categoria_industrial || "").toLowerCase();
+            if (cat.startsWith("marmoraria_") || cat.startsWith("acessorio_")) {
+                const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+                mats.forEach(m => {
+                    if (!m) return;
+                    m.roughness = cat.includes("cuba") ? 0.22 : 0.15;
+                    m.metalness = cat.includes("cuba") ? 0.65 : 0.08;
+                    m.transparent = modoPedraFantasma || modoRaioX;
+                    m.opacity = (modoPedraFantasma || modoRaioX) ? 0.38 : 1.0;
+                    m.needsUpdate = true;
+                });
+            }
+        }
+    });
+};

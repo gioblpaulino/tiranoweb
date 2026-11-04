@@ -19,6 +19,7 @@ from tiranocad_core.construtores.paineis import ConstrutorPaineis
 from tiranocad_core.construtores.avulsos import ConstrutorAvulsos
 from tiranocad_core.orquestradores.orquestrador_usinagens import OrquestradorUsinagens
 from tiranocad_core.construtores.tamponamentos import ConstrutorTamponamento
+from tiranocad_core.construtores.bancadas_rodapes import ConstrutorBancadasRodapes
 
 
 class OrquestradorModulo:
@@ -119,6 +120,45 @@ class OrquestradorModulo:
                 f"🔩 Construtor Avulso: '{subtipo}' fabricado com {len(pecas_avulsas)} peça(s)."
             )
 
+        # =====================================================================
+        # ROTA ESPECIAL 3: CONSTRUTOR DE BANCADAS DE PEDRA (MARMORARIA 3D)
+        # =====================================================================
+        if familia == "MODULO_BANCADA_PEDRA":
+            c_br = ConstrutorBancadasRodapes(self.gerenciador_perfis)
+            pecas_bancada = c_br.construir_bancada_pedra(
+                id_modulo=id_modulo,
+                largura_x=largura_x,
+                profundidade_z=profundidade_z,
+                opcoes=opcoes_esp
+            )
+            return self._empacotar_payload(
+                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
+                opcoes_esp.get("material_pedra", "pedra_preto_sao_gabriel"),
+                opcoes_esp.get("material_pedra", "pedra_preto_sao_gabriel"),
+                [], None, [], pecas_bancada,
+                f"🪨 Marmoraria 3D: Bancada ({largura_x:.0f}x{profundidade_z:.0f}mm) gerada com {len(pecas_bancada)} elemento(s).",
+                zonas_materiais, overrides_pecas, tamponamentos_agregados
+            )
+
+        # =====================================================================
+        # ROTA ESPECIAL 4: CONSTRUTOR DE RODAPÉS (MDF C/ CALÇOS OU PEDRA)
+        # =====================================================================
+        if familia == "MODULO_RODAPE":
+            c_br = ConstrutorBancadasRodapes(self.gerenciador_perfis)
+            pecas_rodape = c_br.construir_rodape(
+                id_modulo=id_modulo,
+                largura_x=largura_x,
+                altura_z=altura_y,
+                profundidade_modulo_base=profundidade_z,
+                opcoes=opcoes_esp
+            )
+            return self._empacotar_payload(
+                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
+                mat_caixa, mat_frentes, [], None, [], pecas_rodape,
+                f"🧱 Construtor de Rodapé: Base ({largura_x:.0f}x{altura_y:.0f}mm) gerada com {len(pecas_rodape)} peça(s) de corte.",
+                zonas_materiais, overrides_pecas, tamponamentos_agregados
+            )
+            
         c_caixaria = ConstrutorCaixaria(self.gerenciador_perfis)
         c_internos = ConstrutorInternos(self.gerenciador_perfis)
         c_gavetas = ConstrutorGavetas(self.gerenciador_perfis)

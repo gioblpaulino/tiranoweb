@@ -1,11 +1,15 @@
 # =============================================================================
 # ARQUIVO: servidor_webcad.py
 # RESPONSABILIDADE: Servidor Flask unificado do Estúdio TiranoCAD Web 3D/2D,
-# com suporte a Seleção Múltipla, Transformação Direcional em Lote (Mover/Girar),
-# Exclusão Seletiva de Módulos/Paredes e Ponte Direta para o TiranoCut.
+# com suporte a Seleção Múltipla, Transformação Direcional, Tamponamento
+# Inteligente, Resumo Industrial (BOM), Histórico (Undo/Redo) e TiranoCut.
 # =============================================================================
 
-import os, copy, json, re
+import os
+import copy
+import json
+import math
+import re
 from datetime import datetime
 from flask import Flask, jsonify, render_template, request
 from tiranocad_core.orquestradores.orquestrador_modulo import OrquestradorModulo
@@ -19,10 +23,38 @@ PASTA_TEMPLATES = os.path.join(BASE_DIR, "templates")
 PASTA_STATIC = os.path.join(BASE_DIR, "static")
 PASTA_PERFIS = os.path.join(BASE_DIR, "tiranocad_core", "catalogos", "perfis")
 PASTA_PROJETOS = os.path.join(BASE_DIR, "projetos_salvos")
+
 os.makedirs(PASTA_PROJETOS, exist_ok=True)
 os.makedirs(os.path.join(PASTA_STATIC, "img"), exist_ok=True)
+os.makedirs(os.path.join(PASTA_STATIC, "textures", "mdf"), exist_ok=True)
 
-# Metadados do Projeto Ativo (Enviados também ao TiranoCut!)
+app = Flask(
+    __name__,
+    template_folder=PASTA_TEMPLATES,
+    static_folder=PASTA_STATIC
+)
+
+COFRE_MODULOS_ATIVOS = {}
+
+orquestrador = OrquestradorModulo(pasta_perfis=PASTA_PERFIS)
+copiloto = OrquestradorCopiloto()
+orq_ambiente = OrquestradorAmbiente()
+
+# Catálogo Multi-Marcas de Chapas MDF
+CATALOGO_MATERIAIS_MDF = [
+    {"id": "generico_branco_tx", "nome": "Branco TX (Padrão)", "marca": "Genérico", "hex": "#ECEFF1", "veio": False},
+    {"id": "duratex_carvalho_avela", "nome": "Carvalho Avelã", "marca": "Duratex", "hex": "#B68656", "veio": True},
+    {"id": "duratex_carvalho_hanover", "nome": "Carvalho Hanover", "marca": "Duratex", "hex": "#C89D66", "veio": True},
+    {"id": "duratex_freijo_puro", "nome": "Freijó Puro", "marca": "Duratex", "hex": "#9C6236", "veio": True},
+    {"id": "duratex_grafite_trama", "nome": "Grafite Trama", "marca": "Duratex", "hex": "#373B3E", "veio": False},
+    {"id": "duratex_gianduia_trama", "nome": "Gianduia Trama", "marca": "Duratex", "hex": "#8D7B68", "veio": False},
+    {"id": "arauco_louro_freijo", "nome": "Louro Freijó", "marca": "Arauco", "hex": "#A86B3E", "veio": True},
+    {"id": "arauco_cinza_cristal", "nome": "Cinza Cristal", "marca": "Arauco", "hex": "#9E9E9E", "veio": False},
+    {"id": "guararapes_azul_petroleo", "nome": "Azul Petróleo", "marca": "Guararapes", "hex": "#1B3B48", "veio": False},
+    {"id": "generico_preto_tx", "nome": "Preto TX", "marca": "Genérico", "hex": "#1C1C1C", "veio": False},
+    {"id": "mdf_cru", "nome": "MDF Cru (Sem Revestimento)", "marca": "Industrial", "hex": "#D2B48C", "veio": False}
+]
+
 METADADOS_PROJETO = {
     "nome_cliente": "Não Informado",
     "nome_ambiente": "COZINHA_TIRANOGIO",
@@ -31,7 +63,6 @@ METADADOS_PROJETO = {
     "cor_parede": "#263238"
 }
 
-# Pilhas da Máquina do Tempo (Ctrl+Z / Ctrl+Y)
 HISTORICO_UNDO = []
 HISTORICO_REDO = []
 MAX_HISTORICO = 40
@@ -66,7 +97,6 @@ def restaurar_estado_snapshot(snapshot: dict) -> None:
             espessura=float(p_dict.get("espessura", 150.0)),
             nome=p_dict.get("nome")
         )
-        # Preserva o ID original da parede para manter o vínculo com os módulos
         orq_ambiente.construtor_paredes.paredes[-1].id_parede = p_dict["id_parede"]
 
     COFRE_MODULOS_ATIVOS.clear()
@@ -79,28 +109,6 @@ def registrar_acao_historico() -> None:
     if len(HISTORICO_UNDO) > MAX_HISTORICO:
         HISTORICO_UNDO.pop(0)
     HISTORICO_REDO.clear()
-
-CATALOGO_MATERIAIS_MDF = [
-    {"id": "generico_branco_tx", "nome": "Branco TX (Padrão)", "marca": "Genérico", "hex": "#ECEFF1", "veio": False},
-    {"id": "duratex_carvalho_avela", "nome": "Carvalho Avelã", "marca": "Duratex", "hex": "#B68656", "veio": True},
-    {"id": "duratex_carvalho_hanover", "nome": "Carvalho Hanover", "marca": "Duratex", "hex": "#C89D66", "veio": True},
-    {"id": "duratex_grafite_trama", "nome": "Grafite Trama", "marca": "Duratex", "hex": "#373B3E", "veio": False},
-    {"id": "duratex_gianduia_trama", "nome": "Gianduia Trama", "marca": "Duratex", "hex": "#8D7B68", "veio": False},
-    {"id": "arauco_louro_freijo", "nome": "Louro Freijó", "marca": "Arauco", "hex": "#A86B3E", "veio": True},
-    {"id": "arauco_cinza_cristal", "nome": "Cinza Cristal", "marca": "Arauco", "hex": "#9E9E9E", "veio": False},
-    {"id": "duratex_freijo_puro", "nome": "Freijó Puro", "marca": "Duratex", "hex": "#9C6236", "veio": True},
-    {"id": "guararapes_azul_petroleo", "nome": "Azul Petróleo", "marca": "Guararapes", "hex": "#1B3B48", "veio": False},
-    {"id": "generico_preto_tx", "nome": "Preto TX", "marca": "Genérico", "hex": "#1C1C1C", "veio": False},
-    {"id": "mdf_cru", "nome": "MDF Cru (Sem Revestimento)", "marca": "Industrial", "hex": "#D2B48C", "veio": False}
-]
-
-app = Flask(__name__, template_folder=PASTA_TEMPLATES, static_folder=PASTA_STATIC)
-
-COFRE_MODULOS_ATIVOS = {}
-
-orquestrador = OrquestradorModulo(pasta_perfis=PASTA_PERFIS)
-copiloto = OrquestradorCopiloto()
-orq_ambiente = OrquestradorAmbiente()
 
 
 @app.after_request
@@ -117,8 +125,28 @@ def pagina_estudio_webcad():
 
 
 # =============================================================================
-# 1. ROTAS DO CONSTRUTOR DE PAREDES E PLANTA BAIXA 2D
+# 1. ROTAS DO CONSTRUTOR DE PAREDES, CATÁLOGO E RESUMO INDUSTRIAL (BOM)
 # =============================================================================
+@app.route("/api/catalogo_materiais", methods=["GET"])
+def obter_catalogo_materiais():
+    """Retorna o catálogo de chapas MDF e verifica texturas em static/textures/mdf/."""
+    pasta_tex = os.path.join(PASTA_STATIC, "textures", "mdf")
+    os.makedirs(pasta_tex, exist_ok=True)
+
+    catalogo_enriquecido = []
+    for item in CATALOGO_MATERIAIS_MDF:
+        copia = dict(item)
+        copia["textura_url"] = None
+        for ext in (".jpg", ".jpeg", ".png", ".webp"):
+            nome_arq = f"{item['id']}{ext}"
+            if os.path.exists(os.path.join(pasta_tex, nome_arq)):
+                copia["textura_url"] = f"/static/textures/mdf/{nome_arq}"
+                break
+        catalogo_enriquecido.append(copia)
+
+    return jsonify({"materiais": catalogo_enriquecido}), 200
+
+
 @app.route("/api/ambiente", methods=["GET"])
 def obter_estado_ambiente():
     modulos_ordenados = [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
@@ -133,11 +161,138 @@ def obter_estado_ambiente():
     }), 200
 
 
+@app.route("/api/ambiente/resumo_industrial", methods=["GET"])
+def obter_resumo_industrial_bom():
+    """
+    Calcula o Totalizador Industrial (BOM) de todo o ambiente ativo:
+    1. Consumo de Chapas MDF por cor e espessura (m² e chapas inteiras 2750x1850mm).
+    2. Consumo de Fitas de Borda por cor e largura (metros lineares + perda de destopo).
+    3. Quantitativo exato de Ferragens (Dobradiças, Corrediças por medida, Fixadores).
+    """
+    AREA_CHAPA_PADRAO_M2 = (2750.0 * 1850.0) / 1_000_000.0
+    FATOR_PERDA_CORTE = 1.15
+    PERDA_DESTOPO_POR_BORDA_MM = 30.0
+
+    mapa_nomes_mat = {m["id"]: f"[{m['marca']}] {m['nome']}" for m in CATALOGO_MATERIAIS_MDF}
+
+    chapas_agrupadas = {}
+    fitas_agrupadas = {}
+    ferragens = {
+        "dobradicas_35mm": 0,
+        "parafusos_estruturais_4_5mm": 0,
+        "tambores_minifix_15mm": 0,
+        "cavilhas_madeira_8mm": 0,
+        "suportes_prateleira_pitao": 0,
+        "pistoes_gas_basculante": 0,
+        "corredicas_por_tamanho": {}
+    }
+
+    for mod in COFRE_MODULOS_ATIVOS.values():
+        for p in mod.get("lista_de_pecas", []):
+            d2 = p.get("dimensoes_2d_planificadas", {})
+            comp_x = float(d2.get("largura_x", 0.0))
+            larg_y = float(d2.get("altura_y", 0.0))
+            esp = float(d2.get("espessura", 15.0))
+            
+            # Normaliza 'generico_branco_tx_6mm' -> 'generico_branco_tx' para unificar a soma das chapas de 6mm!
+            id_mat_bruto = str(p.get("material", "generico_branco_tx"))
+            id_mat = re.sub(r"_(?:3|6)mm$", "", id_mat_bruto)
+            
+            cat = str(p.get("categoria_industrial", "")).lower()
+            if cat.startswith(("marmoraria_", "acessorio_")):
+                continue
+            nome_com = str(p.get("nome_comercial", ""))
+
+            # 1. Acumula Área de Chapa por (Material, Espessura)
+            chave_chapa = f"{id_mat}__{esp:.1f}"
+            if chave_chapa not in chapas_agrupadas:
+                chapas_agrupadas[chave_chapa] = {
+                    "id_material": id_mat,
+                    "nome_material": mapa_nomes_mat.get(id_mat, id_mat),
+                    "espessura_mm": esp,
+                    "qtd_pecas": 0,
+                    "area_liquida_m2": 0.0
+                }
+            chapas_agrupadas[chave_chapa]["qtd_pecas"] += 1
+            chapas_agrupadas[chave_chapa]["area_liquida_m2"] += (comp_x * larg_y) / 1_000_000.0
+
+            # 2. Acumula Metros Lineares de Fita de Borda
+            fb = p.get("fitas_borda", {})
+            id_fita = str(p.get("cor_fita_borda") or id_mat)
+            if id_fita != "SEM_FITA":
+                mm_fita_peca = 0.0
+                if fb.get("base"): mm_fita_peca += comp_x + PERDA_DESTOPO_POR_BORDA_MM
+                if fb.get("topo"): mm_fita_peca += comp_x + PERDA_DESTOPO_POR_BORDA_MM
+                if fb.get("esquerda"): mm_fita_peca += larg_y + PERDA_DESTOPO_POR_BORDA_MM
+                if fb.get("direita"): mm_fita_peca += larg_y + PERDA_DESTOPO_POR_BORDA_MM
+
+                if mm_fita_peca > 0:
+                    larg_comercial_fita = 22 if esp <= 18.5 else 29
+                    chave_fita = f"{id_fita}__{larg_comercial_fita}"
+                    if chave_fita not in fitas_agrupadas:
+                        fitas_agrupadas[chave_fita] = {
+                            "id_cor": id_fita,
+                            "nome_cor": mapa_nomes_mat.get(id_fita, id_fita),
+                            "largura_fita_mm": larg_comercial_fita,
+                            "metros_lineares": 0.0
+                        }
+                    fitas_agrupadas[chave_fita]["metros_lineares"] += (mm_fita_peca / 1000.0)
+
+            # 3. Contagem de Ferragens
+            if cat == "porta_basculante":
+                ferragens["pistoes_gas_basculante"] += 2
+            elif cat == "prateleira_livre":
+                ferragens["suportes_prateleira_pitao"] += 4
+            elif cat in ("lateral_gaveta_esquerda", "lateral_sapateira_esquerda"):
+                esp_estrutural = float(mod.get("parametros", {}).get("perfil_ativo", {}).get("materiais_padrao", {}).get("espessura_estrutural_mm", 15.0))
+                # No Porta-Tempero, a guarda lateral fica entre a contra-frente e a traseira (+2 * espessura = comprimento do trilho)
+                if "Porta-Tempero" in nome_com:
+                    tam_trilho = int(round(comp_x + (2.0 * esp_estrutural)))
+                else:
+                    tam_trilho = int(round(comp_x))
+                chave_trilho = f"Par Corrediça Telescópica {tam_trilho}mm"
+                ferragens["corredicas_por_tamanho"][chave_trilho] = (
+                    ferragens["corredicas_por_tamanho"].get(chave_trilho, 0) + 1
+                )
+
+            for f in p.get("usinagens", {}).get("furos", []):
+                tf = str(f.get("tipo_furo", "")).upper()
+                diam = float(f.get("diametro", 0.0))
+                if tf == "CANECO" or diam >= 30.0:
+                    ferragens["dobradicas_35mm"] += 1
+                elif tf == "MINIFIX" or (14.0 <= diam <= 16.0):
+                    ferragens["tambores_minifix_15mm"] += 1
+                elif tf == "CAVILHA" or (7.5 <= diam <= 8.5):
+                    ferragens["cavilhas_madeira_8mm"] += 1
+                elif tf == "ESTRUTURAL":
+                    ferragens["parafusos_estruturais_4_5mm"] += 1
+
+    lista_chapas = []
+    for item in chapas_agrupadas.values():
+        area_liq = round(item["area_liquida_m2"], 2)
+        chapas_est = max(1, math.ceil((area_liq * FATOR_PERDA_CORTE) / AREA_CHAPA_PADRAO_M2)) if area_liq > 0 else 0
+        item["area_liquida_m2"] = area_liq
+        item["chapas_inteiras_estimadas"] = chapas_est
+        lista_chapas.append(item)
+
+    lista_fitas = []
+    for item in fitas_agrupadas.values():
+        item["metros_lineares"] = math.ceil(item["metros_lineares"])
+        lista_fitas.append(item)
+
+    return jsonify({
+        "sucesso": True,
+        "chapas": lista_chapas,
+        "fitas": lista_fitas,
+        "ferragens": ferragens
+    }), 200
+
+
 @app.route("/api/ambiente/preset", methods=["POST"])
 def aplicar_preset_paredes():
-    registrar_acao_historico()
     dados = request.get_json(silent=True) or {}
     try:
+        registrar_acao_historico()
         formato = str(dados.get("formato", "L")).upper()
         larg_a = float(dados.get("larg_a", 3600.0))
         larg_b = float(dados.get("larg_b", 2600.0))
@@ -156,9 +311,9 @@ def aplicar_preset_paredes():
 
 @app.route("/api/ambiente/parede/adicionar", methods=["POST"])
 def adicionar_parede():
-    registrar_acao_historico()
     dados = request.get_json(silent=True) or {}
     try:
+        registrar_acao_historico()
         pe_dir = float(dados.get("pe_direito", orq_ambiente.construtor_paredes.pe_direito_padrao))
         esp = float(dados.get("espessura", orq_ambiente.construtor_paredes.espessura_padrao))
 
@@ -190,9 +345,8 @@ def adicionar_parede():
 
 @app.route("/api/ambiente/parede/remover_ultima", methods=["POST"])
 def remover_ultima_parede():
-    """Remove o último segmento de parede criado na Planta Baixa."""
-    registrar_acao_historico()
     if orq_ambiente.construtor_paredes.paredes:
+        registrar_acao_historico()
         orq_ambiente.construtor_paredes.paredes.pop()
         orq_ambiente.recalcular_todos_modulos(COFRE_MODULOS_ATIVOS)
     return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
@@ -207,13 +361,14 @@ def limpar_paredes():
 
 
 # =============================================================================
-# 2. ROTAS DE FABRICAÇÃO, TRANSFORMAÇÃO DIRECIONAL E EXCLUSÃO EM LOTE
+# 2. ROTAS DE FABRICAÇÃO, PINTURA, TAMPONAMENTO E TRANSFORMAÇÃO EM LOTE
 # =============================================================================
 @app.route("/api/fabricar", methods=["POST"])
 def api_fabricar_modulo():
-    registrar_acao_historico()
     dados = request.get_json(silent=True) or {}
+
     try:
+        registrar_acao_historico()
         id_informado = str(dados.get("id_modulo", "")).strip()
         if not id_informado:
             proximo_num = len(COFRE_MODULOS_ATIVOS) + 1
@@ -223,7 +378,6 @@ def api_fabricar_modulo():
         else:
             id_modulo = id_informado.zfill(3) if id_informado.isdigit() else id_informado
 
-        # Leitura segura: evita KeyError ('003') quando o módulo é novo!
         era_modulo_existente = id_modulo in COFRE_MODULOS_ATIVOS
         mod_anterior = COFRE_MODULOS_ATIVOS.get(id_modulo) if era_modulo_existente else None
         pos_anterior = mod_anterior.get("posicionamento_ambiente") if mod_anterior else None
@@ -250,11 +404,9 @@ def api_fabricar_modulo():
             if mat_frente_ui:
                 overrides_perfil["materiais_padrao"]["material_frentes"] = mat_frente_ui
 
-        # Recupera ou inicializa as 8 Zonas de Materiais e Fitas sem erro quando o módulo é novo
         zonas_salvas = dict(params_anteriores.get("zonas_materiais") or {})
         overrides_pecas_salvos = dict(params_anteriores.get("overrides_pecas") or {})
 
-        # Se o usuário trocou o MDF Padrão no Construtor Rápido, sincroniza as zonas principais e suas fitas
         mat_caixa_ant = params_anteriores.get("material_caixaria")
         mat_frente_ant = params_anteriores.get("material_frentes")
 
@@ -270,14 +422,14 @@ def api_fabricar_modulo():
 
         operacoes_internas = dados.get("operacoes_internas", [])
         opcoes_especiais = dados.get("opcoes_especiais", {})
-        
+
         tamp_agregado = dados.get("tamponamentos_agregados")
         if tamp_agregado is None and era_modulo_existente:
             tamp_agregado = params_anteriores.get("tamponamentos_agregados")
 
         prompt_copiloto = str(dados.get("prompt_copiloto", "")).strip()
         msg_copiloto = None
-        if prompt_copiloto and familia not in ("MODULO_PAINEL", "MODULO_AVULSO"):
+        if prompt_copiloto and familia not in ("MODULO_PAINEL", "MODULO_AVULSO", "MODULO_BANCADA_PEDRA", "MODULO_RODAPE"):
             interpretacao = copiloto.interpretar_comando(prompt_copiloto)
             msg_copiloto = interpretacao["mensagem_copiloto"]
             operacoes_internas = interpretacao["operacoes_internas"]
@@ -337,7 +489,7 @@ def api_fabricar_modulo():
         payload_gerado["cliente"] = METADADOS_PROJETO["nome_cliente"]
         payload_gerado["nome_cliente"] = METADADOS_PROJETO["nome_cliente"]
         payload_gerado["nome_projeto"] = f"{METADADOS_PROJETO['nome_cliente']} - {METADADOS_PROJETO['nome_ambiente']}"
-        
+
         COFRE_MODULOS_ATIVOS[id_modulo] = payload_gerado
 
         return jsonify({
@@ -354,154 +506,22 @@ def api_fabricar_modulo():
         return jsonify({"sucesso": False, "erro_interno": str(e)}), 500
 
 
-@app.route("/api/modulos/transformar_lote", methods=["POST"])
-def api_transformar_lote():
-    """
-    Move (delta_x, delta_y, delta_z) e/ou rotaciona (delta_rotacao / rotacao_absoluta)
-    1 ou múltiplos módulos selecionados de uma só vez!
-    """
-    registrar_acao_historico()
-    dados = request.get_json(silent=True) or {}
-    ids_alvo = dados.get("ids_modulos", [])
-    if not ids_alvo and "id_modulo" in dados:
-        ids_alvo = [str(dados["id_modulo"])]
-
-    modificados = orq_ambiente.transformar_lote_modulos(
-        ids_selecionados=[str(i).strip() for i in ids_alvo],
-        modulos_ativos=COFRE_MODULOS_ATIVOS,
-        delta_x=float(dados.get("delta_x", 0.0)),
-        delta_y=float(dados.get("delta_y", 0.0)),
-        delta_z=float(dados.get("delta_z", 0.0)),
-        delta_rotacao=float(dados.get("delta_rotacao", 0.0)),
-        z_absoluto=dados.get("z_absoluto"),
-        y_absoluto=dados.get("y_absoluto"),
-        rotacao_absoluta=dados.get("rotacao_absoluta"),
-        nova_id_parede=dados.get("nova_id_parede"),
-        aplicar_autosnap=bool(dados.get("aplicar_autosnap", False))
-    )
-
-    return jsonify({
-        "sucesso": True,
-        "modificados": modificados,
-        "modulos": [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
-    }), 200
-
-
-@app.route("/api/modulos/excluir_lote", methods=["POST"])
-def api_excluir_lote():
-    """Exclui 1 ou múltiplos módulos selecionados pelo usuário."""
-    registrar_acao_historico()
-    dados = request.get_json(silent=True) or {}
-    ids_para_excluir = dados.get("ids_modulos", [])
-    removidos = []
-
-    for m_id in ids_para_excluir:
-        chave = str(m_id).strip()
-        if chave in COFRE_MODULOS_ATIVOS:
-            del COFRE_MODULOS_ATIVOS[chave]
-            removidos.append(chave)
-
-    return jsonify({
-        "sucesso": True,
-        "removidos": removidos,
-        "modulos": [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
-    }), 200
-
-
-@app.route("/api/modulo/posicionar", methods=["POST"])
-def api_posicionar_modulo():
-    registrar_acao_historico()
-    dados = request.get_json(silent=True) or {}
-    id_mod = str(dados.get("id_modulo", "")).strip()
-    if id_mod not in COFRE_MODULOS_ATIVOS:
-        return jsonify({"sucesso": False, "erro_engenharia": "Módulo não encontrado."}), 404
-
-    mod = COFRE_MODULOS_ATIVOS[id_mod]
-    pos_ant = mod.get("posicionamento_ambiente", {})
-    nova_par = dados.get("id_parede")
-    trocou_parede = (nova_par is not None and nova_par != pos_ant.get("id_parede"))
-
-    pos = orq_ambiente.ancorar_modulo_na_parede(
-        modulo_dict=mod,
-        modulos_ativos=COFRE_MODULOS_ATIVOS,
-        id_parede=nova_par,
-        distancia_x_parede=None if trocou_parede else dados.get("distancia_x_parede"),
-        elevacao_z=dados.get("elevacao_z"),
-        afastamento_parede=dados.get("afastamento_parede"),
-        rotacao_offset_graus=dados.get("rotacao_offset_graus"),
-        usar_autosnap=bool(dados.get("usar_autosnap", False)) or trocou_parede
-    )
-    return jsonify({"sucesso": True, "posicionamento": pos, "modulo": mod}), 200
-
-
-# =============================================================================
-# 3. ROTAS DE INTEGRAÇÃO COM O TIRANOCUT
-# =============================================================================
-@app.route("/api/modulos", methods=["GET"])
-def listar_todos_modulos():
-    modulos_ordenados = [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
-    return jsonify(modulos_ordenados), 200
-
-
-@app.route("/api/modulo/<id_modulo>", methods=["GET"])
-def obter_modulo_por_id(id_modulo):
-    id_limpo = str(id_modulo).strip()
-    if id_limpo in COFRE_MODULOS_ATIVOS:
-        return jsonify(COFRE_MODULOS_ATIVOS[id_limpo]), 200
-    return jsonify({"erro": f"Módulo '{id_limpo}' não encontrado."}), 404
-
-
-@app.route("/api/modulos/limpar", methods=["DELETE", "POST"])
-def limpar_projeto_ativo():
-    registrar_acao_historico()
-    COFRE_MODULOS_ATIVOS.clear()
-    return jsonify({"sucesso": True, "mensagem": "Ambiente limpo com sucesso."}), 200
-
-@app.route("/api/catalogo_materiais", methods=["GET"])
-def obter_catalogo_materiais():
-    """
-    Retorna o catálogo de chapas MDF multi-marcas e verifica automaticamente
-    se existe arquivo de textura real (.jpg, .jpeg, .png) em static/textures/mdf/.
-    """
-    pasta_tex = os.path.join(PASTA_STATIC, "textures", "mdf")
-    os.makedirs(pasta_tex, exist_ok=True)
-
-    catalogo_enriquecido = []
-    for item in CATALOGO_MATERIAIS_MDF:
-        copia = dict(item)
-        copia["textura_url"] = None
-        for ext in (".jpg", ".jpeg", ".png", ".webp"):
-            nome_arq = f"{item['id']}{ext}"
-            if os.path.exists(os.path.join(pasta_tex, nome_arq)):
-                copia["textura_url"] = f"/static/textures/mdf/{nome_arq}"
-                break
-        catalogo_enriquecido.append(copia)
-
-    return jsonify({"materiais": catalogo_enriquecido}), 200
-
-
 @app.route("/api/modulo/pintar", methods=["POST"])
 def api_pintar_modulo_ou_peca():
-    """
-    Atualiza as 8 Zonas de Material/Fita do módulo OU aplica override de material
-    e fita de borda em uma Peça Individual SEM alterar a engenharia ou geometria!
-    """
-    registrar_acao_historico()
     dados = request.get_json(silent=True) or {}
     id_mod = str(dados.get("id_modulo", "")).strip()
     if id_mod not in COFRE_MODULOS_ATIVOS:
         return jsonify({"sucesso": False, "erro_engenharia": "Módulo não encontrado."}), 404
 
+    registrar_acao_historico()
     mod = COFRE_MODULOS_ATIVOS[id_mod]
     params = mod.setdefault("parametros", {})
     zonas_atuais = params.setdefault("zonas_materiais", {})
     overrides_pecas = params.setdefault("overrides_pecas", {})
 
-    # 1. Atualiza Zonas do Módulo (se enviadas)
     if "zonas_materiais" in dados and isinstance(dados["zonas_materiais"], dict):
         zonas_atuais.update(dados["zonas_materiais"])
 
-    # 2. Atualiza Override de Peça Individual (se enviado)
     if "override_peca" in dados and isinstance(dados["override_peca"], dict):
         ov = dados["override_peca"]
         nome_peca = str(ov.get("nome_comercial", "")).strip()
@@ -512,7 +532,6 @@ def api_pintar_modulo_ou_peca():
                 "fitas_borda": ov.get("fitas_borda")
             }
 
-    # Limpa overrides individuais se solicitado
     if dados.get("resetar_pecas_individuais"):
         overrides_pecas.clear()
 
@@ -531,7 +550,6 @@ def api_pintar_modulo_ou_peca():
     }
     cats_fundo_gaveta = {"fundo_gaveta", "fundo_sapateira"}
 
-    # Reaplica as cores diretamente nos dicionários das peças já calculadas (Zero recálculo geométrico!)
     for p_dict in mod.get("lista_de_pecas", []):
         cat = str(p_dict.get("categoria_industrial", "")).lower()
         nome_com = p_dict.get("nome_comercial", "")
@@ -554,7 +572,6 @@ def api_pintar_modulo_ou_peca():
 
         p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
 
-        # Aplica o override individual se esta peça específica foi customizada pelo usuário
         if nome_com in overrides_pecas:
             ov_p = overrides_pecas[nome_com]
             if ov_p.get("material"):
@@ -566,6 +583,7 @@ def api_pintar_modulo_ou_peca():
                 p_dict["fitas_borda"].update(ov_p["fitas_borda"])
 
     return jsonify({"sucesso": True, "modulo": mod}), 200
+
 
 def _reconstruir_modulo_preservando_estado(mod: dict, cfg_tamp: dict) -> dict:
     """Reconstrói o módulo mantendo 100% das cores, frentes, zonas, overrides e posição."""
@@ -690,123 +708,84 @@ def api_redimensionar_peca_tamponamento():
     COFRE_MODULOS_ATIVOS[id_mod] = reconstruido
     return jsonify({"sucesso": True, "modulo": reconstruido}), 200
 
-def obter_resumo_industrial_bom():
-    """
-    Calcula o Totalizador Industrial (BOM) de todo o ambiente ativo:
-    1. Consumo de Chapas MDF por cor e espessura (m² e chapas inteiras 2750x1850mm).
-    2. Consumo de Fitas de Borda por cor e largura (metros lineares + perda de destopo).
-    3. Quantitativo exato de Ferragens (Dobradiças, Corrediças por medida, Fixadores).
-    """
-    import math
 
-    AREA_CHAPA_PADRAO_M2 = (2750.0 * 1850.0) / 1_000_000.0  # 5.0875 m²
-    FATOR_PERDA_CORTE = 1.15  # 15% de margem de perda/refilo
-    PERDA_DESTOPO_POR_BORDA_MM = 30.0
+@app.route("/api/modulos/transformar_lote", methods=["POST"])
+def api_transformar_lote():
+    dados = request.get_json(silent=True) or {}
+    registrar_acao_historico()
+    ids_alvo = dados.get("ids_modulos", [])
+    if not ids_alvo and "id_modulo" in dados:
+        ids_alvo = [str(dados["id_modulo"])]
 
-    mapa_nomes_mat = {m["id"]: f"[{m['marca']}] {m['nome']}" for m in CATALOGO_MATERIAIS_MDF}
-
-    chapas_agrupadas = {}
-    fitas_agrupadas = {}
-    ferragens = {
-        "dobradicas_35mm": 0,
-        "parafusos_estruturais_4_5mm": 0,
-        "tambores_minifix_15mm": 0,
-        "cavilhas_madeira_8mm": 0,
-        "suportes_prateleira_pitao": 0,
-        "pistoes_gas_basculante": 0,
-        "corredicas_por_tamanho": {}
-    }
-
-    for mod in COFRE_MODULOS_ATIVOS.values():
-        for p in mod.get("lista_de_pecas", []):
-            d2 = p.get("dimensoes_2d_planificadas", {})
-            comp_x = float(d2.get("largura_x", 0.0))
-            larg_y = float(d2.get("altura_y", 0.0))
-            esp = float(d2.get("espessura", 15.0))
-            id_mat = str(p.get("material", "generico_branco_tx"))
-            cat = str(p.get("categoria_industrial", "")).lower()
-
-            # 1. Acumula Área de Chapa por (Material, Espessura)
-            chave_chapa = f"{id_mat}__{esp:.1f}"
-            if chave_chapa not in chapas_agrupadas:
-                chapas_agrupadas[chave_chapa] = {
-                    "id_material": id_mat,
-                    "nome_material": mapa_nomes_mat.get(id_mat, id_mat),
-                    "espessura_mm": esp,
-                    "qtd_pecas": 0,
-                    "area_liquida_m2": 0.0
-                }
-            chapas_agrupadas[chave_chapa]["qtd_pecas"] += 1
-            chapas_agrupadas[chave_chapa]["area_liquida_m2"] += (comp_x * larg_y) / 1_000_000.0
-
-            # 2. Acumula Metros Lineares de Fita de Borda
-            fb = p.get("fitas_borda", {})
-            id_fita = str(p.get("cor_fita_borda") or id_mat)
-            if id_fita != "SEM_FITA":
-                mm_fita_peca = 0.0
-                if fb.get("base"): mm_fita_peca += comp_x + PERDA_DESTOPO_POR_BORDA_MM
-                if fb.get("topo"): mm_fita_peca += comp_x + PERDA_DESTOPO_POR_BORDA_MM
-                if fb.get("esquerda"): mm_fita_peca += larg_y + PERDA_DESTOPO_POR_BORDA_MM
-                if fb.get("direita"): mm_fita_peca += larg_y + PERDA_DESTOPO_POR_BORDA_MM
-
-                if mm_fita_peca > 0:
-                    larg_comercial_fita = 22 if esp <= 18.5 else 29
-                    chave_fita = f"{id_fita}__{larg_comercial_fita}"
-                    if chave_fita not in fitas_agrupadas:
-                        fitas_agrupadas[chave_fita] = {
-                            "id_cor": id_fita,
-                            "nome_cor": mapa_nomes_mat.get(id_fita, id_fita),
-                            "largura_fita_mm": larg_comercial_fita,
-                            "metros_lineares": 0.0
-                        }
-                    fitas_agrupadas[chave_fita]["metros_lineares"] += (mm_fita_peca / 1000.0)
-
-            # 3. Contagem de Ferragens por Categoria e Usinagens
-            if cat == "porta_basculante":
-                ferragens["pistoes_gas_basculante"] += 2
-            elif cat == "prateleira_livre":
-                ferragens["suportes_prateleira_pitao"] += 4
-            elif cat in ("lateral_gaveta_esquerda", "lateral_sapateira_esquerda"):
-                tam_trilho = int(round(comp_x))
-                chave_trilho = f"Par Corrediça Telescópica {tam_trilho}mm"
-                ferragens["corredicas_por_tamanho"][chave_trilho] = (
-                    ferragens["corredicas_por_tamanho"].get(chave_trilho, 0) + 1
-                )
-
-            for f in p.get("usinagens", {}).get("furos", []):
-                tf = str(f.get("tipo_furo", "")).upper()
-                diam = float(f.get("diametro", 0.0))
-                if tf == "CANECO" or diam >= 30.0:
-                    ferragens["dobradicas_35mm"] += 1
-                elif tf == "MINIFIX" or (14.0 <= diam <= 16.0):
-                    ferragens["tambores_minifix_15mm"] += 1
-                elif tf == "CAVILHA" or (7.5 <= diam <= 8.5):
-                    ferragens["cavilhas_madeira_8mm"] += 1
-                elif tf == "ESTRUTURAL":
-                    ferragens["parafusos_estruturais_4_5mm"] += 1
-
-    lista_chapas = []
-    for item in chapas_agrupadas.values():
-        area_liq = round(item["area_liquida_m2"], 2)
-        chapas_est = max(1, math.ceil((area_liq * FATOR_PERDA_CORTE) / AREA_CHAPA_PADRAO_M2)) if area_liq > 0 else 0
-        item["area_liquida_m2"] = area_liq
-        item["chapas_inteiras_estimadas"] = chapas_est
-        lista_chapas.append(item)
-
-    lista_fitas = []
-    for item in fitas_agrupadas.values():
-        item["metros_lineares"] = math.ceil(item["metros_lineares"])
-        lista_fitas.append(item)
+    modificados = orq_ambiente.transformar_lote_modulos(
+        ids_selecionados=[str(i).strip() for i in ids_alvo],
+        modulos_ativos=COFRE_MODULOS_ATIVOS,
+        delta_x=float(dados.get("delta_x", 0.0)),
+        delta_y=float(dados.get("delta_y", 0.0)),
+        delta_z=float(dados.get("delta_z", 0.0)),
+        delta_rotacao=float(dados.get("delta_rotacao", 0.0)),
+        z_absoluto=dados.get("z_absoluto"),
+        y_absoluto=dados.get("y_absoluto"),
+        rotacao_absoluta=dados.get("rotacao_absoluta"),
+        nova_id_parede=dados.get("nova_id_parede"),
+        aplicar_autosnap=bool(dados.get("aplicar_autosnap", False))
+    )
 
     return jsonify({
         "sucesso": True,
-        "chapas": lista_chapas,
-        "fitas": lista_fitas,
-        "ferragens": ferragens
+        "modificados": modificados,
+        "modulos": [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
     }), 200
 
+
+@app.route("/api/modulos/excluir_lote", methods=["POST"])
+def api_excluir_lote():
+    dados = request.get_json(silent=True) or {}
+    registrar_acao_historico()
+    ids_para_excluir = dados.get("ids_modulos", [])
+    removidos = []
+
+    for m_id in ids_para_excluir:
+        chave = str(m_id).strip()
+        if chave in COFRE_MODULOS_ATIVOS:
+            del COFRE_MODULOS_ATIVOS[chave]
+            removidos.append(chave)
+
+    return jsonify({
+        "sucesso": True,
+        "removidos": removidos,
+        "modulos": [COFRE_MODULOS_ATIVOS[k] for k in sorted(COFRE_MODULOS_ATIVOS.keys())]
+    }), 200
+
+
+@app.route("/api/modulo/posicionar", methods=["POST"])
+def api_posicionar_modulo():
+    dados = request.get_json(silent=True) or {}
+    id_mod = str(dados.get("id_modulo", "")).strip()
+    if id_mod not in COFRE_MODULOS_ATIVOS:
+        return jsonify({"sucesso": False, "erro_engenharia": "Módulo não encontrado."}), 404
+
+    registrar_acao_historico()
+    mod = COFRE_MODULOS_ATIVOS[id_mod]
+    pos_ant = mod.get("posicionamento_ambiente", {})
+    nova_par = dados.get("id_parede")
+    trocou_parede = (nova_par is not None and nova_par != pos_ant.get("id_parede"))
+
+    pos = orq_ambiente.ancorar_modulo_na_parede(
+        modulo_dict=mod,
+        modulos_ativos=COFRE_MODULOS_ATIVOS,
+        id_parede=nova_par,
+        distancia_x_parede=None if trocou_parede else dados.get("distancia_x_parede"),
+        elevacao_z=dados.get("elevacao_z"),
+        afastamento_parede=dados.get("afastamento_parede"),
+        rotacao_offset_graus=dados.get("rotacao_offset_graus"),
+        usar_autosnap=bool(dados.get("usar_autosnap", False)) or trocou_parede
+    )
+    return jsonify({"sucesso": True, "posicionamento": pos, "modulo": mod}), 200
+
+
 # =============================================================================
-# ROTAS DE UNDO / REDO (CTRL+Z / CTRL+Y) E GERENCIAMENTO DE PROJETOS SALVOS
+# 3. ROTAS DE UNDO / REDO, PROJETOS SALVOS E INTEGRAÇÃO TIRANOCUT
 # =============================================================================
 @app.route("/api/historico/undo", methods=["POST"])
 def api_desfazer_acao():
@@ -830,7 +809,6 @@ def api_refazer_acao():
 
 @app.route("/api/projeto/novo", methods=["POST"])
 def api_criar_novo_projeto():
-    """Inicializa um novo ambiente do zero com Cliente, Ambiente e Planta escolhidos."""
     dados = request.get_json(silent=True) or {}
     registrar_acao_historico()
 
@@ -854,7 +832,6 @@ def api_criar_novo_projeto():
 
 @app.route("/api/projeto/salvar", methods=["POST"])
 def api_salvar_projeto():
-    """Salva todo o estado do ambiente e módulos em projetos_salvos/*.json."""
     dados = request.get_json(silent=True) or {}
     if dados.get("nome_cliente"):
         METADADOS_PROJETO["nome_cliente"] = str(dados["nome_cliente"]).strip()
@@ -865,7 +842,6 @@ def api_salvar_projeto():
     if dados.get("cor_parede"):
         METADADOS_PROJETO["cor_parede"] = str(dados["cor_parede"])
 
-    # Atualiza o nome do cliente em todos os módulos ativos para o TiranoCut
     for mod in COFRE_MODULOS_ATIVOS.values():
         mod["cliente"] = METADADOS_PROJETO["nome_cliente"]
         mod["nome_cliente"] = METADADOS_PROJETO["nome_cliente"]
@@ -888,7 +864,6 @@ def api_salvar_projeto():
 
 @app.route("/api/projeto/listar", methods=["GET"])
 def api_listar_projetos_salvos():
-    """Lista todos os projetos salvos na pasta projetos_salvos/."""
     lista = []
     for arq in sorted(os.listdir(PASTA_PROJETOS)):
         if not arq.endswith(".json"):
@@ -915,7 +890,6 @@ def api_listar_projetos_salvos():
 
 @app.route("/api/projeto/carregar", methods=["POST"])
 def api_carregar_projeto():
-    """Carrega um projeto salvo do disco para a memória ativa."""
     dados = request.get_json(silent=True) or {}
     nome_arq = str(dados.get("arquivo", "")).strip()
     caminho = os.path.join(PASTA_PROJETOS, nome_arq)
@@ -938,13 +912,46 @@ def api_excluir_projeto_salvo():
     if os.path.exists(caminho):
         os.remove(caminho)
     return jsonify({"sucesso": True}), 200
-    
+
+
+@app.route("/api/modulos", methods=["GET"])
+def listar_todos_modulos():
+    """Retorna apenas os módulos e peças de MDF para o TiranoCut (ignora pedras/cubas)."""
+    modulos_mdf = []
+    for k in sorted(COFRE_MODULOS_ATIVOS.keys()):
+        mod = copy.deepcopy(COFRE_MODULOS_ATIVOS[k])
+        if mod.get("familia") == "MODULO_BANCADA_PEDRA":
+            continue
+        pecas_mdf = [
+            p for p in mod.get("lista_de_pecas", [])
+            if not str(p.get("categoria_industrial", "")).startswith(("marmoraria_", "acessorio_"))
+        ]
+        if pecas_mdf:
+            mod["lista_de_pecas"] = pecas_mdf
+            modulos_mdf.append(mod)
+    return jsonify(modulos_mdf), 200
+
+
+@app.route("/api/modulo/<id_modulo>", methods=["GET"])
+def obter_modulo_por_id(id_modulo):
+    id_limpo = str(id_modulo).strip()
+    if id_limpo in COFRE_MODULOS_ATIVOS:
+        return jsonify(COFRE_MODULOS_ATIVOS[id_limpo]), 200
+    return jsonify({"erro": f"Módulo '{id_limpo}' não encontrado."}), 404
+
+
+@app.route("/api/modulos/limpar", methods=["DELETE", "POST"])
+def limpar_projeto_ativo():
+    registrar_acao_historico()
+    COFRE_MODULOS_ATIVOS.clear()
+    return jsonify({"sucesso": True, "mensagem": "Ambiente limpo com sucesso."}), 200
+
+
 if __name__ == "__main__":
     os.makedirs(PASTA_TEMPLATES, exist_ok=True)
     os.makedirs(os.path.join(PASTA_STATIC, "css"), exist_ok=True)
     os.makedirs(os.path.join(PASTA_STATIC, "js"), exist_ok=True)
-    os.makedirs(os.path.join(PASTA_STATIC, "textures", "mdf"), exist_ok=True)
-    
+
     cmd_1 = copiloto.interpretar_comando("Coloque 4 gavetas")
     m1 = orquestrador.fabricar_modulo(
         id_modulo="001", nome_projeto="COZINHA_TIRANOGIO", familia="MODULO_INFERIOR",
@@ -965,5 +972,3 @@ if __name__ == "__main__":
 
     print("🚀 Estúdio Web CAD 3D disponível em: http://localhost:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)
-    
-    
