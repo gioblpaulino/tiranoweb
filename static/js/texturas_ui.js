@@ -275,6 +275,14 @@ function criarMaterialFace(idMat, orientacao) {
 
 function construirArray6MateriaisPeca(p) {
     const idLaminado = p.material || "generico_branco_tx";
+    const cat = (p.categoria_industrial || "").toLowerCase();
+
+    // Se for Bancada/Rodapé de Pedra, Cuba Inox ou Cooktop, todas as 6 faces são da própria pedra/inox!
+    if (cat.startsWith("marmoraria_") || cat.startsWith("acessorio_")) {
+        const matUnico = criarMaterialFace(idLaminado, "HORIZONTAL_XY");
+        return [matUnico, matUnico, matUnico, matUnico, matUnico, matUnico];
+    }
+
     const idFita = (p.cor_fita_borda && p.cor_fita_borda !== "SEM_FITA") ? p.cor_fita_borda : idLaminado;
     const fb = p.fitas_borda || {};
 
@@ -562,14 +570,18 @@ function calcularXComSnapEColisao(modArrastado, xProposto, parede) {
     }
     xFinal = Math.max(0.0, Math.min(parede.comprimento - larg, xFinal));
 
+    
     // 2. Verifica todos os outros módulos na mesma parede que se sobrepõem na altura Z
+    const ehBancadaOuRodape = ["MODULO_BANCADA_PEDRA", "MODULO_RODAPE"].includes(modArrastado.familia);
     const vizinhos = modulosCache.filter(m => {
         if (m.id_modulo === modArrastado.id_modulo) return false;
+        // Bancadas e Rodapés podem deslizar livremente por cima/baixo dos armários sem travar neles!
+        if (ehBancadaOuRodape || ["MODULO_BANCADA_PEDRA", "MODULO_RODAPE"].includes(m.familia)) return false;
+
         const posM = m.posicionamento_ambiente || {};
         if (posM.id_parede !== parede.id_parede) return false;
         const mZIni = posM.elevacao_z || 0;
         const mZFim = mZIni + m.dimensoes_ocupadas.altura_y;
-        // Só colide se estiverem na mesma faixa de altura vertical!
         return (zIni < mZFim - 5) && (zFim > mZIni + 5);
     });
 
@@ -1087,6 +1099,12 @@ function abrirDialogoNovoProjeto() {
 }
 
 async function confirmarCriacaoNovoProjeto() {
+    const nome_cliente = document.getElementById("inp_splash_cliente").value.trim();
+    const nome_ambiente = document.getElementById("inp_splash_ambiente").value.trim();
+    if (!nome_cliente || !nome_ambiente) {
+        alert("⚠️ Informe o Nome do Cliente e o Nome do Ambiente para iniciar o projeto!");
+        return;
+    }
     const payload = {
         nome_cliente: document.getElementById("inp_splash_cliente").value,
         nome_ambiente: document.getElementById("inp_splash_ambiente").value,
@@ -1341,8 +1359,13 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
     let prof = parseFloat(document.getElementById("inp_banc_prof").value) || 600;
     let cotaZ = parseFloat(document.getElementById("inp_banc_z").value) || 860;
     const altSaia = parseFloat(document.getElementById("inp_banc_saia").value) || 40;
+
+    // Se criar solta ("Criar Bancada (Medidas)"), usa a Cota X atual ou 0.0 na parede ativa
     let xPosParede = 0.0;
     let idParedeAlvo = document.getElementById("sel_parede_modulo").value || null;
+    if (!idParedeAlvo && ambienteCache.paredes && ambienteCache.paredes.length > 0) {
+        idParedeAlvo = ambienteCache.paredes[0].id_parede;
+    }
 
     if (cobrirSelecionados) {
         const lim = obterLimitesModulosSelecionados();
@@ -1351,8 +1374,7 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
             return;
         }
         larg = lim.larguraTotal;
-        prof = lim.profundidadeBase + 35.0; // Pingadeira de 35mm além do balcão
-        // A saia da pedra desce abraçando o topo do módulo ou apoia o tampo exatamente em lim.zTopoModulos
+        prof = lim.profundidadeBase + 35.0;
         cotaZ = lim.zTopoModulos - altSaia + 20.0;
         xPosParede = lim.xInicio;
         if (lim.idParede) idParedeAlvo = lim.idParede;
@@ -1368,6 +1390,7 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
         if (!isNaN(n) && n > maiorNum) maiorNum = n;
     });
     const novoId = String(maiorNum + 1).padStart(3, "0");
+    const matPedraEscolhida = document.getElementById("sel_mat_pedra").value;
 
     const opcoesBancada = {
         espessura_pedra_mm: 20.0,
@@ -1376,7 +1399,7 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
         cascata_esquerda: document.getElementById("chk_banc_casc_esq").checked,
         cascata_direita: document.getElementById("chk_banc_casc_dir").checked,
         altura_instalacao_z: cotaZ,
-        material_pedra: document.getElementById("sel_mat_pedra").value,
+        material_pedra: matPedraEscolhida,
         possui_cuba: document.getElementById("chk_banc_cuba").checked,
         pos_x_cuba_mm: parseFloat(document.getElementById("inp_cuba_x").value) || (larg * 0.35),
         possui_cooktop: document.getElementById("chk_banc_cooktop").checked,
@@ -1390,8 +1413,10 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
             id_modulo: novoId,
             familia: "MODULO_BANCADA_PEDRA",
             largura_x: larg,
-            altura_y: altSaia,
+            altura_y: Math.max(altSaia, 20.0),
             profundidade_z: prof,
+            material_caixaria: matPedraEscolhida,
+            material_frentes: matPedraEscolhida,
             opcoes_especiais: opcoesBancada,
             id_parede: idParedeAlvo,
             distancia_x_parede: xPosParede,
@@ -1400,10 +1425,14 @@ async function gerarBancadaPedra(cobrirSelecionados = false) {
         })
     });
     const dados = await resp.json();
-    if (dados.sucesso) {
-        moduloAtivo = dados.modulo;
-        await carregarEstadoAmbiente();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || dados.erro_interno || "Erro ao criar bancada.");
+        return;
     }
+    moduloAtivo = dados.modulo;
+    idsSelecionados.clear();
+    idsSelecionados.add(moduloAtivo.id_modulo);
+    await carregarEstadoAmbiente();
 }
 
 async function gerarRodapeDedicado(sobSelecionados = false) {
@@ -1416,6 +1445,9 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
     let profBase = 550.0;
     let xPosParede = 0.0;
     let idParedeAlvo = document.getElementById("sel_parede_modulo").value || null;
+    if (!idParedeAlvo && ambienteCache.paredes && ambienteCache.paredes.length > 0) {
+        idParedeAlvo = ambienteCache.paredes[0].id_parede;
+    }
 
     if (sobSelecionados) {
         const lim = obterLimitesModulosSelecionados();
@@ -1429,7 +1461,6 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
         if (lim.idParede) idParedeAlvo = lim.idParede;
         document.getElementById("inp_rod_larg").value = larg;
 
-        // Sobe automaticamente os balcões selecionados para a altura exata do rodapé!
         await fetch("/api/modulos/transformar_lote", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1444,14 +1475,16 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
     });
     const novoId = String(maiorNum + 1).padStart(3, "0");
 
+    const matRod = modeloRod === "PEDRA_GRANITO"
+        ? document.getElementById("sel_mat_pedra").value
+        : (document.getElementById("sel_mat_caixa").value || "generico_branco_tx");
+
     const opcoesRodape = {
         modelo_rodape: modeloRod,
         espessura_mdf_mm: espMdf,
         recuo_frontal_mm: recuoFront,
         recuo_traseiro_mm: 20.0,
-        material_rodape: modeloRod === "PEDRA_GRANITO"
-            ? document.getElementById("sel_mat_pedra").value
-            : (document.getElementById("sel_mat_caixa").value || "generico_branco_tx")
+        material_rodape: matRod
     };
 
     const resp = await fetch("/api/fabricar", {
@@ -1463,6 +1496,8 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
             largura_x: larg,
             altura_y: altRodape,
             profundidade_z: profBase,
+            material_caixaria: matRod,
+            material_frentes: matRod,
             opcoes_especiais: opcoesRodape,
             id_parede: idParedeAlvo,
             distancia_x_parede: xPosParede,
@@ -1471,32 +1506,12 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
         })
     });
     const dados = await resp.json();
-    if (dados.sucesso) {
-        moduloAtivo = dados.modulo;
-        await carregarEstadoAmbiente();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || dados.erro_interno || "Erro ao criar rodapé.");
+        return;
     }
+    moduloAtivo = dados.modulo;
+    idsSelecionados.clear();
+    idsSelecionados.add(moduloAtivo.id_modulo);
+    await carregarEstadoAmbiente();
 }
-
-// Aplica brilho polido de pedra/inox e transparência "Fantasma" nas bancadas quando ativa
-const _renderCenaAntesBancada = renderizarCenaCompleta;
-renderizarCenaCompleta = function () {
-    _renderCenaAntesBancada();
-
-    grupoAmbienteModulos.traverse(obj => {
-        if (obj.isMesh && obj.name === "corpo_mdf" && obj.parent && obj.parent.userData.peca) {
-            const p = obj.parent.userData.peca;
-            const cat = (p.categoria_industrial || "").toLowerCase();
-            if (cat.startsWith("marmoraria_") || cat.startsWith("acessorio_")) {
-                const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-                mats.forEach(m => {
-                    if (!m) return;
-                    m.roughness = cat.includes("cuba") ? 0.22 : 0.15;
-                    m.metalness = cat.includes("cuba") ? 0.65 : 0.08;
-                    m.transparent = modoPedraFantasma || modoRaioX;
-                    m.opacity = (modoPedraFantasma || modoRaioX) ? 0.38 : 1.0;
-                    m.needsUpdate = true;
-                });
-            }
-        }
-    });
-};

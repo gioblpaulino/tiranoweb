@@ -26,7 +26,7 @@
     "altura_total_mao_amiga": 120.0,
     "folga_encaixe_mao_amiga": 2.0,
     "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
-    "altura_travessa_reforco_torre": 100.0,
+    "altura_travessa_reforco_torre": 70.0,
     "largura_sarrafo": 70.0,
     "largura_regua_afastador": 60.0,
     "altura_cava_puxador": 35.0,
@@ -40,16 +40,17 @@
   "folgas_frentes": {
     "tipo_montagem_frente": "SOBREPOSTA",
     "recuo_frente_embutida": 2.0,
-    "gap_superior": 3.0,
-    "gap_inferior": 3.0,
-    "gap_lateral_esquerda": 3.0,
-    "gap_lateral_direita": 3.0,
+    "gap_superior": 4.0,
+    "gap_inferior": 4.0,
+    "gap_lateral_esquerda": 4.0,
+    "gap_lateral_direita": 4.0,
     "gap_entre_frentes": 4.0,
     "afastamento_frontal_caixa": 1.5
   },
   "regras_gaveta": {
     "tipo_corredica": "TELESCOPICA_LATERAL",
     "folga_corredica_cada_lado": 13.0,
+    "recuo_frontal_caixote": 0.0,
     "recuo_trilho_frontal": 37.0,
     "folga_profundidade_traseira": 10.0,
     "folga_altura_caixote": 30.0,
@@ -63,6 +64,16 @@
     "vao_puxador_gaveta_interna": 28.0,
     "altura_lateral_sapateira": 80.0,
     "recuo_frontal_sapateira": 30.0
+  },
+  "regras_porta_tempero": {
+    "recuo_frontal_estrutura": 0.0,
+    "folga_topo_estrutura": 25.0,
+    "altura_guarda_lateral": 70.0,
+    "vao_livre_abaixo_guarda_z": 15.0,
+    "cota_z_prateleira_intermediaria_fator": 0.52,
+    "offset_corredica_inferior_z": 45.0,
+    "offset_corredica_superior_topo_z": 60.0
+
   },
   "parametros_usinagem": {
     "largura_canal_fundo": 7.0,
@@ -126,6 +137,12 @@
     "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
     "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
     "traseira_sapateira": "Traseira Sapateira",
-    "fundo_sapateira": "Fundo Sapateira"
+    "fundo_sapateira": "Fundo Sapateira",
+    "frente_porta_tempero": "Frente Porta-Tempero",
+    "coluna_frontal_porta_tempero": "Coluna Frontal Porta-Tempero",
+    "coluna_traseira_porta_tempero": "Coluna Traseira Porta-Tempero",
+    "base_nivel_porta_tempero": "Base Nível Porta-Tempero",
+    "guarda_lateral_porta_tempero_esq": "Lateral Porta-Tempero (Esq)",
+    "guarda_lateral_porta_tempero_dir": "Lateral Porta-Tempero (Dir)"
   }
 }

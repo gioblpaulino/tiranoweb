@@ -952,23 +952,5 @@ if __name__ == "__main__":
     os.makedirs(os.path.join(PASTA_STATIC, "css"), exist_ok=True)
     os.makedirs(os.path.join(PASTA_STATIC, "js"), exist_ok=True)
 
-    cmd_1 = copiloto.interpretar_comando("Coloque 4 gavetas")
-    m1 = orquestrador.fabricar_modulo(
-        id_modulo="001", nome_projeto="COZINHA_TIRANOGIO", familia="MODULO_INFERIOR",
-        largura_x=800.0, altura_y=700.0, profundidade_z=550.0, operacoes_internas=cmd_1["operacoes_internas"]
-    )
-    m1["resposta_copiloto"] = cmd_1["mensagem_copiloto"]
-    orq_ambiente.ancorar_modulo_na_parede(m1, COFRE_MODULOS_ATIVOS, usar_autosnap=True)
-    COFRE_MODULOS_ATIVOS["001"] = m1
-
-    cmd_2 = copiloto.interpretar_comando("Coloque porta-tempero de 200mm na esquerda e 1 prateleira na direita e 2 portas na direita")
-    m2 = orquestrador.fabricar_modulo(
-        id_modulo="002", nome_projeto="COZINHA_TIRANOGIO", familia="MODULO_INFERIOR",
-        largura_x=1200.0, altura_y=700.0, profundidade_z=550.0, operacoes_internas=cmd_2["operacoes_internas"]
-    )
-    m2["resposta_copiloto"] = cmd_2["mensagem_copiloto"]
-    orq_ambiente.ancorar_modulo_na_parede(m2, COFRE_MODULOS_ATIVOS, usar_autosnap=True)
-    COFRE_MODULOS_ATIVOS["002"] = m2
-
     print("🚀 Estúdio Web CAD 3D disponível em: http://localhost:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)

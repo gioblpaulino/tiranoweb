@@ -37,6 +37,15 @@ class ValidadorEngenharia:
         profundidade_z: float
     ) -> None:
         """Verifica se as medidas externas do módulo respeitam os limites da chapa e da família."""
+        familia = familia.strip().upper()
+
+        # Bancadas de Pedra (Marmoraria) e Rodapés (que já seccionam chapas automaticamente)
+        # não sofrem bloqueio pelo comprimento de uma única chapa de MDF (2710mm)!
+        if familia in ("MODULO_BANCADA_PEDRA", "MODULO_RODAPE"):
+            if largura_x <= 50.0 or profundidade_z <= 50.0:
+                raise ErroGeometriaCAD("🚨 As dimensões da bancada/rodapé devem ser maiores que 50mm.")
+            return
+
         max_comp = float(self.perfil.obter("restricoes_chapa.comprimento_max_mdf"))
         max_larg = float(self.perfil.obter("restricoes_chapa.largura_max_mdf"))
         refilo = float(self.perfil.obter("restricoes_chapa.refilo_seguranca"))

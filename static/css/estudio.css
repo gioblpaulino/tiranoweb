@@ -1,7 +1,7 @@
 /* =============================================================================
  * ARQUIVO: static/css/estudio.css
- * RESPONSABILIDADE: Layout HUD 100% Imersivo (Palco 3D em Tela Cheia), separação
- * entre Construtor Vendedor, Modal de Engenharia de Fábrica e Abas Unificadas.
+ * RESPONSABILIDADE: Folha de estilos unificada e sem duplicatas do Tirano-Gio.
+ * Contém o Cabeçalho Dual-Deck, Palco 3D, Painéis HUD, D-Pad e Splash Screen.
  * ============================================================================= */
 
 :root {
@@ -39,60 +39,79 @@ body {
 }
 
 /* =============================================================================
- * BARRA SUPERIOR UNIFICADA (TOP COMMAND DOCK)
+ * 1. CABEÇALHO DE DOIS ANDARES (DUAL-DECK HEADER)
  * ============================================================================= */
-.toolbar-top {
-    height: 54px;
+.header-dual-deck {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     background: #0D1116;
     border-bottom: 1px solid var(--border-color);
+    z-index: 40;
+    flex-shrink: 0;
+}
+
+.deck-row-info {
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 14px;
-    z-index: 40;
-    flex-shrink: 0;
+    padding: 0 12px;
+    border-bottom: 1px solid #1C242B;
+    background: #090C10;
+}
+
+.deck-row-tools {
+    min-height: 38px;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #10151C;
 }
 
 .brand-compact {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .brand-title-main {
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 900;
-    letter-spacing: 2.5px;
+    letter-spacing: 1.2px;
     color: #FFFFFF;
 }
 
 .brand-title-sub {
-    font-size: 8px;
-    letter-spacing: 1.2px;
-    color: var(--text-muted);
-    font-weight: 600;
+    font-size: 10px;
+    color: var(--accent-green);
+    font-weight: 700;
 }
 
 .toolbar-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    flex-wrap: wrap;
 }
 
 .divider-v {
     width: 1px;
-    height: 26px;
+    height: 20px;
     background: #263238;
-    margin: 0 4px;
+    margin: 0 3px;
 }
 
 /* =============================================================================
- * PALCO CENTRAL 3D EM TELA CHEIA (CORREÇÃO DEFINITIVA DO FLEXBOX/CANVAS)
+ * 2. PALCO CENTRAL 3D EM TELA CHEIA
  * ============================================================================= */
 .stage-center {
     flex: 1;
     width: 100%;
-    height: calc(100vh - 54px);
     min-width: 0;
     min-height: 0;
     position: relative;
@@ -121,7 +140,7 @@ body {
 }
 
 /* =============================================================================
- * GAVETAS E MODAIS FLUTUANTES (HUD PANELS)
+ * 3. JANELAS E MODAIS FLUTUANTES (HUD PANELS & FLOATING MODALS)
  * ============================================================================= */
 .hud-panel {
     position: absolute;
@@ -135,7 +154,7 @@ body {
     flex-direction: column;
     gap: 8px;
     z-index: 25;
-    max-height: calc(100vh - 82px);
+    max-height: calc(100vh - 96px);
     overflow-y: auto;
     box-shadow: 0 10px 32px rgba(0, 0, 0, 0.75);
     transition: opacity 0.18s ease, transform 0.18s ease;
@@ -165,12 +184,29 @@ body {
     border-top: 2px solid var(--accent-blue);
 }
 
+.floating-modal {
+    display: none;
+    position: absolute;
+    top: 12px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 35;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
+}
+
 .hud-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--border-color);
+    cursor: grab;
+    user-select: none;
+}
+.hud-header:active {
+    cursor: grabbing;
 }
 
 .hud-close {
@@ -184,6 +220,26 @@ body {
 .hud-close:hover {
     background: #263238;
     color: #FFFFFF;
+}
+
+.hud-resize-handle {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 15px;
+    height: 15px;
+    cursor: nwse-resize;
+    color: var(--accent-cyan);
+    font-size: 11px;
+    line-height: 15px;
+    text-align: center;
+    user-select: none;
+    opacity: 0.65;
+    z-index: 50;
+}
+.hud-resize-handle:hover {
+    opacity: 1;
+    color: var(--accent-green);
 }
 
 /* ABAS DO PAINEL DIREITO (AMBIENTE vs MATERIAIS) */
@@ -213,7 +269,9 @@ body {
     border: 1px solid #37474F;
 }
 
-/* CARDS E INPUTS */
+/* =============================================================================
+ * 4. CARDS, FORMULÁRIOS E BOTÕES
+ * ============================================================================= */
 .card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -263,7 +321,6 @@ textarea {
     min-height: 48px;
 }
 
-/* BOTÕES */
 .btn {
     border: none;
     border-radius: 5px;
@@ -277,6 +334,26 @@ textarea {
     align-items: center;
     justify-content: center;
     gap: 4px;
+}
+
+.header-dual-deck .btn {
+    height: 27px;
+    min-height: 27px;
+    padding: 0 7px;
+    font-size: 10px;
+    white-space: nowrap;
+    border-radius: 4px;
+    gap: 3px;
+}
+
+.header-dual-deck .btn-undo-redo {
+    width: 27px;
+    padding: 0;
+}
+
+.btn-undo-redo:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 .btn-primary { background: var(--btn-green); }
@@ -327,19 +404,9 @@ textarea {
     color: #FFFFFF;
 }
 
-/* MODAIS AUXILIARES E D-PAD */
-.floating-modal {
-    display: none;
-    position: absolute;
-    top: 12px;
-    background: var(--panel-bg);
-    backdrop-filter: blur(8px);
-    border-radius: 8px;
-    padding: 12px;
-    z-index: 35;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
-}
-
+/* =============================================================================
+ * 5. CONTROLE DIRECIONAL INFERIOR (D-PAD + BARRA DE CINEMÁTICA)
+ * ============================================================================= */
 .dpad-hud {
     position: absolute;
     bottom: 14px;
@@ -348,12 +415,39 @@ textarea {
     background: rgba(16, 20, 25, 0.95);
     border: 1px solid var(--accent-blue);
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8);
+}
+
+.dpad-kinematics-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #263238;
+}
+
+.dpad-kinematics-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.dpad-main-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    z-index: 20;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8);
 }
 
 .dpad-cross {
@@ -383,6 +477,9 @@ textarea {
 .dpad-btn.eixo-y { border-bottom: 2px solid #448AFF; }
 .dpad-btn.eixo-z { border-bottom: 2px solid var(--accent-green); }
 
+/* =============================================================================
+ * 6. LEGENDA INFERIOR E LISTAS DE MÓDULOS / PEÇAS
+ * ============================================================================= */
 .hud-bottom-left {
     position: absolute;
     bottom: 14px;
@@ -436,6 +533,12 @@ textarea {
     background: #102830;
 }
 
+.part-item.peca-destacada {
+    border: 1px solid var(--accent-cyan) !important;
+    background: #0D2B36 !important;
+    font-weight: 700;
+}
+
 .chk-sel {
     width: 14px;
     height: 14px;
@@ -450,7 +553,7 @@ textarea {
 }
 
 /* =============================================================================
- * TELA INICIAL (SPLASH LAUNCHER IDENTICO AO TIRANOCUT)
+ * 7. TELA INICIAL (SPLASH LAUNCHER ESTILO TIRANOCUT)
  * ============================================================================= */
 .splash-overlay {
     position: fixed;
@@ -546,162 +649,4 @@ textarea {
     display: none;
     flex-direction: column;
     gap: 12px;
-}
-
-.btn-undo-redo:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
-
-/* =============================================================================
- * CABEÇALHO DE DOIS ANDARES (DUAL-DECK HEADER: ZERO ROLAGEM E 100% VISÍVEL)
- * ============================================================================= */
-.header-dual-deck {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background: #0D1116;
-    border-bottom: 1px solid var(--border-color);
-    z-index: 40;
-    flex-shrink: 0;
-}
-
-.deck-row-info {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 14px;
-    border-bottom: 1px solid #1C242B;
-    background: #090C10;
-}
-
-.deck-row-tools {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 14px;
-    background: #10151C;
-}
-
-.brand-compact {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.brand-title-main {
-    font-size: 14px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    color: #FFFFFF;
-}
-
-.brand-title-sub {
-    font-size: 10px;
-    color: var(--accent-green);
-    font-weight: 700;
-}
-
-.toolbar-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.divider-v {
-    width: 1px;
-    height: 22px;
-    background: #263238;
-    margin: 0 4px;
-}
-
-.header-dual-deck .btn {
-    height: 29px !important;
-    min-height: 29px !important;
-    padding: 0 10px !important;
-    font-size: 11px !important;
-    white-space: nowrap !important;
-    border-radius: 5px;
-}
-
-.header-dual-deck .btn-undo-redo {
-    width: 30px !important;
-    padding: 0 !important;
-}
-
-.stage-center {
-    height: calc(100vh - 81px) !important;
-}
-/* =============================================================================
- * FAIXA DE EXPLOSÃO E ABERTURAS CENTRALIZADA NO CONTROLE INFERIOR (D-PAD)
- * ============================================================================= */
-.dpad-hud {
-    flex-direction: column !important;
-    gap: 8px !important;
-    padding: 8px 14px !important;
-}
-
-.dpad-kinematics-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    width: 100%;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #263238;
-}
-
-.dpad-kinematics-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10.5px;
-    font-weight: 700;
-    color: var(--text-main);
-}
-
-.dpad-main-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* =============================================================================
- * MENUS FLUTUANTES ARRASTÁVEIS E REDIMENSIONÁVEIS PROPORCIONALMENTE
- * ============================================================================= */
-.hud-header {
-    cursor: grab;
-    user-select: none;
-}
-.hud-header:active {
-    cursor: grabbing;
-}
-
-.hud-resize-handle {
-    position: absolute;
-    right: 3px;
-    bottom: 3px;
-    width: 15px;
-    height: 15px;
-    cursor: nwse-resize;
-    color: var(--accent-cyan);
-    font-size: 11px;
-    line-height: 15px;
-    text-align: center;
-    user-select: none;
-    opacity: 0.65;
-    z-index: 50;
-}
-.hud-resize-handle:hover {
-    opacity: 1;
-    color: var(--accent-green);
-}
-
-.part-item.peca-destacada {
-    border: 1px solid var(--accent-cyan) !important;
-    background: #0D2B36 !important;
-    font-weight: 700;
 }

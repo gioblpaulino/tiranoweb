@@ -47,7 +47,7 @@ class ConstrutorGavetas:
         afast_frontal = float(self.perfil.obter("folgas_frentes.afastamento_frontal_caixa"))
 
         folga_corredica = float(self.perfil.obter("regras_gaveta.folga_corredica_cada_lado"))
-        recuo_trilho_frontal = float(self.perfil.obter("regras_gaveta.recuo_trilho_frontal"))
+        recuo_caixote = float(self.perfil.obter("regras_gaveta.recuo_frontal_caixote"))
         folga_prof_traseira = float(self.perfil.obter("regras_gaveta.folga_profundidade_traseira"))
         folga_alt_caixote = float(self.perfil.obter("regras_gaveta.folga_altura_caixote"))
         elevacao_base_z = float(self.perfil.obter("regras_gaveta.elevacao_base_caixote_z"))
@@ -61,7 +61,7 @@ class ConstrutorGavetas:
         tem_veio_caixa = not any(c in mat_caixa.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
         tem_veio_frente = not any(c in mat_frente.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
 
-        prof_max_permitida = vao_alvo.profundidade - recuo_trilho_frontal - folga_prof_traseira
+        prof_max_permitida = vao_alvo.profundidade - recuo_caixote - folga_prof_traseira
         prof_caixote = next((t for t in self.TRILHOS_COMERCIAIS_MM if t <= prof_max_permitida), 0.0)
         if prof_caixote <= 0.0:
             raise ErroGeometriaCAD(
@@ -109,7 +109,7 @@ class ConstrutorGavetas:
             num_gav = i + 1
             z_base_nicho = vao_alvo.z + (i * altura_nicho_unitario)
             z_base_caixote = round(z_base_nicho + elevacao_base_z, 2)
-            y_inicio_caixote = round(vao_alvo.y + recuo_trilho_frontal, 2)
+            y_inicio_caixote = round(vao_alvo.y + recuo_caixote, 2)
 
             z_frente = round((vao_alvo.z - cob_inf) + i * (altura_frente + gap_entre), 2)
             x_frente = round(vao_alvo.x - cob_esq, 2)
