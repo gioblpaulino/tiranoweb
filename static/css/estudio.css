@@ -62,14 +62,15 @@ body {
 }
 
 .deck-row-tools {
-    min-height: 38px;
-    padding: 4px 12px;
+    height: 36px;
+    padding: 0 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 4px;
     background: #10151C;
+    overflow-x: auto;
 }
 
 .brand-compact {
@@ -95,8 +96,9 @@ body {
 .toolbar-group {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
+    gap: 3px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
 }
 
 .divider-v {
@@ -337,13 +339,14 @@ textarea {
 }
 
 .header-dual-deck .btn {
-    height: 27px;
-    min-height: 27px;
-    padding: 0 7px;
-    font-size: 10px;
+    height: 26px;
+    min-height: 26px;
+    padding: 0 6px;
+    font-size: 9.5px;
     white-space: nowrap;
     border-radius: 4px;
-    gap: 3px;
+    gap: 2px;
+    flex-shrink: 0;
 }
 
 .header-dual-deck .btn-undo-redo {

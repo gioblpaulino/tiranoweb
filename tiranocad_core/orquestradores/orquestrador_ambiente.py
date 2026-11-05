@@ -1,61 +1,73 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/orquestradores/orquestrador_ambiente.py
-# RESPONSABILIDADE: Coordenar as Paredes do ConstrutorAmbiente, calcular o
-# Auto-Snap lateral e executar movimentações/rotações direcionais (individuais
-# ou em lote) respeitando as coordenadas da parede ou globais do ambiente.
+# RESPONSABILIDADE: Gerenciar o posicionamento global dos módulos nas paredes,
+# Auto-Snap inteligente (desviando de Portas de Passagem), Transformações em
+# Lote e Auditoria de Interferências Arquitetônicas (Janelas, Portas, Água/Gás).
 # =============================================================================
 
+import math
 from typing import Any, Dict, List, Optional
-from tiranocad_core.modelos.ambiente import ConstrutorAmbiente, Parede
+from tiranocad_core.modelos.ambiente import ConstrutorParedes, ParedeAmbiente
 
 
 class OrquestradorAmbiente:
     """
-    Gerencia a planta baixa de paredes e posiciona/movimenta os módulos no espaço 3D.
+    Motor de ancoragem magnética, transformação 3D e validação arquitetônica
+    entre os módulos de marcenaria e os elementos da obra (paredes/esquadrias/pontos).
     """
 
-    ALTURA_PADRAO_AEREO_MM = 1450.0
-
     def __init__(self):
-        self.construtor_paredes = ConstrutorAmbiente(pe_direito_padrao=2700.0, espessura_padrao=150.0)
-        self.construtor_paredes.gerar_preset_ambiente("L", larg_a=3600.0, larg_b=2600.0)
-
-    def obter_primeira_parede(self) -> Optional[Parede]:
-        return self.construtor_paredes.paredes[0] if self.construtor_paredes.paredes else None
+        self.construtor_paredes = ConstrutorParedes()
+        self.construtor_paredes.gerar_preset_ambiente("L", 3600.0, 2600.0)
 
     def calcular_proximo_x_autosnap(
         self,
         id_parede: str,
         elevacao_z: float,
         modulos_ativos: Dict[str, Dict[str, Any]],
-        ignorar_id_modulo: Optional[str] = None
+        ignorar_id: Optional[str] = None,
+        largura_novo_modulo: float = 0.0
     ) -> float:
         """
-        Descobre onde termina o último módulo ancorado na mesma parede e na mesma
-        faixa de altura (Piso vs. Aéreo), retornando a cota X exata para Auto-Snap.
+        Calcula a próxima coordenada X livre na parede para encostar o módulo (Auto-Snap).
+        Se for um módulo de piso (Z < 200mm) e houver uma PORTA de passagem no caminho,
+        salta automaticamente para depois da porta!
         """
         maior_x_ocupado = 0.0
-        eh_faixa_alta = (elevacao_z >= 900.0)
+        eh_aereo = elevacao_z >= 1000.0
 
         for m_id, mod in modulos_ativos.items():
-            if ignorar_id_modulo and m_id == ignorar_id_modulo:
+            if ignorar_id and m_id == ignorar_id:
+                continue
+            # Ignora bancadas e rodapés no cálculo de fila de armários
+            if mod.get("familia") in ("MODULO_BANCADA_PEDRA", "MODULO_RODAPE"):
                 continue
 
-            pos_amb = mod.get("posicionamento_ambiente", {})
-            if pos_amb.get("id_parede") != id_parede:
+            pos = mod.get("posicionamento_ambiente")
+            if not pos or pos.get("id_parede") != id_parede:
                 continue
 
-            z_mod = float(pos_amb.get("elevacao_z", 0.0))
-            mod_eh_alto = (z_mod >= 900.0)
+            mod_eh_aereo = float(pos.get("elevacao_z", 0.0)) >= 1000.0
+            if mod_eh_aereo == eh_aereo:
+                fim_x = float(pos.get("distancia_x_parede", 0.0)) + float(mod["dimensoes_ocupadas"]["largura_x"])
+                if fim_x > maior_x_ocupado:
+                    maior_x_ocupado = fim_x
 
-            if eh_faixa_alta == mod_eh_alto:
-                x_ini = float(pos_amb.get("distancia_x_parede", 0.0))
-                larg_m = float(mod["dimensoes_ocupadas"]["largura_x"])
-                fim_m = x_ini + larg_m
-                if fim_m > maior_x_ocupado:
-                    maior_x_ocupado = fim_m
+        x_candidato = round(maior_x_ocupado, 2)
 
-        return round(maior_x_ocupado, 2)
+        # Inteligência Arquitetônica: Se o módulo não for aéreo, verifica se vai parar na frente de uma PORTA
+        parede = self.construtor_paredes.buscar_parede(id_parede)
+        if parede and not eh_aereo:
+            larg_teste = largura_novo_modulo if largura_novo_modulo > 0 else 600.0
+            for el in sorted(parede.elementos, key=lambda e: e.distancia_x):
+                if el.tipo == "PORTA":
+                    p_ini = el.distancia_x
+                    p_fim = el.distancia_x + el.largura_x
+                    # Se o intervalo [x_candidato, x_candidato + larg_teste] cruza a porta, pula para depois da porta!
+                    if (x_candidato < p_fim - 5.0) and ((x_candidato + larg_teste) > p_ini + 5.0):
+                        x_candidato = round(p_fim, 2)
+
+        return x_candidato
 
     def ancorar_modulo_na_parede(
         self,
@@ -64,86 +76,80 @@ class OrquestradorAmbiente:
         id_parede: Optional[str] = None,
         distancia_x_parede: Optional[float] = None,
         elevacao_z: Optional[float] = None,
-        afastamento_parede: Optional[float] = None,
-        rotacao_offset_graus: Optional[float] = None,
+        afastamento_parede: float = 0.0,
+        rotacao_offset_graus: float = 0.0,
         usar_autosnap: bool = True
     ) -> Dict[str, Any]:
-        """
-        Calcula e injeta o dicionário 'posicionamento_ambiente' dentro do módulo,
-        convertendo coordenadas relativas da parede em coordenadas 3D globais.
-        """
-        pos_atual = modulo_dict.get("posicionamento_ambiente", {})
-
-        parede = self.construtor_paredes.obter_parede(id_parede) if id_parede else None
-        if not parede:
-            parede = self.obter_primeira_parede()
-
-        familia = str(modulo_dict.get("familia", "MODULO_INFERIOR")).upper()
-
-        # Define elevação Z (1450mm automático para Aéreos quando não informado ou zerado na criação)
+        """Ancora um módulo em uma parede convertendo coordenadas locais em globais 3D."""
+        familia = modulo_dict.get("familia", "MODULO_INFERIOR")
         if elevacao_z is None:
-            z_final = self.ALTURA_PADRAO_AEREO_MM if familia == "MODULO_AEREO" else 0.0
+            elevacao_z = 1450.0 if familia == "MODULO_AEREO" else 0.0
         else:
-            z_final = float(elevacao_z)
+            elevacao_z = float(elevacao_z)
 
-        afast_final = float(
-            afastamento_parede if afastamento_parede is not None else pos_atual.get("afastamento_parede", 0.0)
-        )
-        rot_offset_final = float(
-            rotacao_offset_graus if rotacao_offset_graus is not None else pos_atual.get("rotacao_offset_graus", 0.0)
-        )
+        parede: Optional[ParedeAmbiente] = None
+        if id_parede and id_parede != "LIVRE":
+            parede = self.construtor_paredes.buscar_parede(id_parede)
+        elif id_parede is None and self.construtor_paredes.paredes:
+            parede = self.construtor_paredes.paredes[0]
+
+        larg_mod = float(modulo_dict["dimensoes_ocupadas"]["largura_x"])
 
         if not parede:
-            x_dist = float(distancia_x_parede or 0.0)
-            modulo_dict["posicionamento_ambiente"] = {
-                "id_parede": None,
+            dist_x = float(distancia_x_parede) if distancia_x_parede is not None else 0.0
+            pos_info = {
+                "id_parede": "LIVRE",
                 "nome_parede": "Livre (Sem Parede)",
-                "distancia_x_parede": round(x_dist, 2),
-                "elevacao_z": round(z_final, 2),
-                "afastamento_parede": round(afast_final, 2),
-                "rotacao_offset_graus": round(rot_offset_final, 2),
-                "x_ambiente": round(x_dist, 2),
-                "y_ambiente": round(afast_final, 2),
-                "z_ambiente": round(z_final, 2),
-                "rotacao_graus": round(rot_offset_final, 2),
-                "sobra_parede_mm": 0.0
+                "distancia_x_parede": round(dist_x, 2),
+                "elevacao_z": round(elevacao_z, 2),
+                "afastamento_parede": round(float(afastamento_parede), 2),
+                "rotacao_offset_graus": round(float(rotacao_offset_graus), 2),
+                "pos_global_x": round(dist_x, 2),
+                "pos_global_y": round(float(afastamento_parede), 2),
+                "pos_global_z": round(elevacao_z, 2),
+                "rotacao_graus": round(float(rotacao_offset_graus), 2),
+                "sobra_parede_mm": 0.0,
+                "ultrapassou_parede": False
             }
-            return modulo_dict["posicionamento_ambiente"]
+            modulo_dict["posicionamento_ambiente"] = pos_info
+            return pos_info
 
         if usar_autosnap or distancia_x_parede is None:
-            x_dist = self.calcular_proximo_x_autosnap(
+            dist_x = self.calcular_proximo_x_autosnap(
                 id_parede=parede.id_parede,
-                elevacao_z=z_final,
+                elevacao_z=elevacao_z,
                 modulos_ativos=modulos_ativos,
-                ignorar_id_modulo=modulo_dict["id_modulo"]
+                ignorar_id=modulo_dict["id_modulo"],
+                largura_novo_modulo=larg_mod
             )
         else:
-            x_dist = float(distancia_x_parede)
+            dist_x = float(distancia_x_parede)
 
-        transf = parede.calcular_transformacao_modulo(
-            distancia_ao_longo_mm=x_dist,
-            elevacao_z_mm=z_final,
-            afastamento_parede_mm=afast_final
-        )
+        ux, uy = parede.vetor_direcao
+        nx, ny = parede.vetor_normal_interno
 
-        rot_total = (transf["rotacao_graus"] + rot_offset_final) % 360.0
-        larg_mod = float(modulo_dict["dimensoes_ocupadas"]["largura_x"])
-        sobra_parede = round(parede.comprimento - (x_dist + larg_mod), 2)
+        pos_global_x = parede.x1 + (ux * dist_x) + (nx * float(afastamento_parede))
+        pos_global_y = parede.y1 + (uy * dist_x) + (ny * float(afastamento_parede))
+        rot_final = parede.angulo_graus + float(rotacao_offset_graus)
+        sobra_parede = round(parede.comprimento - (dist_x + larg_mod), 2)
 
-        modulo_dict["posicionamento_ambiente"] = {
+        pos_info = {
             "id_parede": parede.id_parede,
             "nome_parede": parede.nome,
-            "distancia_x_parede": round(x_dist, 2),
-            "elevacao_z": round(z_final, 2),
-            "afastamento_parede": round(afast_final, 2),
-            "rotacao_offset_graus": round(rot_offset_final, 2),
-            "x_ambiente": transf["x_ambiente"],
-            "y_ambiente": transf["y_ambiente"],
-            "z_ambiente": transf["z_ambiente"],
-            "rotacao_graus": round(rot_total, 2),
-            "sobra_parede_mm": sobra_parede
+            "distancia_x_parede": round(dist_x, 2),
+            "elevacao_z": round(elevacao_z, 2),
+            "afastamento_parede": round(float(afastamento_parede), 2),
+            "rotacao_offset_graus": round(float(rotacao_offset_graus), 2),
+            "pos_global_x": round(pos_global_x, 2),
+            "pos_global_y": round(pos_global_y, 2),
+            "pos_global_z": round(elevacao_z, 2),
+            "rotacao_graus": round(rot_final, 2),
+            "sobra_parede_mm": sobra_parede,
+            "ultrapassou_parede": sobra_parede < 0.0
         }
-        return modulo_dict["posicionamento_ambiente"]
+
+        modulo_dict["posicionamento_ambiente"] = pos_info
+        return pos_info
 
     def transformar_lote_modulos(
         self,
@@ -158,56 +164,114 @@ class OrquestradorAmbiente:
         rotacao_absoluta: Optional[float] = None,
         nova_id_parede: Optional[str] = None,
         aplicar_autosnap: bool = False
-    ) -> List[str]:
-        """
-        Aplica deslocamentos direcionais (X, Y, Z) e rotações em 1 ou múltiplos
-        módulos selecionados simultaneamente.
-        """
-        modificados: List[str] = []
+    ) -> List[Dict[str, Any]]:
+        """Aplica translações e rotações simultaneamente a múltiplos módulos."""
+        modificados = []
 
         for m_id in ids_selecionados:
             if m_id not in modulos_ativos:
                 continue
 
             mod = modulos_ativos[m_id]
-            pos = mod.get("posicionamento_ambiente", {})
+            pos_atual = mod.get("posicionamento_ambiente", {})
 
-            id_par_alvo = nova_id_parede if nova_id_parede else pos.get("id_parede")
-            trocou_parede = (nova_id_parede is not None and nova_id_parede != pos.get("id_parede"))
+            id_par = nova_id_parede if nova_id_parede is not None else pos_atual.get("id_parede")
+            trocou_parede = (nova_id_parede is not None and nova_id_parede != pos_atual.get("id_parede"))
 
-            novo_x = float(pos.get("distancia_x_parede", 0.0)) + float(delta_x)
-            novo_y = float(y_absoluto) if y_absoluto is not None else (float(pos.get("afastamento_parede", 0.0)) + float(delta_y))
-            novo_z = float(z_absoluto) if z_absoluto is not None else max(0.0, float(pos.get("elevacao_z", 0.0)) + float(delta_z))
-
-            if rotacao_absoluta is not None:
-                novo_rot = float(rotacao_absoluta)
-            else:
-                novo_rot = (float(pos.get("rotacao_offset_graus", 0.0)) + float(delta_rotacao)) % 360.0
+            novo_x = float(pos_atual.get("distancia_x_parede", 0.0)) + float(delta_x)
+            novo_y = float(y_absoluto) if y_absoluto is not None else (
+                float(pos_atual.get("afastamento_parede", 0.0)) + float(delta_y)
+            )
+            novo_z = max(0.0, float(z_absoluto) if z_absoluto is not None else (
+                float(pos_atual.get("elevacao_z", 0.0)) + float(delta_z)
+            ))
+            nova_rot = float(rotacao_absoluta) if rotacao_absoluta is not None else (
+                float(pos_atual.get("rotacao_offset_graus", 0.0)) + float(delta_rotacao)
+            )
+            nova_rot = nova_rot % 360.0
 
             self.ancorar_modulo_na_parede(
                 modulo_dict=mod,
                 modulos_ativos=modulos_ativos,
-                id_parede=id_par_alvo,
+                id_parede=id_par,
                 distancia_x_parede=None if (aplicar_autosnap or trocou_parede) else novo_x,
                 elevacao_z=novo_z,
                 afastamento_parede=novo_y,
-                rotacao_offset_graus=novo_rot,
-                usar_autosnap=(aplicar_autosnap or trocou_parede)
+                rotacao_offset_graus=nova_rot,
+                usar_autosnap=aplicar_autosnap or trocou_parede
             )
-            modificados.append(m_id)
+            modificados.append(mod)
 
         return modificados
 
     def recalcular_todos_modulos(self, modulos_ativos: Dict[str, Dict[str, Any]]) -> None:
-        for mod in modulos_ativos.values():
-            pos = mod.get("posicionamento_ambiente", {})
+        """Recalcula a posição global de todos os módulos quando as paredes mudam."""
+        for m_id in sorted(modulos_ativos.keys()):
+            mod = modulos_ativos[m_id]
+            pos_ant = mod.get("posicionamento_ambiente", {})
             self.ancorar_modulo_na_parede(
                 modulo_dict=mod,
                 modulos_ativos=modulos_ativos,
-                id_parede=pos.get("id_parede"),
-                distancia_x_parede=pos.get("distancia_x_parede", 0.0),
-                elevacao_z=pos.get("elevacao_z", 0.0),
-                afastamento_parede=pos.get("afastamento_parede", 0.0),
-                rotacao_offset_graus=pos.get("rotacao_offset_graus", 0.0),
+                id_parede=pos_ant.get("id_parede"),
+                distancia_x_parede=pos_ant.get("distancia_x_parede"),
+                elevacao_z=pos_ant.get("elevacao_z"),
+                afastamento_parede=pos_ant.get("afastamento_parede", 0.0),
+                rotacao_offset_graus=pos_ant.get("rotacao_offset_graus", 0.0),
                 usar_autosnap=False
             )
+
+    def auditar_interferencias_obra(self, modulos_ativos: Dict[str, Dict[str, Any]]) -> List[str]:
+        """
+        Audita todo o ambiente verificando interferências entre a marcenaria e a obra:
+        1. Módulos bloqueando Portas de Passagem.
+        2. Módulos invadindo o vão de Janelas.
+        3. Balcões com Fundo Costa fechado posicionados na frente de Pontos de Água/Gás.
+        """
+        alertas: List[str] = []
+
+        for mod in modulos_ativos.values():
+            pos = mod.get("posicionamento_ambiente") or {}
+            id_par = pos.get("id_parede")
+            if not id_par or id_par == "LIVRE":
+                continue
+
+            parede = self.construtor_paredes.buscar_parede(id_par)
+            if not parede or parede.id_parede != id_par:
+                continue
+
+            mx1 = float(pos.get("distancia_x_parede", 0.0))
+            mx2 = mx1 + float(mod["dimensoes_ocupadas"]["largura_x"])
+            mz1 = float(pos.get("elevacao_z", 0.0))
+            mz2 = mz1 + float(mod["dimensoes_ocupadas"]["altura_y"])
+            fam = mod.get("familia", "")
+
+            for el in parede.elementos:
+                ex1 = el.distancia_x
+                ex2 = ex1 + el.largura_x
+                ez1 = el.elevacao_z
+                ez2 = ez1 + el.altura_z
+
+                sobrepoe_x = (mx1 < ex2 - 5.0) and (mx2 > ex1 + 5.0)
+                sobrepoe_z = (mz1 < ez2 - 5.0) and (mz2 > ez1 + 5.0)
+
+                if sobrepoe_x and sobrepoe_z:
+                    if el.tipo == "PORTA":
+                        alertas.append(
+                            f"🚨 COLISÃO: Item #{mod['id_modulo']} está bloqueando a '{el.nome}' na Parede {id_par}!"
+                        )
+                    elif el.tipo == "JANELA" and fam != "MODULO_BANCADA_PEDRA":
+                        alertas.append(
+                            f"⚠️ JANELA: Item #{mod['id_modulo']} invade a '{el.nome}' (Peitoril Z={ez1:.0f}mm) na Parede {id_par}!"
+                        )
+                    elif el.tipo in ("PONTO_AGUA", "PONTO_GAS") and fam == "MODULO_INFERIOR":
+                        tem_fundo_fechado = any(
+                            p.get("categoria_industrial") == "fundo_costa"
+                            for p in mod.get("lista_de_pecas", [])
+                        )
+                        if tem_fundo_fechado:
+                            icone = "🚰 HIDRÁULICA" if el.tipo == "PONTO_AGUA" else "🔥 GÁS"
+                            alertas.append(
+                                f"{icone}: O '{el.nome}' (X={ex1:.0f}mm) está atrás do Balcão #{mod['id_modulo']}, que está COM FUNDO fechado!"
+                            )
+
+        return alertas

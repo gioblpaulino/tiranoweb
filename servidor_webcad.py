@@ -98,6 +98,19 @@ def restaurar_estado_snapshot(snapshot: dict) -> None:
             nome=p_dict.get("nome")
         )
         orq_ambiente.construtor_paredes.paredes[-1].id_parede = p_dict["id_parede"]
+        
+        parede_criada = orq_ambiente.construtor_paredes.paredes[-1]
+        parede_criada.id_parede = p_dict["id_parede"]
+        for el_d in p_dict.get("elementos", []):
+            parede_criada.adicionar_elemento(
+                tipo=el_d["tipo"],
+                distancia_x=float(el_d["distancia_x"]),
+                elevacao_z=float(el_d["elevacao_z"]),
+                largura_x=float(el_d["largura_x"]),
+                altura_z=float(el_d["altura_z"]),
+                nome=el_d.get("nome"),
+                id_elemento=el_d.get("id_elemento")
+            )
 
     COFRE_MODULOS_ATIVOS.clear()
     COFRE_MODULOS_ATIVOS.update(copy.deepcopy(snapshot.get("modulos", {})))
@@ -359,6 +372,63 @@ def limpar_paredes():
     orq_ambiente.recalcular_todos_modulos(COFRE_MODULOS_ATIVOS)
     return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
 
+@app.route("/api/ambiente/elemento_parede/adicionar", methods=["POST"])
+def api_adicionar_elemento_parede():
+    """Adiciona Janela, Porta de Passagem ou Ponto Hidráulico/Elétrico/Gás numa parede."""
+    dados = request.get_json(silent=True) or {}
+    id_par = str(dados.get("id_parede", "")).strip()
+    parede = orq_ambiente.construtor_paredes.buscar_parede(id_par)
+    if not parede:
+        return jsonify({"sucesso": False, "erro_engenharia": "Nenhuma parede encontrada."}), 404
+
+    registrar_acao_historico()
+    tipo = str(dados.get("tipo", "JANELA")).strip().upper()
+    dist_x = float(dados.get("distancia_x", 500.0))
+    elev_z = float(dados.get("elevacao_z", 1100.0 if tipo == "JANELA" else 0.0))
+    larg_x = float(dados.get("largura_x", 1200.0 if tipo == "JANELA" else 800.0))
+    alt_z = float(dados.get("altura_z", 1000.0 if tipo == "JANELA" else 2100.0))
+
+    if tipo in ("PONTO_AGUA", "PONTO_GAS", "PONTO_TOMADA"):
+        larg_x = 120.0
+        alt_z = 120.0
+
+    nomes_padrao = {
+        "JANELA": f"Janela ({larg_x:.0f}x{alt_z:.0f}mm)",
+        "PORTA": f"Porta Passagem ({larg_x:.0f}x{alt_z:.0f}mm)",
+        "PONTO_AGUA": "🚰 Ponto Água / Esgoto",
+        "PONTO_GAS": "🔥 Ponto de Gás",
+        "PONTO_TOMADA": "⚡ Tomada / Ponto Elétrico"
+    }
+
+    parede.adicionar_elemento(
+        tipo=tipo,
+        distancia_x=dist_x,
+        elevacao_z=elev_z,
+        largura_x=larg_x,
+        altura_z=alt_z,
+        nome=dados.get("nome") or nomes_padrao.get(tipo, tipo)
+    )
+    return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
+
+
+@app.route("/api/ambiente/elemento_parede/remover", methods=["POST"])
+def api_remover_elemento_parede():
+    dados = request.get_json(silent=True) or {}
+    id_par = str(dados.get("id_parede", "")).strip()
+    id_el = str(dados.get("id_elemento", "")).strip()
+    parede = orq_ambiente.construtor_paredes.buscar_parede(id_par)
+    if not parede:
+        return jsonify({"sucesso": False}), 404
+
+    registrar_acao_historico()
+    parede.elementos = [e for e in parede.elementos if e.id_elemento != id_el]
+    return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
+
+
+@app.route("/api/ambiente/verificar_interferencias", methods=["GET"])
+def api_verificar_interferencias_arquitetonicas():
+    alertas = orq_ambiente.auditar_interferencias_obra(COFRE_MODULOS_ATIVOS)
+    return jsonify({"alertas": alertas}), 200
 
 # =============================================================================
 # 2. ROTAS DE FABRICAÇÃO, PINTURA, TAMPONAMENTO E TRANSFORMAÇÃO EM LOTE

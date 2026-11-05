@@ -145,16 +145,25 @@ class ConstrutorPortaTempero:
 
         for idx, z_nivel in enumerate(cotas_z_niveis):
             num_n = idx + 1
+            tem_vao_livre = vao_livre_guarda_z > 0.0
+
+            # Se houver vão livre abaixo da guarda, a prateleira base se estende até a borda externa
+            # do quadro (larg_util_interna) e recebe fita nas laterais aparentes;
+            # se for 0, ela fica confinada entre as guardas laterais (larg_base_interna) sem fita!
+            larg_efetiva_base = larg_util_interna if tem_vao_livre else larg_base_interna
+            x_efetivo_base = round(x_quadro, 2) if tem_vao_livre else round(x_quadro + esp_caixa, 2)
+
             base_nivel = Peca(
                 categoria_industrial="prateleira_interna_tempero",
                 nome_comercial=f"{nome_base_nivel} {num_n}",
-                dim_3d=(larg_base_interna + esp_caixa * 2.0, comp_bandeja_y, esp_caixa),
-                pos_3d=(round(x_quadro, 2), y_bandeja, z_nivel),
+                dim_3d=(larg_efetiva_base, comp_bandeja_y, esp_caixa),
+                pos_3d=(x_efetivo_base, y_bandeja, z_nivel),
                 material=mat_caixa,
                 id_pai=id_modulo
             )
-
-            base_nivel.fitas.esquerda = base_nivel.fitas.direita = True
+            if tem_vao_livre:
+                base_nivel.fitas.esquerda = True
+                base_nivel.fitas.direita = True
             
             # A guarda sobe acima da base_nivel (esp_caixa) + o vãozinho livre configurado!
             z_guarda = round(z_nivel + esp_caixa + vao_livre_guarda_z, 2)

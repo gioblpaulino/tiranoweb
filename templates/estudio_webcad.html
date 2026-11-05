@@ -128,6 +128,7 @@
                 <button class="btn btn-secondary" id="btn_hud_engenharia" onclick="alternarJanelaHUD('hud_engenharia', 'btn_hud_engenharia')">⚙️ Engenharia Fábrica</button>
                 <button class="btn btn-secondary" id="btn_hud_tamponamento" onclick="alternarJanelaHUD('hud_tamponamento', 'btn_hud_tamponamento')">🛡️ Tamponamentos</button>
                 <button class="btn btn-secondary" id="btn_hud_bancadas" onclick="alternarJanelaHUD('hud_bancadas', 'btn_hud_bancadas')">🪨 Bancadas &amp; Rodapés</button>
+                <button class="btn btn-secondary" id="btn_hud_esquadrias" onclick="alternarJanelaHUD('hud_esquadrias', 'btn_hud_esquadrias')">🪟 Esquadrias &amp; Pontos</button>
                 <button class="btn btn-purple" id="btn_menu_materiais" onclick="abrirAbaDireita('MATERIAIS')">🎨 Materiais &amp; Peças</button>
                 <button class="btn btn-secondary ativo" id="btn_hud_direita" onclick="alternarJanelaHUD('hud_direita', 'btn_hud_direita')">📦 Fila &amp; Inspetor</button>
             </div>
@@ -499,6 +500,47 @@
             </div>
         </div>
 
+        <!-- JANELA FLUTUANTE: ESQUADRIAS (JANELAS/PORTAS) & PONTOS HIDRÁULICOS/ELÉTRICOS -->
+        <div id="hud_esquadrias" class="hud-panel oculto" style="left:378px; width:390px; border-top:3px solid #FFB74D; z-index:34;">
+            <div class="hud-header">
+                <strong style="color:#FFB74D; font-size:12px;">🪟 Esquadrias &amp; Pontos de Obra na Parede</strong>
+                <span class="hud-close" onclick="alternarJanelaHUD('hud_esquadrias', 'btn_hud_esquadrias')">✕</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#00E5FF;">1. Inserir Janela, Porta ou Ponto Técnico</div>
+                <div class="row-2">
+                    <div>
+                        <label>Parede Alvo</label>
+                        <select id="sel_parede_esquadria"></select>
+                    </div>
+                    <div>
+                        <label>Tipo de Elemento</label>
+                        <select id="sel_tipo_esquadria" onchange="ajustarPadraoEsquadriaUI()">
+                            <option value="JANELA">🪟 Janela (c/ Peitoril)</option>
+                            <option value="PORTA">🚪 Porta de Passagem</option>
+                            <option value="PONTO_AGUA">🚰 Ponto Água / Esgoto</option>
+                            <option value="PONTO_GAS">🔥 Ponto de Gás</option>
+                            <option value="PONTO_TOMADA">⚡ Tomada / Ponto Elétrico</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row-4">
+                    <div><label>Cota X (mm)</label><input type="number" id="inp_esq_x" value="800" step="50"></div>
+                    <div><label>Peitoril Z</label><input type="number" id="inp_esq_z" value="1100" step="50"></div>
+                    <div><label>Largura (X)</label><input type="number" id="inp_esq_larg" value="1200" step="50"></div>
+                    <div><label>Altura (Z)</label><input type="number" id="inp_esq_alt" value="1000" step="50"></div>
+                </div>
+                <button class="btn btn-primary" onclick="adicionarElementoParedeUI()">➕ Inserir na Parede</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">2. Elementos Instalados nas Paredes</div>
+                <div id="lista_elementos_parede_ui" class="list-container" style="max-height:140px;"></div>
+                <div id="box_alertas_obra" style="font-size:10.5px; color:#FF5252; font-weight:bold;"></div>
+            </div>
+        </div>
+        
         <!-- MODAL FLUTUANTE: REDIMENSIONAMENTO DE PEÇA INDIVIDUAL DO TAMPONAMENTO -->
         <div id="modal_redimensionar_tamp" class="floating-modal" style="left:380px; top:220px; width:345px; border:1px solid #00E5FF; z-index:38;">
             <div class="hud-header" style="margin-bottom:6px;">

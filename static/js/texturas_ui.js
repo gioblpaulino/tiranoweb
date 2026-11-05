@@ -261,15 +261,16 @@ function obterTexturaMDF(idMaterial, hexColor, temVeio, orientacao3D) {
 }
 
 function criarMaterialFace(idMat, orientacao) {
-    const corHex = MAPA_HEX_MATERIAIS[idMat] || 0xECEFF1;
-    const info = (catalogoMateriaisCache || []).find(m => m.id === idMat);
+    const idLimpo = String(idMat || "generico_branco_tx").replace(/_(?:3|6)mm$/, "");
+    const corHex = MAPA_HEX_MATERIAIS[idLimpo] || 0xECEFF1;
+    const info = (catalogoMateriaisCache || []).find(m => m.id === idLimpo);
     const temVeio = info ? !!info.veio : false;
-    const tex = obterTexturaMDF(idMat, corHex, temVeio, orientacao);
+    const tex = obterTexturaMDF(idLimpo, corHex, temVeio, orientacao);
 
     return new THREE.MeshStandardMaterial({
         color: 0xFFFFFF,
         map: tex,
-        roughness: idMat === "mdf_cru" ? 0.85 : (temVeio ? 0.48 : 0.62)
+        roughness: idLimpo === "mdf_cru" ? 0.85 : (temVeio ? 0.48 : 0.62)
     });
 }
 
@@ -1515,3 +1516,226 @@ async function gerarRodapeDedicado(sobSelecionados = false) {
     idsSelecionados.add(moduloAtivo.id_modulo);
     await carregarEstadoAmbiente();
 }
+
+// =============================================================================
+// 11. ESQUADRIAS (JANELAS/PORTAS) E PONTOS HIDRÁULICOS/ELÉTRICOS NAS PAREDES
+// =============================================================================
+let grupoEsquadriasEPontos3D = new THREE.Group();
+
+function ajustarPadraoEsquadriaUI() {
+    const tipo = document.getElementById("sel_tipo_esquadria").value;
+    if (tipo === "JANELA") {
+        document.getElementById("inp_esq_z").value = 1100;
+        document.getElementById("inp_esq_larg").value = 1200;
+        document.getElementById("inp_esq_alt").value = 1000;
+    } else if (tipo === "PORTA") {
+        document.getElementById("inp_esq_z").value = 0;
+        document.getElementById("inp_esq_larg").value = 800;
+        document.getElementById("inp_esq_alt").value = 2100;
+    } else if (tipo === "PONTO_AGUA") {
+        document.getElementById("inp_esq_z").value = 550;
+        document.getElementById("inp_esq_larg").value = 120;
+        document.getElementById("inp_esq_alt").value = 120;
+    } else if (tipo === "PONTO_GAS") {
+        document.getElementById("inp_esq_z").value = 400;
+        document.getElementById("inp_esq_larg").value = 120;
+        document.getElementById("inp_esq_alt").value = 120;
+    } else if (tipo === "PONTO_TOMADA") {
+        document.getElementById("inp_esq_z").value = 1150;
+        document.getElementById("inp_esq_larg").value = 120;
+        document.getElementById("inp_esq_alt").value = 120;
+    }
+}
+
+async function adicionarElementoParedeUI() {
+    const payload = {
+        id_parede: document.getElementById("sel_parede_esquadria").value,
+        tipo: document.getElementById("sel_tipo_esquadria").value,
+        distancia_x: parseFloat(document.getElementById("inp_esq_x").value) || 0,
+        elevacao_z: parseFloat(document.getElementById("inp_esq_z").value) || 0,
+        largura_x: parseFloat(document.getElementById("inp_esq_larg").value) || 800,
+        altura_z: parseFloat(document.getElementById("inp_esq_alt").value) || 1000
+    };
+
+    const resp = await fetch("/api/ambiente/elemento_parede/adicionar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        await carregarEstadoAmbiente();
+    }
+}
+
+async function removerElementoParedeUI(idParede, idElemento) {
+    await fetch("/api/ambiente/elemento_parede/remover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_parede: idParede, id_elemento: idElemento })
+    });
+    await carregarEstadoAmbiente();
+}
+
+function renderizarEsquadriasEPontos3D() {
+    if (!scene.children.includes(grupoEsquadriasEPontos3D)) {
+        scene.add(grupoEsquadriasEPontos3D);
+    }
+    grupoEsquadriasEPontos3D.clear();
+
+    const selParEsq = document.getElementById("sel_parede_esquadria");
+    const valorAnt = selParEsq ? selParEsq.value : "";
+    if (selParEsq) selParEsq.innerHTML = "";
+
+    const containerLista = document.getElementById("lista_elementos_parede_ui");
+    if (containerLista) containerLista.innerHTML = "";
+
+    (ambienteCache.paredes || []).forEach(par => {
+        if (selParEsq) {
+            const opt = document.createElement("option");
+            opt.value = par.id_parede;
+            opt.innerText = `Parede ${par.id_parede} (${par.comprimento}mm)`;
+            selParEsq.appendChild(opt);
+        }
+
+        const grupoLocalPar = new THREE.Group();
+        grupoLocalPar.position.set(par.x1, 0, par.y1);
+        grupoLocalPar.rotation.y = -THREE.MathUtils.degToRad(par.angulo_graus || 0);
+
+        (par.elementos || []).forEach(el => {
+            if (containerLista) {
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "module-item";
+                itemDiv.innerHTML = `
+                    <span><b>[Par. ${par.id_parede}]</b> ${el.nome} <small style="color:#80D8FF;">(X:${el.distancia_x} Z:${el.elevacao_z})</small></span>
+                    <button class="btn btn-danger" style="padding:2px 6px;" onclick="removerElementoParedeUI('${par.id_parede}', '${el.id_elemento}')">🗑️</button>
+                `;
+                containerLista.appendChild(itemDiv);
+            }
+
+            const larg = el.largura_x;
+            const alt = el.altura_z;
+            const cx = el.distancia_x + (larg / 2.0);
+            const cy = el.elevacao_z + (alt / 2.0);
+            const zFace = 14.0; // Avançado 14mm da face interna da parede para evitar Z-fighting
+
+            if (el.tipo === "JANELA") {
+                const espPerfil = 45.0;
+                const profJan = 24.0;
+                const matAlum = new THREE.MeshStandardMaterial({ color: 0xB0BEC5, metalness: 0.55, roughness: 0.35 });
+                const matFundoEscuro = new THREE.MeshBasicMaterial({ color: 0x0B1622 });
+                const matVidro = new THREE.MeshStandardMaterial({
+                    color: 0x80D8FF,
+                    transparent: true,
+                    opacity: 0.32,
+                    roughness: 0.1,
+                    metalness: 0.2,
+                    depthWrite: false
+                });
+
+                // Fundo escuro simulando o vão aberto na alvenaria + Vidro translúcido
+                const fundoVao = new THREE.Mesh(new THREE.BoxGeometry(larg - 20, alt - 20, 6), matFundoEscuro);
+                fundoVao.position.set(cx, cy, 4);
+                const vidro = new THREE.Mesh(new THREE.BoxGeometry(larg - (espPerfil * 2), alt - (espPerfil * 2), 8), matVidro);
+                vidro.position.set(cx, cy, zFace);
+
+                // 4 Perfis do Quadro de Alumínio + Divisão Central (2 Folhas) + Peitoril de Granito
+                const pSup = new THREE.Mesh(new THREE.BoxGeometry(larg, espPerfil, profJan), matAlum);
+                pSup.position.set(cx, el.elevacao_z + alt - (espPerfil / 2), zFace);
+
+                const pInf = new THREE.Mesh(new THREE.BoxGeometry(larg + 40, espPerfil, profJan + 18), matAlum);
+                pInf.position.set(cx, el.elevacao_z + (espPerfil / 2), zFace + 6);
+
+                const pEsq = new THREE.Mesh(new THREE.BoxGeometry(espPerfil, alt - (espPerfil * 2), profJan), matAlum);
+                pEsq.position.set(el.distancia_x + (espPerfil / 2), cy, zFace);
+
+                const pDir = new THREE.Mesh(new THREE.BoxGeometry(espPerfil, alt - (espPerfil * 2), profJan), matAlum);
+                pDir.position.set(el.distancia_x + larg - (espPerfil / 2), cy, zFace);
+
+                const pMeio = new THREE.Mesh(new THREE.BoxGeometry(28, alt - (espPerfil * 2), profJan + 4), matAlum);
+                pMeio.position.set(cx, cy, zFace + 2);
+
+                const spJan = criarSpriteTextoCAD(`🪟 ${larg}x${alt} (Peitoril ${el.elevacao_z})`, "#0277BD", "rgba(255,255,255,0.92)", 210);
+                spJan.position.set(cx, el.elevacao_z + alt + 55, zFace + 15);
+
+                grupoLocalPar.add(fundoVao, vidro, pSup, pInf, pEsq, pDir, pMeio, spJan);
+            } else if (el.tipo === "PORTA") {
+                const largGuarnicao = 60.0;
+                const matGuarnicao = new THREE.MeshStandardMaterial({ color: 0x4E342E, roughness: 0.55 });
+                const matFolha = new THREE.MeshStandardMaterial({ color: 0x795548, roughness: 0.5 });
+                const matInox = new THREE.MeshStandardMaterial({ color: 0xECEFF1, metalness: 0.85, roughness: 0.2 });
+
+                // Folha da porta
+                const folha = new THREE.Mesh(new THREE.BoxGeometry(larg, alt, 18), matFolha);
+                folha.position.set(cx, cy, zFace);
+
+                // Guarnições (Alisares Esquerdo, Direito e Superior)
+                const gEsq = new THREE.Mesh(new THREE.BoxGeometry(largGuarnicao, alt + largGuarnicao, 26), matGuarnicao);
+                gEsq.position.set(el.distancia_x - (largGuarnicao / 2), (alt + largGuarnicao) / 2, zFace + 2);
+
+                const gDir = new THREE.Mesh(new THREE.BoxGeometry(largGuarnicao, alt + largGuarnicao, 26), matGuarnicao);
+                gDir.position.set(el.distancia_x + larg + (largGuarnicao / 2), (alt + largGuarnicao) / 2, zFace + 2);
+
+                const gSup = new THREE.Mesh(new THREE.BoxGeometry(larg + (largGuarnicao * 2), largGuarnicao, 26), matGuarnicao);
+                gSup.position.set(cx, alt + (largGuarnicao / 2), zFace + 2);
+
+                // Maçaneta cromada na altura ergonômica (Z = 1050mm)
+                const macaneta = new THREE.Mesh(new THREE.BoxGeometry(110, 22, 35), matInox);
+                macaneta.position.set(el.distancia_x + larg - 90, Math.min(1050, alt * 0.5), zFace + 22);
+
+                const spPorta = criarSpriteTextoCAD(`🚪 Porta ${larg}x${alt}`, "#4E342E", "rgba(255,255,255,0.92)", 180);
+                spPorta.position.set(cx, alt + largGuarnicao + 55, zFace + 15);
+
+                grupoLocalPar.add(folha, gEsq, gDir, gSup, macaneta, spPorta);
+            } else {
+                // Pontos de Obra: Água (Azul), Gás (Amarelo), Tomada (Vermelho)
+                let corPonto = 0x00B0FF;
+                let sigla = "🚰 ÁGUA";
+                if (el.tipo === "PONTO_GAS") { corPonto = 0xFFB300; sigla = "🔥 GÁS"; }
+                else if (el.tipo === "PONTO_TOMADA") { corPonto = 0xFF1744; sigla = "⚡ TOMADA"; }
+
+                const matPonto = new THREE.MeshStandardMaterial({ color: corPonto, roughness: 0.3 });
+                let pecaPonto;
+                if (el.tipo === "PONTO_TOMADA") {
+                    // Espelho retangular padrão 4x2"
+                    pecaPonto = new THREE.Mesh(new THREE.BoxGeometry(80, 120, 14), matPonto);
+                } else {
+                    // Registro / Saída tubular cilíndrica para Água ou Gás
+                    pecaPonto = new THREE.Mesh(new THREE.CylinderGeometry(35, 35, 18, 24), matPonto);
+                    pecaPonto.rotation.x = Math.PI / 2;
+                }
+                pecaPonto.position.set(cx, cy, zFace);
+
+                const spPt = criarSpriteTextoCAD(`${sigla} X:${el.distancia_x} Z:${el.elevacao_z}`, "#111111", "rgba(255,255,255,0.92)", 175);
+                spPt.position.set(cx, cy + 75, zFace + 12);
+
+                grupoLocalPar.add(pecaPonto, spPt);
+            }
+        });
+
+        grupoEsquadriasEPontos3D.add(grupoLocalPar);
+    });
+
+    if (selParEsq && valorAnt) selParEsq.value = valorAnt;
+    verificarInterferenciasObraUI();
+}
+
+async function verificarInterferenciasObraUI() {
+    const resp = await fetch("/api/ambiente/verificar_interferencias");
+    const dados = await resp.json();
+    const box = document.getElementById("box_alertas_obra");
+    if (!box) return;
+
+    if (dados.alertas && dados.alertas.length > 0) {
+        box.innerHTML = dados.alertas.join("<br>");
+        document.getElementById("txt_resposta_copiloto").innerText = dados.alertas[0];
+    } else {
+        box.innerHTML = "<span style='color:#4CE660;'>✅ Zero colisões entre módulos e esquadrias/pontos!</span>";
+    }
+}
+
+const _renderAntesEsquadrias = renderizarCenaCompleta;
+renderizarCenaCompleta = function () {
+    _renderAntesEsquadrias();
+    renderizarEsquadriasEPontos3D();
+};
