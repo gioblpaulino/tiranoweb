@@ -63,6 +63,8 @@ METADADOS_PROJETO = {
     "cor_parede": "#263238"
 }
 
+ELEMENTOS_PAREDE_ATIVOS = []
+
 HISTORICO_UNDO = []
 HISTORICO_REDO = []
 MAX_HISTORICO = 40
@@ -73,7 +75,8 @@ def capturar_estado_atual() -> dict:
     return copy.deepcopy({
         "metadados": METADADOS_PROJETO,
         "ambiente": orq_ambiente.construtor_paredes.to_dict(),
-        "modulos": COFRE_MODULOS_ATIVOS
+        "modulos": COFRE_MODULOS_ATIVOS,
+        "elementos_parede": ELEMENTOS_PAREDE_ATIVOS
     })
 
 
@@ -98,22 +101,11 @@ def restaurar_estado_snapshot(snapshot: dict) -> None:
             nome=p_dict.get("nome")
         )
         orq_ambiente.construtor_paredes.paredes[-1].id_parede = p_dict["id_parede"]
-        
-        parede_criada = orq_ambiente.construtor_paredes.paredes[-1]
-        parede_criada.id_parede = p_dict["id_parede"]
-        for el_d in p_dict.get("elementos", []):
-            parede_criada.adicionar_elemento(
-                tipo=el_d["tipo"],
-                distancia_x=float(el_d["distancia_x"]),
-                elevacao_z=float(el_d["elevacao_z"]),
-                largura_x=float(el_d["largura_x"]),
-                altura_z=float(el_d["altura_z"]),
-                nome=el_d.get("nome"),
-                id_elemento=el_d.get("id_elemento")
-            )
 
     COFRE_MODULOS_ATIVOS.clear()
     COFRE_MODULOS_ATIVOS.update(copy.deepcopy(snapshot.get("modulos", {})))
+    ELEMENTOS_PAREDE_ATIVOS.clear()
+    ELEMENTOS_PAREDE_ATIVOS.extend(copy.deepcopy(snapshot.get("elementos_parede", [])))
 
 
 def registrar_acao_historico() -> None:
@@ -167,6 +159,7 @@ def obter_estado_ambiente():
         "metadados": METADADOS_PROJETO,
         "ambiente": orq_ambiente.construtor_paredes.to_dict(),
         "modulos": modulos_ordenados,
+        "elementos_parede": ELEMENTOS_PAREDE_ATIVOS,
         "historico": {
             "pode_desfazer": len(HISTORICO_UNDO) > 0,
             "pode_refazer": len(HISTORICO_REDO) > 0
@@ -374,60 +367,91 @@ def limpar_paredes():
 
 @app.route("/api/ambiente/elemento_parede/adicionar", methods=["POST"])
 def api_adicionar_elemento_parede():
-    """Adiciona Janela, Porta de Passagem ou Ponto Hidráulico/Elétrico/Gás numa parede."""
+    import uuid
     dados = request.get_json(silent=True) or {}
-    id_par = str(dados.get("id_parede", "")).strip()
-    parede = orq_ambiente.construtor_paredes.buscar_parede(id_par)
+    id_par = str(dados.get("id_parede", "A")).strip()
+    
+    # Busca diretamente na lista de paredes do ConstrutorAmbiente original
+    paredes_lista = orq_ambiente.construtor_paredes.paredes
+    parede = next((p for p in paredes_lista if p.id_parede == id_par), paredes_lista[0] if paredes_lista else None)
     if not parede:
-        return jsonify({"sucesso": False, "erro_engenharia": "Nenhuma parede encontrada."}), 404
+        return jsonify({"sucesso": False, "erro_engenharia": "Parede não encontrada."}), 404
 
     registrar_acao_historico()
     tipo = str(dados.get("tipo", "JANELA")).strip().upper()
-    dist_x = float(dados.get("distancia_x", 500.0))
-    elev_z = float(dados.get("elevacao_z", 1100.0 if tipo == "JANELA" else 0.0))
     larg_x = float(dados.get("largura_x", 1200.0 if tipo == "JANELA" else 800.0))
     alt_z = float(dados.get("altura_z", 1000.0 if tipo == "JANELA" else 2100.0))
-
     if tipo in ("PONTO_AGUA", "PONTO_GAS", "PONTO_TOMADA"):
-        larg_x = 120.0
-        alt_z = 120.0
+        larg_x, alt_z = 100.0, 100.0
 
-    nomes_padrao = {
+    dist_x = max(0.0, min(parede.comprimento - larg_x, float(dados.get("distancia_x", 500.0))))
+    elev_z = max(0.0, min(parede.pe_direito - alt_z, float(dados.get("elevacao_z", 1100.0 if tipo == "JANELA" else 0.0))))
+
+    nomes = {
         "JANELA": f"Janela ({larg_x:.0f}x{alt_z:.0f}mm)",
-        "PORTA": f"Porta Passagem ({larg_x:.0f}x{alt_z:.0f}mm)",
-        "PONTO_AGUA": "🚰 Ponto Água / Esgoto",
+        "PORTA": f"Porta ({larg_x:.0f}x{alt_z:.0f}mm)",
+        "PONTO_AGUA": "🚰 Ponto Água/Esgoto",
         "PONTO_GAS": "🔥 Ponto de Gás",
-        "PONTO_TOMADA": "⚡ Tomada / Ponto Elétrico"
+        "PONTO_TOMADA": "⚡ Tomada Elétrica"
     }
 
-    parede.adicionar_elemento(
-        tipo=tipo,
-        distancia_x=dist_x,
-        elevacao_z=elev_z,
-        largura_x=larg_x,
-        altura_z=alt_z,
-        nome=dados.get("nome") or nomes_padrao.get(tipo, tipo)
-    )
-    return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
+    novo_el = {
+        "id_elemento": f"EL_{str(uuid.uuid4())[:6].upper()}",
+        "id_parede": parede.id_parede,
+        "tipo": tipo,
+        "nome": nomes.get(tipo, tipo),
+        "distancia_x": round(dist_x, 2),
+        "elevacao_z": round(elev_z, 2),
+        "largura_x": round(larg_x, 2),
+        "altura_z": round(alt_z, 2)
+    }
+    ELEMENTOS_PAREDE_ATIVOS.append(novo_el)
+    return jsonify({"sucesso": True, "elementos_parede": ELEMENTOS_PAREDE_ATIVOS}), 200
 
 
 @app.route("/api/ambiente/elemento_parede/remover", methods=["POST"])
 def api_remover_elemento_parede():
     dados = request.get_json(silent=True) or {}
-    id_par = str(dados.get("id_parede", "")).strip()
     id_el = str(dados.get("id_elemento", "")).strip()
-    parede = orq_ambiente.construtor_paredes.buscar_parede(id_par)
-    if not parede:
-        return jsonify({"sucesso": False}), 404
-
     registrar_acao_historico()
-    parede.elementos = [e for e in parede.elementos if e.id_elemento != id_el]
-    return jsonify({"sucesso": True, "ambiente": orq_ambiente.construtor_paredes.to_dict()}), 200
+    global ELEMENTOS_PAREDE_ATIVOS
+    ELEMENTOS_PAREDE_ATIVOS = [e for e in ELEMENTOS_PAREDE_ATIVOS if e["id_elemento"] != id_el]
+    return jsonify({"sucesso": True, "elementos_parede": ELEMENTOS_PAREDE_ATIVOS}), 200
 
 
 @app.route("/api/ambiente/verificar_interferencias", methods=["GET"])
 def api_verificar_interferencias_arquitetonicas():
-    alertas = orq_ambiente.auditar_interferencias_obra(COFRE_MODULOS_ATIVOS)
+    alertas = []
+    for mod in COFRE_MODULOS_ATIVOS.values():
+        pos = mod.get("posicionamento_ambiente") or {}
+        id_par = pos.get("id_parede")
+        if not id_par or id_par == "LIVRE":
+            continue
+
+        mx1 = float(pos.get("distancia_x_parede", 0.0))
+        mx2 = mx1 + float(mod["dimensoes_ocupadas"]["largura_x"])
+        mz1 = float(pos.get("elevacao_z", 0.0))
+        mz2 = mz1 + float(mod["dimensoes_ocupadas"]["altura_y"])
+        fam = mod.get("familia", "")
+
+        for el in ELEMENTOS_PAREDE_ATIVOS:
+            if el["id_parede"] != id_par:
+                continue
+            ex1 = float(el["distancia_x"])
+            ex2 = ex1 + float(el["largura_x"])
+            ez1 = float(el["elevacao_z"])
+            ez2 = ez1 + float(el["altura_z"])
+
+            if (mx1 < ex2 - 5.0) and (mx2 > ex1 + 5.0) and (mz1 < ez2 - 5.0) and (mz2 > ez1 + 5.0):
+                t = el["tipo"]
+                if t == "PORTA":
+                    alertas.append(f"🚨 COLISÃO: Item #{mod['id_modulo']} bloqueia a '{el['nome']}' na Parede {id_par}!")
+                elif t == "JANELA" and fam != "MODULO_BANCADA_PEDRA":
+                    alertas.append(f"⚠️ JANELA: Item #{mod['id_modulo']} invade a '{el['nome']}' (Peitoril Z={ez1:.0f}mm) na Parede {id_par}!")
+                elif t in ("PONTO_AGUA", "PONTO_GAS") and fam == "MODULO_INFERIOR":
+                    tem_fundo = any(p.get("categoria_industrial") == "fundo_costa" for p in mod.get("lista_de_pecas", []))
+                    if tem_fundo:
+                        alertas.append(f"🚰 OBRA: '{el['nome']}' atrás do Balcão #{mod['id_modulo']} (que está COM FUNDO fechado)!")
     return jsonify({"alertas": alertas}), 200
 
 # =============================================================================
@@ -983,6 +1007,118 @@ def api_excluir_projeto_salvo():
         os.remove(caminho)
     return jsonify({"sucesso": True}), 200
 
+# =============================================================================
+# 4. BIBLIOTECA DE MÓDULOS FAVORITOS (CATÁLOGO REUTILIZÁVEL DO USUÁRIO)
+# =============================================================================
+PASTA_FAVORITOS = os.path.join(BASE_DIR, "biblioteca_favoritos")
+os.makedirs(PASTA_FAVORITOS, exist_ok=True)
+
+
+@app.route("/api/favoritos/listar", methods=["GET"])
+def api_listar_favoritos():
+    favoritos = []
+    for arq in sorted(os.listdir(PASTA_FAVORITOS)):
+        if not arq.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(PASTA_FAVORITOS, arq), "r", encoding="utf-8") as f:
+                d = json.load(f)
+            favoritos.append({
+                "arquivo": arq,
+                "nome_favorito": d.get("nome_favorito", arq.replace(".json", "")),
+                "familia": d.get("familia", "MODULO_INFERIOR"),
+                "largura_x": d.get("dimensoes_ocupadas", {}).get("largura_x", 800),
+                "altura_y": d.get("dimensoes_ocupadas", {}).get("altura_y", 700),
+                "profundidade_z": d.get("dimensoes_ocupadas", {}).get("profundidade_z", 550),
+                "qtd_pecas": len(d.get("lista_de_pecas", [])),
+                "prompt_original": d.get("prompt_original", "")
+            })
+        except Exception:
+            continue
+    return jsonify({"sucesso": True, "favoritos": favoritos}), 200
+
+
+@app.route("/api/favoritos/salvar", methods=["POST"])
+def api_salvar_favorito():
+    dados = request.get_json(silent=True) or {}
+    id_mod = str(dados.get("id_modulo", "")).strip()
+    nome_fav = str(dados.get("nome_favorito", "")).strip()
+
+    if id_mod not in COFRE_MODULOS_ATIVOS or not nome_fav:
+        return jsonify({"sucesso": False, "erro_engenharia": "Selecione um módulo e digite um nome."}), 400
+
+    mod_copia = copy.deepcopy(COFRE_MODULOS_ATIVOS[id_mod])
+    mod_copia["nome_favorito"] = nome_fav
+
+    slug = re.sub(r"[^a-zA-Z0-9_-]", "_", nome_fav).strip("_").lower()
+    nome_arq = f"{slug or 'modulo_padrao'}.json"
+    with open(os.path.join(PASTA_FAVORITOS, nome_arq), "w", encoding="utf-8") as f:
+        json.dump(mod_copia, f, ensure_ascii=False, indent=2)
+
+    return jsonify({"sucesso": True, "arquivo": nome_arq}), 200
+
+
+@app.route("/api/favoritos/inserir", methods=["POST"])
+def api_inserir_favorito_no_ambiente():
+    dados = request.get_json(silent=True) or {}
+    nome_arq = str(dados.get("arquivo", "")).strip()
+    caminho = os.path.join(PASTA_FAVORITOS, nome_arq)
+    if not os.path.exists(caminho):
+        return jsonify({"sucesso": False, "erro_engenharia": "Favorito não encontrado."}), 404
+
+    registrar_acao_historico()
+    with open(caminho, "r", encoding="utf-8") as f:
+        molde = json.load(f)
+
+    proximo_num = 1
+    while f"{proximo_num:03d}" in COFRE_MODULOS_ATIVOS:
+        proximo_num += 1
+    novo_id = f"{proximo_num:03d}"
+
+    dims = molde.get("dimensoes_ocupadas", {})
+    larg_x = float(dados.get("largura_custom_mm") or dims.get("largura_x", 800.0))
+    alt_y = float(dims.get("altura_y", 700.0))
+    prof_z = float(dims.get("profundidade_z", 550.0))
+    fam = molde.get("familia", "MODULO_INFERIOR")
+    params = molde.get("parametros", {})
+
+    novo_mod = orquestrador.fabricar_modulo(
+        id_modulo=novo_id,
+        nome_projeto=METADADOS_PROJETO["nome_ambiente"],
+        familia=fam,
+        largura_x=larg_x,
+        altura_y=alt_y,
+        profundidade_z=prof_z,
+        overrides_perfil=params.get("perfil_ativo"),
+        operacoes_internas=molde.get("operacoes_internas", []),
+        zonas_materiais=params.get("zonas_materiais"),
+        overrides_pecas=params.get("overrides_pecas"),
+        tamponamentos_agregados=params.get("tamponamentos_agregados")
+    )
+    novo_mod["prompt_original"] = molde.get("prompt_original", "")
+    novo_mod["resposta_copiloto"] = f"⭐ Favorito '{molde.get('nome_favorito')}' inserido como #{novo_id}!"
+
+    id_parede_req = dados.get("id_parede")
+    elev_z = 1450.0 if fam == "MODULO_AEREO" else 0.0
+    orq_ambiente.ancorar_modulo_na_parede(
+        modulo_dict=novo_mod,
+        modulos_ativos=COFRE_MODULOS_ATIVOS,
+        id_parede=id_parede_req,
+        elevacao_z=elev_z,
+        usar_autosnap=True
+    )
+
+    COFRE_MODULOS_ATIVOS[novo_id] = novo_mod
+    return jsonify({"sucesso": True, "modulo": novo_mod}), 200
+
+
+@app.route("/api/favoritos/excluir", methods=["POST"])
+def api_excluir_favorito():
+    dados = request.get_json(silent=True) or {}
+    caminho = os.path.join(PASTA_FAVORITOS, str(dados.get("arquivo", "")).strip())
+    if os.path.exists(caminho):
+        os.remove(caminho)
+    return jsonify({"sucesso": True}), 200
 
 @app.route("/api/modulos", methods=["GET"])
 def listar_todos_modulos():

@@ -62,15 +62,14 @@ body {
 }
 
 .deck-row-tools {
-    height: 36px;
-    padding: 0 8px;
+    min-height: 38px;
+    padding: 4px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 4px;
     background: #10151C;
-    overflow-x: auto;
 }
 
 .brand-compact {
@@ -96,9 +95,8 @@ body {
 .toolbar-group {
     display: flex;
     align-items: center;
-    gap: 3px;
-    flex-wrap: nowrap;
-    flex-shrink: 0;
+    gap: 4px;
+    flex-wrap: wrap;
 }
 
 .divider-v {

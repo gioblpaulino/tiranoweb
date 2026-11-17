@@ -261,16 +261,15 @@ function obterTexturaMDF(idMaterial, hexColor, temVeio, orientacao3D) {
 }
 
 function criarMaterialFace(idMat, orientacao) {
-    const idLimpo = String(idMat || "generico_branco_tx").replace(/_(?:3|6)mm$/, "");
-    const corHex = MAPA_HEX_MATERIAIS[idLimpo] || 0xECEFF1;
-    const info = (catalogoMateriaisCache || []).find(m => m.id === idLimpo);
+    const corHex = MAPA_HEX_MATERIAIS[idMat] || 0xECEFF1;
+    const info = (catalogoMateriaisCache || []).find(m => m.id === idMat);
     const temVeio = info ? !!info.veio : false;
-    const tex = obterTexturaMDF(idLimpo, corHex, temVeio, orientacao);
+    const tex = obterTexturaMDF(idMat, corHex, temVeio, orientacao);
 
     return new THREE.MeshStandardMaterial({
         color: 0xFFFFFF,
         map: tex,
-        roughness: idLimpo === "mdf_cru" ? 0.85 : (temVeio ? 0.48 : 0.62)
+        roughness: idMat === "mdf_cru" ? 0.85 : (temVeio ? 0.48 : 0.62)
     });
 }
 
@@ -692,7 +691,7 @@ window.addEventListener("load", () => {
 
     // B) INÍCIO DO ARRASTE 3D DE MÓDULO E SELEÇÃO DIRETA DE PEÇA NO 3D
     container.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0 || modoCamera === "PLANTA_2D") return;
+        if (event.button !== 0 || modoCamera === "PLANTA_2D" || mostrarVaos) return;
 
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -1265,10 +1264,13 @@ function aplicarAcabamentoAmbiente3D() {
     }
 }
 
+let elementosParedeCache = [];
+
 const _carregarEstadoBase = carregarEstadoAmbiente;
 carregarEstadoAmbiente = async function () {
     const resp = await fetch("/api/ambiente");
     const dados = await resp.json();
+    elementosParedeCache = dados.elementos_parede || [];
 
     if (dados.metadados) {
         const lblCli = document.getElementById("lbl_cliente_ativo");
@@ -1534,16 +1536,16 @@ function ajustarPadraoEsquadriaUI() {
         document.getElementById("inp_esq_alt").value = 2100;
     } else if (tipo === "PONTO_AGUA") {
         document.getElementById("inp_esq_z").value = 550;
-        document.getElementById("inp_esq_larg").value = 120;
-        document.getElementById("inp_esq_alt").value = 120;
+        document.getElementById("inp_esq_larg").value = 100;
+        document.getElementById("inp_esq_alt").value = 100;
     } else if (tipo === "PONTO_GAS") {
         document.getElementById("inp_esq_z").value = 400;
-        document.getElementById("inp_esq_larg").value = 120;
-        document.getElementById("inp_esq_alt").value = 120;
+        document.getElementById("inp_esq_larg").value = 100;
+        document.getElementById("inp_esq_alt").value = 100;
     } else if (tipo === "PONTO_TOMADA") {
         document.getElementById("inp_esq_z").value = 1150;
-        document.getElementById("inp_esq_larg").value = 120;
-        document.getElementById("inp_esq_alt").value = 120;
+        document.getElementById("inp_esq_larg").value = 100;
+        document.getElementById("inp_esq_alt").value = 100;
     }
 }
 
@@ -1568,11 +1570,11 @@ async function adicionarElementoParedeUI() {
     }
 }
 
-async function removerElementoParedeUI(idParede, idElemento) {
+async function removerElementoParedeUI(idElemento) {
     await fetch("/api/ambiente/elemento_parede/remover", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_parede: idParede, id_elemento: idElemento })
+        body: JSON.stringify({ id_elemento: idElemento })
     });
     await carregarEstadoAmbiente();
 }
@@ -1602,13 +1604,14 @@ function renderizarEsquadriasEPontos3D() {
         grupoLocalPar.position.set(par.x1, 0, par.y1);
         grupoLocalPar.rotation.y = -THREE.MathUtils.degToRad(par.angulo_graus || 0);
 
-        (par.elementos || []).forEach(el => {
+        const elsDaParede = (elementosParedeCache || []).filter(e => e.id_parede === par.id_parede);
+        elsDaParede.forEach(el => {
             if (containerLista) {
                 const itemDiv = document.createElement("div");
                 itemDiv.className = "module-item";
                 itemDiv.innerHTML = `
                     <span><b>[Par. ${par.id_parede}]</b> ${el.nome} <small style="color:#80D8FF;">(X:${el.distancia_x} Z:${el.elevacao_z})</small></span>
-                    <button class="btn btn-danger" style="padding:2px 6px;" onclick="removerElementoParedeUI('${par.id_parede}', '${el.id_elemento}')">🗑️</button>
+                    <button class="btn btn-danger" style="padding:2px 6px;" onclick="removerElementoParedeUI('${el.id_elemento}')">🗑️</button>
                 `;
                 containerLista.appendChild(itemDiv);
             }
@@ -1617,7 +1620,7 @@ function renderizarEsquadriasEPontos3D() {
             const alt = el.altura_z;
             const cx = el.distancia_x + (larg / 2.0);
             const cy = el.elevacao_z + (alt / 2.0);
-            const zFace = 14.0; // Avançado 14mm da face interna da parede para evitar Z-fighting
+            const zFace = 14.0;
 
             if (el.tipo === "JANELA") {
                 const espPerfil = 45.0;
@@ -1625,91 +1628,64 @@ function renderizarEsquadriasEPontos3D() {
                 const matAlum = new THREE.MeshStandardMaterial({ color: 0xB0BEC5, metalness: 0.55, roughness: 0.35 });
                 const matFundoEscuro = new THREE.MeshBasicMaterial({ color: 0x0B1622 });
                 const matVidro = new THREE.MeshStandardMaterial({
-                    color: 0x80D8FF,
-                    transparent: true,
-                    opacity: 0.32,
-                    roughness: 0.1,
-                    metalness: 0.2,
-                    depthWrite: false
+                    color: 0x80D8FF, transparent: true, opacity: 0.32, roughness: 0.1, depthWrite: false
                 });
 
-                // Fundo escuro simulando o vão aberto na alvenaria + Vidro translúcido
                 const fundoVao = new THREE.Mesh(new THREE.BoxGeometry(larg - 20, alt - 20, 6), matFundoEscuro);
                 fundoVao.position.set(cx, cy, 4);
                 const vidro = new THREE.Mesh(new THREE.BoxGeometry(larg - (espPerfil * 2), alt - (espPerfil * 2), 8), matVidro);
                 vidro.position.set(cx, cy, zFace);
 
-                // 4 Perfis do Quadro de Alumínio + Divisão Central (2 Folhas) + Peitoril de Granito
                 const pSup = new THREE.Mesh(new THREE.BoxGeometry(larg, espPerfil, profJan), matAlum);
                 pSup.position.set(cx, el.elevacao_z + alt - (espPerfil / 2), zFace);
-
                 const pInf = new THREE.Mesh(new THREE.BoxGeometry(larg + 40, espPerfil, profJan + 18), matAlum);
                 pInf.position.set(cx, el.elevacao_z + (espPerfil / 2), zFace + 6);
-
                 const pEsq = new THREE.Mesh(new THREE.BoxGeometry(espPerfil, alt - (espPerfil * 2), profJan), matAlum);
                 pEsq.position.set(el.distancia_x + (espPerfil / 2), cy, zFace);
-
                 const pDir = new THREE.Mesh(new THREE.BoxGeometry(espPerfil, alt - (espPerfil * 2), profJan), matAlum);
                 pDir.position.set(el.distancia_x + larg - (espPerfil / 2), cy, zFace);
-
                 const pMeio = new THREE.Mesh(new THREE.BoxGeometry(28, alt - (espPerfil * 2), profJan + 4), matAlum);
                 pMeio.position.set(cx, cy, zFace + 2);
 
-                const spJan = criarSpriteTextoCAD(`🪟 ${larg}x${alt} (Peitoril ${el.elevacao_z})`, "#0277BD", "rgba(255,255,255,0.92)", 210);
+                const spJan = criarSpriteTextoCAD(`🪟 ${larg}x${alt} (Z:${el.elevacao_z})`, "#0277BD", "rgba(255,255,255,0.92)", 200);
                 spJan.position.set(cx, el.elevacao_z + alt + 55, zFace + 15);
-
                 grupoLocalPar.add(fundoVao, vidro, pSup, pInf, pEsq, pDir, pMeio, spJan);
             } else if (el.tipo === "PORTA") {
-                const largGuarnicao = 60.0;
-                const matGuarnicao = new THREE.MeshStandardMaterial({ color: 0x4E342E, roughness: 0.55 });
-                const matFolha = new THREE.MeshStandardMaterial({ color: 0x795548, roughness: 0.5 });
+                const largG = 60.0;
+                const matG = new THREE.MeshStandardMaterial({ color: 0x4E342E, roughness: 0.55 });
+                const matF = new THREE.MeshStandardMaterial({ color: 0x795548, roughness: 0.5 });
                 const matInox = new THREE.MeshStandardMaterial({ color: 0xECEFF1, metalness: 0.85, roughness: 0.2 });
 
-                // Folha da porta
-                const folha = new THREE.Mesh(new THREE.BoxGeometry(larg, alt, 18), matFolha);
+                const folha = new THREE.Mesh(new THREE.BoxGeometry(larg, alt, 18), matF);
                 folha.position.set(cx, cy, zFace);
+                const gEsq = new THREE.Mesh(new THREE.BoxGeometry(largG, alt + largG, 26), matG);
+                gEsq.position.set(el.distancia_x - (largG / 2), (alt + largG) / 2, zFace + 2);
+                const gDir = new THREE.Mesh(new THREE.BoxGeometry(largG, alt + largG, 26), matG);
+                gDir.position.set(el.distancia_x + larg + (largG / 2), (alt + largG) / 2, zFace + 2);
+                const gSup = new THREE.Mesh(new THREE.BoxGeometry(larg + (largG * 2), largG, 26), matG);
+                gSup.position.set(cx, alt + (largG / 2), zFace + 2);
+                const mac = new THREE.Mesh(new THREE.BoxGeometry(110, 22, 35), matInox);
+                mac.position.set(el.distancia_x + larg - 90, Math.min(1050, alt * 0.5), zFace + 22);
 
-                // Guarnições (Alisares Esquerdo, Direito e Superior)
-                const gEsq = new THREE.Mesh(new THREE.BoxGeometry(largGuarnicao, alt + largGuarnicao, 26), matGuarnicao);
-                gEsq.position.set(el.distancia_x - (largGuarnicao / 2), (alt + largGuarnicao) / 2, zFace + 2);
-
-                const gDir = new THREE.Mesh(new THREE.BoxGeometry(largGuarnicao, alt + largGuarnicao, 26), matGuarnicao);
-                gDir.position.set(el.distancia_x + larg + (largGuarnicao / 2), (alt + largGuarnicao) / 2, zFace + 2);
-
-                const gSup = new THREE.Mesh(new THREE.BoxGeometry(larg + (largGuarnicao * 2), largGuarnicao, 26), matGuarnicao);
-                gSup.position.set(cx, alt + (largGuarnicao / 2), zFace + 2);
-
-                // Maçaneta cromada na altura ergonômica (Z = 1050mm)
-                const macaneta = new THREE.Mesh(new THREE.BoxGeometry(110, 22, 35), matInox);
-                macaneta.position.set(el.distancia_x + larg - 90, Math.min(1050, alt * 0.5), zFace + 22);
-
-                const spPorta = criarSpriteTextoCAD(`🚪 Porta ${larg}x${alt}`, "#4E342E", "rgba(255,255,255,0.92)", 180);
-                spPorta.position.set(cx, alt + largGuarnicao + 55, zFace + 15);
-
-                grupoLocalPar.add(folha, gEsq, gDir, gSup, macaneta, spPorta);
+                grupoLocalPar.add(folha, gEsq, gDir, gSup, mac);
             } else {
-                // Pontos de Obra: Água (Azul), Gás (Amarelo), Tomada (Vermelho)
-                let corPonto = 0x00B0FF;
-                let sigla = "🚰 ÁGUA";
-                if (el.tipo === "PONTO_GAS") { corPonto = 0xFFB300; sigla = "🔥 GÁS"; }
-                else if (el.tipo === "PONTO_TOMADA") { corPonto = 0xFF1744; sigla = "⚡ TOMADA"; }
+                let corP = 0x00B0FF, sigla = "🚰 ÁGUA";
+                if (el.tipo === "PONTO_GAS") { corP = 0xFFB300; sigla = "🔥 GÁS"; }
+                else if (el.tipo === "PONTO_TOMADA") { corP = 0xFF1744; sigla = "⚡ TOMADA"; }
 
-                const matPonto = new THREE.MeshStandardMaterial({ color: corPonto, roughness: 0.3 });
-                let pecaPonto;
+                const matP = new THREE.MeshStandardMaterial({ color: corP, roughness: 0.3 });
+                let pecaP;
                 if (el.tipo === "PONTO_TOMADA") {
-                    // Espelho retangular padrão 4x2"
-                    pecaPonto = new THREE.Mesh(new THREE.BoxGeometry(80, 120, 14), matPonto);
+                    pecaP = new THREE.Mesh(new THREE.BoxGeometry(80, 110, 14), matP);
                 } else {
-                    // Registro / Saída tubular cilíndrica para Água ou Gás
-                    pecaPonto = new THREE.Mesh(new THREE.CylinderGeometry(35, 35, 18, 24), matPonto);
-                    pecaPonto.rotation.x = Math.PI / 2;
+                    pecaP = new THREE.Mesh(new THREE.CylinderGeometry(35, 35, 18, 24), matP);
+                    pecaP.rotation.x = Math.PI / 2;
                 }
-                pecaPonto.position.set(cx, cy, zFace);
+                pecaP.position.set(cx, cy, zFace);
 
                 const spPt = criarSpriteTextoCAD(`${sigla} X:${el.distancia_x} Z:${el.elevacao_z}`, "#111111", "rgba(255,255,255,0.92)", 175);
                 spPt.position.set(cx, cy + 75, zFace + 12);
-
-                grupoLocalPar.add(pecaPonto, spPt);
+                grupoLocalPar.add(pecaP, spPt);
             }
         });
 
@@ -1739,3 +1715,312 @@ renderizarCenaCompleta = function () {
     _renderAntesEsquadrias();
     renderizarEsquadriasEPontos3D();
 };
+
+// =============================================================================
+// 12. BIBLIOTECA DE FAVORITOS, EDIÇÃO PARAMÉTRICA DE VÃO E SMART FILL DE PAREDE
+// =============================================================================
+async function abrirJanelaFavoritos() {
+    alternarJanelaHUD("hud_favoritos", "btn_hud_favoritos");
+    const painel = document.getElementById("hud_favoritos");
+    if (!painel.classList.contains("oculto")) {
+        if (moduloAtivo) {
+            document.getElementById("inp_nome_favorito").value =
+                `${moduloAtivo.familia.replace("MODULO_", "")} ${moduloAtivo.dimensoes_ocupadas.largura_x}mm (#${moduloAtivo.id_modulo})`;
+        }
+        await carregarListaFavoritosUI();
+    }
+}
+
+async function carregarListaFavoritosUI() {
+    const resp = await fetch("/api/favoritos/listar");
+    const dados = await resp.json();
+    const container = document.getElementById("lista_favoritos_ui");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!dados.favoritos || dados.favoritos.length === 0) {
+        container.innerHTML = `<div style="padding:10px; color:#90A4AE; text-align:center;">Nenhum módulo salvo nos favoritos ainda.</div>`;
+        return;
+    }
+
+    dados.favoritos.forEach(fav => {
+        const div = document.createElement("div");
+        div.className = "module-item";
+        div.innerHTML = `
+            <div style="flex:1;" onclick="inserirFavoritoNoAmbiente('${fav.arquivo}')">
+                <strong style="color:#FFD600;">⭐ ${fav.nome_favorito}</strong><br>
+                <small style="color:#80D8FF;">📐 ${fav.largura_x}x${fav.altura_y}x${fav.profundidade_z}mm | 🪵 ${fav.qtd_pecas} pçs</small>
+            </div>
+            <button class="btn btn-primary" style="padding:4px 8px;" onclick="inserirFavoritoNoAmbiente('${fav.arquivo}')">➕ Inserir</button>
+            <button class="btn btn-danger" style="padding:4px 6px;" onclick="excluirFavoritoUI('${fav.arquivo}', event)">🗑️</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function salvarModuloAtivoNosFavoritos() {
+    if (!moduloAtivo) {
+        alert("Selecione um módulo no ambiente para salvar nos favoritos!");
+        return;
+    }
+    const nome = document.getElementById("inp_nome_favorito").value.trim();
+    if (!nome) {
+        alert("Digite um nome para identificar este módulo na biblioteca!");
+        return;
+    }
+
+    const resp = await fetch("/api/favoritos/salvar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_modulo: moduloAtivo.id_modulo, nome_favorito: nome })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        await carregarListaFavoritosUI();
+    }
+}
+
+async function inserirFavoritoNoAmbiente(nomeArquivo) {
+    const largCustom = parseFloat(document.getElementById("inp_larg_custom_fav").value) || 0;
+    const idPar = document.getElementById("sel_parede_modulo").value || null;
+
+    const resp = await fetch("/api/favoritos/inserir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            arquivo: nomeArquivo,
+            largura_custom_mm: largCustom > 100 ? largCustom : null,
+            id_parede: idPar
+        })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = dados.modulo;
+        idsSelecionados.clear();
+        idsSelecionados.add(moduloAtivo.id_modulo);
+        await carregarEstadoAmbiente();
+    } else {
+        alert(dados.erro_engenharia || "Erro ao inserir favorito.");
+    }
+}
+
+async function excluirFavoritoUI(nomeArquivo, event) {
+    event.stopPropagation();
+    await fetch("/api/favoritos/excluir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ arquivo: nomeArquivo })
+    });
+    await carregarListaFavoritosUI();
+}
+
+// Preenche automaticamente os inputs de Largura Livre (X) e Altura Livre (Z) ao clicar num vão 3D
+const _abrirPainelVaoOrig = abrirPainelVao;
+abrirPainelVao = function (no) {
+    _abrirPainelVaoOrig(no);
+    const g = no.geometria_3d;
+    const inpL = document.getElementById("inp_vao_larg_interna");
+    const inpA = document.getElementById("inp_vao_alt_interna");
+    const lblDica = document.getElementById("lbl_dica_edicao_vao");
+
+    if (inpL) inpL.value = g.largura;
+    if (inpA) inpA.value = g.altura;
+
+    if (lblDica) {
+        if (no.id_vao === "raiz") {
+            lblDica.innerText = "💡 Vão Raiz: Alterar aqui ajusta a Largura/Altura total do módulo.";
+        } else {
+            lblDica.innerText = "💡 Sub-Vão: Alterar aqui move a Divisória/Prateleira automaticamente!";
+        }
+    }
+};
+
+// Localiza um nó na árvore recursiva de vãos pelo seu id_vao
+function buscarNoEspacialPorId(noAtual, idAlvo) {
+    if (!noAtual) return null;
+    if (noAtual.id_vao === idAlvo) return noAtual;
+    for (const f of (noAtual.filhos || [])) {
+        const achado = buscarNoEspacialPorId(f, idAlvo);
+        if (achado) return achado;
+    }
+    return null;
+}
+
+// Aplica a nova Largura Livre (X) e/ou Altura Livre (Z) digitada diretamente para o vão selecionado!
+async function redimensionarMedidaInternaDoVao() {
+    if (!moduloAtivo || !vaoSelecionadoId) return;
+
+    const noAlvo = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, vaoSelecionadoId);
+    if (!noAlvo) return;
+
+    const novaLarg = parseFloat(document.getElementById("inp_vao_larg_interna").value);
+    const novaAlt = parseFloat(document.getElementById("inp_vao_alt_interna").value);
+    const largAtual = noAlvo.geometria_3d.largura;
+    const altAtual = noAlvo.geometria_3d.altura;
+
+    const espCaixa = parseFloat(document.getElementById("sel_esp_caixa").value) || 15.0;
+    let largMod = moduloAtivo.dimensoes_ocupadas.largura_x;
+    let altMod = moduloAtivo.dimensoes_ocupadas.altura_y;
+
+    let ops = moduloAtivo.operacoes_internas ? JSON.parse(JSON.stringify(moduloAtivo.operacoes_internas)) : [];
+
+    // CASO 1: Usuário editou a medida interna do Vão Principal (raiz) -> Ajusta o módulo externo!
+    if (vaoSelecionadoId === "raiz") {
+        if (!isNaN(novaLarg) && Math.abs(novaLarg - largAtual) > 0.5) {
+            largMod = Math.round((largMod + (novaLarg - largAtual)) * 10) / 10;
+            document.getElementById("inp_largura").value = largMod;
+        }
+        if (!isNaN(novaAlt) && Math.abs(novaAlt - altAtual) > 0.5) {
+            altMod = Math.round((altMod + (novaAlt - altAtual)) * 10) / 10;
+            document.getElementById("inp_altura").value = altMod;
+        }
+    } else {
+        // CASO 2: É um Sub-Vão (IDs do NoEspacial: "_E", "_D", "_I", "_S") -> Move a Divisória no Pai!
+        
+        // A) Mudou a Largura Livre (X) do sub-vão? Procura o ancestral dividido na vertical (_E ou _D)
+        if (!isNaN(novaLarg) && Math.abs(novaLarg - largAtual) > 0.5) {
+            let idCursor = vaoSelecionadoId;
+            let encontrouDivVertical = false;
+            while (idCursor.includes("_")) {
+                if (idCursor.endsWith("_E") || idCursor.endsWith("_D")) {
+                    const ehEsq = idCursor.endsWith("_E");
+                    const idPai = idCursor.slice(0, -2); // Remove "_E" ou "_D"
+                    const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
+                    const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_VERTICAL");
+                    if (noPai && opDiv) {
+                        opDiv.cota_esquerda = ehEsq
+                            ? Math.round(novaLarg * 10) / 10
+                            : Math.round((noPai.geometria_3d.largura - espCaixa - novaLarg) * 10) / 10;
+                        encontrouDivVertical = true;
+                    }
+                    break;
+                }
+                idCursor = idCursor.substring(0, idCursor.lastIndexOf("_"));
+            }
+            // Se o sub-vão só tinha divisão horizontal, ajusta a largura total do módulo
+            if (!encontrouDivVertical) {
+                largMod = Math.round((largMod + (novaLarg - largAtual)) * 10) / 10;
+                document.getElementById("inp_largura").value = largMod;
+            }
+        }
+
+        // B) Mudou a Altura Livre (Z) do sub-vão? Procura o ancestral dividido na horizontal (_I ou _S)
+        if (!isNaN(novaAlt) && Math.abs(novaAlt - altAtual) > 0.5) {
+            let idCursor = vaoSelecionadoId;
+            let encontrouDivHorizontal = false;
+            while (idCursor.includes("_")) {
+                if (idCursor.endsWith("_I") || idCursor.endsWith("_S")) {
+                    const ehInf = idCursor.endsWith("_I");
+                    const idPai = idCursor.slice(0, -2); // Remove "_I" ou "_S"
+                    const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
+                    const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_HORIZONTAL");
+                    if (noPai && opDiv) {
+                        opDiv.cota_inferior = ehInf
+                            ? Math.round(novaAlt * 10) / 10
+                            : Math.round((noPai.geometria_3d.altura - espCaixa - novaAlt) * 10) / 10;
+                        encontrouDivHorizontal = true;
+                    }
+                    break;
+                }
+                idCursor = idCursor.substring(0, idCursor.lastIndexOf("_"));
+            }
+            // Se o sub-vão só tinha divisão vertical, ajusta a altura total do módulo
+            if (!encontrouDivHorizontal) {
+                altMod = Math.round((altMod + (novaAlt - altAtual)) * 10) / 10;
+                document.getElementById("inp_altura").value = altMod;
+            }
+        }
+    }
+
+    document.getElementById("inp_prompt").value = "";
+    const overrides = coletarOverridesPerfilUI();
+
+    const resp = await fetch("/api/fabricar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_modulo: moduloAtivo.id_modulo,
+            familia: moduloAtivo.familia,
+            largura_x: largMod,
+            altura_y: altMod,
+            profundidade_z: moduloAtivo.dimensoes_ocupadas.profundidade_z,
+            material_caixaria: document.getElementById("sel_mat_caixa").value,
+            material_frentes: document.getElementById("sel_mat_frentes").value,
+            overrides_perfil: overrides,
+            operacoes_internas: ops
+        })
+    });
+    const dados = await resp.json();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || dados.erro_interno);
+        return;
+    }
+
+    moduloAtivo = dados.modulo;
+    await carregarEstadoAmbiente();
+
+    // Atualiza os números na janela do vão imediatamente
+    const noAtualizado = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, vaoSelecionadoId);
+    if (noAtualizado) abrirPainelVao(noAtualizado);
+}
+
+// Subdivisão e inserção usando as chaves exatas do OrquestradorModulo ('cota_esquerda' e 'cota_inferior')!
+async function aplicarOperacaoVaoParametrica(tipoOp, extras = {}) {
+    const cotaDiv = parseFloat(document.getElementById("inp_vao_cota_div").value) || 0;
+    const qtdItens = parseInt(document.getElementById("inp_vao_qtd_itens").value) || 2;
+
+    const paramsExtras = { ...extras };
+    if (tipoOp === "DIVISORIA_VERTICAL" && cotaDiv >= 50) {
+        paramsExtras.cota_esquerda = cotaDiv;
+    } else if (tipoOp === "DIVISORIA_HORIZONTAL" && cotaDiv >= 50) {
+        paramsExtras.cota_inferior = cotaDiv;
+    }
+
+    if (["GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA", "PRATELEIRAS", "PORTAS_BASCULANTES"].includes(tipoOp)) {
+        paramsExtras.quantidade = qtdItens;
+    }
+
+    await aplicarOperacaoNoVao(tipoOp, paramsExtras);
+}
+
+// Limpa os componentes internos do vão clicado (ou desfaz a divisão do pai se o sub-vão já estiver vazio!)
+async function limparOperacoesDoVaoSelecionado() {
+    if (!moduloAtivo || !vaoSelecionadoId) return;
+    let ops = moduloAtivo.operacoes_internas ? [...moduloAtivo.operacoes_internas] : [];
+
+    const tinhaNoVao = ops.some(op => op.id_vao === vaoSelecionadoId);
+    if (tinhaNoVao) {
+        ops = ops.filter(op => op.id_vao !== vaoSelecionadoId);
+    } else if (vaoSelecionadoId.includes("_")) {
+        const idPai = vaoSelecionadoId.substring(0, vaoSelecionadoId.lastIndexOf("_"));
+        ops = ops.filter(op => !op.id_vao.startsWith(idPai));
+        vaoSelecionadoId = idPai;
+    } else if (ops.length > 0) {
+        ops.pop();
+    }
+
+    document.getElementById("inp_prompt").value = "";
+    const overrides = coletarOverridesPerfilUI();
+
+    const resp = await fetch("/api/fabricar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_modulo: moduloAtivo.id_modulo,
+            familia: moduloAtivo.familia,
+            largura_x: moduloAtivo.dimensoes_ocupadas.largura_x,
+            altura_y: moduloAtivo.dimensoes_ocupadas.altura_y,
+            profundidade_z: moduloAtivo.dimensoes_ocupadas.profundidade_z,
+            material_caixaria: document.getElementById("sel_mat_caixa").value,
+            material_frentes: document.getElementById("sel_mat_frentes").value,
+            overrides_perfil: overrides,
+            operacoes_internas: ops
+        })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        moduloAtivo = dados.modulo;
+        fecharPainelVao();
+        await carregarEstadoAmbiente();
+    }
+}

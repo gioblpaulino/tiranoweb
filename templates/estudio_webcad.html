@@ -129,6 +129,7 @@
                 <button class="btn btn-secondary" id="btn_hud_tamponamento" onclick="alternarJanelaHUD('hud_tamponamento', 'btn_hud_tamponamento')">🛡️ Tamponamentos</button>
                 <button class="btn btn-secondary" id="btn_hud_bancadas" onclick="alternarJanelaHUD('hud_bancadas', 'btn_hud_bancadas')">🪨 Bancadas &amp; Rodapés</button>
                 <button class="btn btn-secondary" id="btn_hud_esquadrias" onclick="alternarJanelaHUD('hud_esquadrias', 'btn_hud_esquadrias')">🪟 Esquadrias &amp; Pontos</button>
+                <button class="btn btn-secondary" id="btn_hud_favoritos" onclick="abrirJanelaFavoritos()">⭐ Favoritos</button>
                 <button class="btn btn-purple" id="btn_menu_materiais" onclick="abrirAbaDireita('MATERIAIS')">🎨 Materiais &amp; Peças</button>
                 <button class="btn btn-secondary ativo" id="btn_hud_direita" onclick="alternarJanelaHUD('hud_direita', 'btn_hud_direita')">📦 Fila &amp; Inspetor</button>
             </div>
@@ -541,6 +542,36 @@
             </div>
         </div>
         
+        <!-- JANELA FLUTUANTE: BIBLIOTECA DE MÓDULOS FAVORITOS -->
+        <div id="hud_favoritos" class="hud-panel oculto" style="left:378px; width:395px; border-top:3px solid #FFD600; z-index:34;">
+            <div class="hud-header">
+                <strong style="color:#FFD600; font-size:12px;">⭐ Biblioteca de Módulos Favoritos (Padrões)</strong>
+                <span class="hud-close" onclick="alternarJanelaHUD('hud_favoritos', 'btn_hud_favoritos')">✕</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#4CE660;">1. Salvar Módulo Selecionado na Biblioteca</div>
+                <div class="row-2">
+                    <div>
+                        <label>Nome do Módulo Padrão</label>
+                        <input type="text" id="inp_nome_favorito" placeholder="Ex: Balcão Pia 1200 c/ Tempero">
+                    </div>
+                    <div style="display:flex; align-items:flex-end;">
+                        <button class="btn btn-primary" style="width:100%;" onclick="salvarModuloAtivoNosFavoritos()">⭐ Salvar Atual</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#00E5FF;">2. Meus Módulos Salvos (Clique p/ Inserir c/ Snap)</div>
+                <div>
+                    <label>Forçar Nova Largura ao Inserir (Opcional - 0 = Original)</label>
+                    <input type="number" id="inp_larg_custom_fav" value="0" step="50" title="Deixe 0 para usar a largura original salva">
+                </div>
+                <div id="lista_favoritos_ui" class="list-container" style="max-height:210px;"></div>
+            </div>
+        </div>
+
         <!-- MODAL FLUTUANTE: REDIMENSIONAMENTO DE PEÇA INDIVIDUAL DO TAMPONAMENTO -->
         <div id="modal_redimensionar_tamp" class="floating-modal" style="left:380px; top:220px; width:345px; border:1px solid #00E5FF; z-index:38;">
             <div class="hud-header" style="margin-bottom:6px;">
@@ -587,6 +618,8 @@
                         <div><label>Elevação Z</label><input type="number" id="inp_elevacao_z" value="0" step="50" onchange="posicionarModuloManual(false)"></div>
                     </div>
                     <div id="lbl_sobra_parede" style="font-size:10px; color:#80D8FF; text-align:center;"></div>
+                    <div id="lbl_sobra_parede" style="font-size:10px; color:#80D8FF; text-align:center;"></div>
+                    <button class="btn btn-secondary" style="width:100%; padding:3px; font-size:10px; margin-top:2px;" onclick="preencherSobraParedeComModulo()" title="Cria um módulo ou ajusta a largura para preencher exatamente o espaço restante da parede!">⚡ Preencher Sobra da Parede</button>
                 </div>
 
                 <div class="card">
@@ -716,23 +749,54 @@
             <div id="status_desenho_2d" style="margin-top:6px; font-size:11px; color:#4CE660; font-weight:bold;"></div>
         </div>
 
-        <!-- MENU FLUTUANTE DE INTERAÇÃO DIRETA COM O NÓ ESPACIAL 3D -->
-        <div id="painel_interacao_vao" class="floating-modal" style="right:390px; width:305px; border:1px solid #00E5FF;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <!-- MENU FLUTUANTE DE INTERAÇÃO E EDIÇÃO DIRETA DAS MEDIDAS DO VÃO 3D -->
+        <div id="painel_interacao_vao" class="floating-modal" style="right:390px; width:345px; border:1px solid #00E5FF;">
+            <div class="hud-header" style="margin-bottom:6px;">
                 <strong id="titulo_vao_clicado" style="color:#00E5FF; font-size:12px;">📐 Vão Selecionado</strong>
                 <span class="hud-close" onclick="fecharPainelVao()">✕</span>
             </div>
-            <div id="medidas_vao_clicado" style="font-size:11px; color:#BDBDBD; margin-bottom:10px;"></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                <button class="btn btn-secondary" onclick="aplicarOperacaoNoVao('DIVISORIA_VERTICAL')">➕ Dividir Vertical</button>
-                <button class="btn btn-secondary" onclick="aplicarOperacaoNoVao('DIVISORIA_HORIZONTAL')">➖ Dividir Horiz.</button>
-                <button class="btn btn-primary" onclick="aplicarOperacaoNoVao('GAVETEIRO', {quantidade: 4})">🗄️ +4 Gavetas Ext.</button>
-                <button class="btn btn-purple" onclick="aplicarOperacaoNoVao('GAVETEIRO_INTERNO', {quantidade: 3})">🔒 +3 Gav. Internas</button>
-                <button class="btn btn-secondary" style="background:#00838F;" onclick="aplicarOperacaoNoVao('SAPATEIRA', {quantidade: 2})">👟 +2 Sapateiras</button>
-                <button class="btn btn-primary" onclick="aplicarOperacaoNoVao('PRATELEIRAS', {quantidade: 2})">📏 +2 Prateleiras</button>
-                <button class="btn btn-blue" onclick="aplicarOperacaoNoVao('PORTA_TEMPERO')">🍾 Porta-Tempero</button>
-                <button class="btn btn-blue" onclick="aplicarOperacaoNoVao('PORTAS_GIRO', {abertura: 'DUPLA'})">🚪 Porta Giro Dupla</button>
-                <button class="btn btn-blue" style="background:#E65100; grid-column: span 2;" onclick="aplicarOperacaoNoVao('PORTAS_BASCULANTES', {quantidade: 1})">⏫ Porta Basculante (Pistão)</button>
+            <div id="medidas_vao_clicado" style="font-size:11px; color:#BDBDBD; margin-bottom:6px;"></div>
+
+            <!-- 1. EDITOR DIRETO DE MEDIDA INTERNA DO VÃO SELECIONADO -->
+            <div class="card" style="margin-bottom:8px; border-color:#4CE660; background:#0F1915;">
+                <div class="card-title" style="color:#4CE660;">📏 1. Editar Medida Interna Deste Vão (mm)</div>
+                <div class="row-3" style="align-items:flex-end;">
+                    <div>
+                        <label>Largura Livre (X)</label>
+                        <input type="number" id="inp_vao_larg_interna" step="5">
+                    </div>
+                    <div>
+                        <label>Altura Livre (Z)</label>
+                        <input type="number" id="inp_vao_alt_interna" step="5">
+                    </div>
+                    <button class="btn btn-primary" style="height:28px; width:100%;" onclick="redimensionarMedidaInternaDoVao()">✔️ Aplicar</button>
+                </div>
+                <small id="lbl_dica_edicao_vao" style="font-size:9.5px; color:#80D8FF;"></small>
+            </div>
+
+            <!-- 2. SUBDIVISÃO E INSERÇÃO DE COMPONENTES NO VÃO -->
+            <div class="row-2" style="margin-bottom:6px; background:#12171D; padding:6px; border-radius:6px; border:1px solid #263238;">
+                <div>
+                    <label title="0 = Divide na metade | >0 = Medida do 1º vão (Esq/Inf)">Nova Divisão (0=Meio)</label>
+                    <input type="number" id="inp_vao_cota_div" value="0" step="10" placeholder="0 = Metade">
+                </div>
+                <div>
+                    <label>Qtd. (Gavetas / Prat.)</label>
+                    <input type="number" id="inp_vao_qtd_itens" value="3" min="1" max="8" step="1">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                <button class="btn btn-secondary" onclick="aplicarOperacaoVaoParametrica('DIVISORIA_VERTICAL')">➕ Dividir Vertical</button>
+                <button class="btn btn-secondary" onclick="aplicarOperacaoVaoParametrica('DIVISORIA_HORIZONTAL')">➖ Dividir Horiz.</button>
+                <button class="btn btn-primary" onclick="aplicarOperacaoVaoParametrica('GAVETEIRO')">🗄️ Gavetas Ext.</button>
+                <button class="btn btn-purple" onclick="aplicarOperacaoVaoParametrica('GAVETEIRO_INTERNO')">🔒 Gav. Internas</button>
+                <button class="btn btn-secondary" style="background:#00838F;" onclick="aplicarOperacaoVaoParametrica('SAPATEIRA')">👟 Sapateiras</button>
+                <button class="btn btn-primary" onclick="aplicarOperacaoVaoParametrica('PRATELEIRAS')">📏 Prateleiras</button>
+                <button class="btn btn-blue" onclick="aplicarOperacaoVaoParametrica('PORTA_TEMPERO')">🍾 Porta-Tempero</button>
+                <button class="btn btn-blue" onclick="aplicarOperacaoVaoParametrica('PORTAS_GIRO', {abertura: 'DUPLA'})">🚪 Porta Giro</button>
+                <button class="btn btn-blue" style="background:#E65100;" onclick="aplicarOperacaoVaoParametrica('PORTAS_BASCULANTES')">⏫ Basculante</button>
+                <button class="btn btn-danger" onclick="limparOperacoesDoVaoSelecionado()" title="Remove os componentes deste vão ou desfaz a divisão">🧹 Limpar Vão</button>
             </div>
         </div>
 
