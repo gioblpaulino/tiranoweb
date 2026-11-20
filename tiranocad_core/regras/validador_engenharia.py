@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/regras/validador_engenharia.py
 # RESPONSABILIDADE: Blindar o sistema contra combinações fisicamente impossíveis
-# ou proibidas pelas regras de marcenaria (Família vs. Componentes, Conflitos
-# de Ocupação de Vão e Limites de Chapa/Ferragens).
+# ou proibidas pelas regras de marcenaria, lendo 100% dos limites do Perfil JSON.
 # =============================================================================
 
 from typing import Any, Dict
@@ -38,17 +37,21 @@ class ValidadorEngenharia:
     ) -> None:
         """Verifica se as medidas externas do módulo respeitam os limites da chapa e da família."""
         familia = familia.strip().upper()
+        min_bancada_rodape = float(self.perfil.obter("limites_engenharia.medida_min_bancada_rodape_mm"))
 
         # Bancadas de Pedra (Marmoraria) e Rodapés (que já seccionam chapas automaticamente)
-        # não sofrem bloqueio pelo comprimento de uma única chapa de MDF (2710mm)!
+        # não sofrem bloqueio pelo comprimento de uma única chapa de MDF!
         if familia in ("MODULO_BANCADA_PEDRA", "MODULO_RODAPE"):
-            if largura_x <= 50.0 or profundidade_z <= 50.0:
-                raise ErroGeometriaCAD("🚨 As dimensões da bancada/rodapé devem ser maiores que 50mm.")
+            if largura_x <= min_bancada_rodape or profundidade_z <= min_bancada_rodape:
+                raise ErroGeometriaCAD(
+                    f"🚨 As dimensões da bancada/rodapé devem ser maiores que {min_bancada_rodape:.0f}mm."
+                )
             return
 
         max_comp = float(self.perfil.obter("restricoes_chapa.comprimento_max_mdf"))
         max_larg = float(self.perfil.obter("restricoes_chapa.largura_max_mdf"))
         refilo = float(self.perfil.obter("restricoes_chapa.refilo_seguranca"))
+        prof_max_aereo = float(self.perfil.obter("limites_engenharia.profundidade_max_aereo_mm"))
 
         util_x = max_comp - (2.0 * refilo)
         util_y = max_larg - (2.0 * refilo)
@@ -68,10 +71,10 @@ class ValidadorEngenharia:
                 f"largura útil da chapa ({util_y:.0f}mm)."
             )
 
-        if familia == "MODULO_AEREO" and profundidade_z > 600.0:
+        if familia == "MODULO_AEREO" and profundidade_z > prof_max_aereo:
             raise ErroGeometriaCAD(
                 f"🚨 [TRAVA DE SEGURANÇA] Um Módulo Aéreo com {profundidade_z:.0f}mm de profundidade "
-                f"apresenta risco estrutural de alavanca na parede (máximo recomendado: 600mm)."
+                f"apresenta risco estrutural de alavanca na parede (máximo configurado: {prof_max_aereo:.0f}mm)."
             )
 
     def validar_operacao_no_vao(
@@ -86,7 +89,7 @@ class ValidadorEngenharia:
         familia = familia.strip().upper()
         tipo_op = str(operacao.get("tipo", "")).strip().upper()
 
-        # 1. Trava de Contexto da Família (Ex: Proibido Gaveta/Sapateira/Tempero em Aéreo)
+        # 1. Trava de Contexto da Família
         regras_familia = self.OPERACOES_PROIBIDAS_POR_FAMILIA.get(familia, {})
         if tipo_op in regras_familia:
             raise ErroGeometriaCAD(f"🚨 [REGRA DE FAMÍLIA] {regras_familia[tipo_op]}")
@@ -102,11 +105,10 @@ class ValidadorEngenharia:
                 f"internamente ({vao_alvo.tipo_divisao}). Aplique o componente em um dos sub-vãos filhos!"
             )
 
-        # 3. Trava de Colisão Frontal: Portas são proibidas sobre Gaveteiro Externo ou Porta-Tempero,
-        # mas são PERMITIDAS sobre Gaveteiro Interno e Sapateira!
+        # 3. Trava de Colisão Frontal
         tem_portas_no_vao = hasattr(vao_alvo, "metadados_portas") and bool(getattr(vao_alvo, "metadados_portas"))
 
-        if tipo_op in ("PORTAS_GIRO", "PORTAS_BASCULANTES"):
+        if tipo_op in ("PORTAS_GIRO", "PORTAS_BASCULANTES", "PORTAS_CORRER"):
             if vao_alvo.ocupacao_interna in ("GAVETEIRO", "PORTA_TEMPERO"):
                 raise ErroGeometriaCAD(
                     f"🚨 [COLISÃO DE FRENTES] O '{vao_alvo.nome_vao}' já está ocupado por "
@@ -130,17 +132,21 @@ class ValidadorEngenharia:
                     f"🚨 [VÃO OCUPADO] O '{vao_alvo.nome_vao}' já está ocupado por '{vao_alvo.ocupacao_interna}'."
                 )
 
-        # 5. Limites Físicos de Largura
+        # 5. Limites Físicos de Largura (100% vindos do Perfil JSON)
         if tipo_op == "PORTA_TEMPERO":
-            if not (110.0 <= vao_alvo.largura <= 350.0):
+            larg_min_pt = float(self.perfil.obter("limites_engenharia.largura_min_porta_tempero_mm"))
+            larg_max_pt = float(self.perfil.obter("limites_engenharia.largura_max_porta_tempero_mm"))
+            if not (larg_min_pt <= vao_alvo.largura <= larg_max_pt):
                 raise ErroGeometriaCAD(
-                    f"🚨 [LARGURA INCOMPATÍVEL] O Porta-Tempero exige um vão livre entre 110mm e 350mm "
+                    f"🚨 [LARGURA INCOMPATÍVEL] O Porta-Tempero exige um vão livre entre {larg_min_pt:.0f}mm e {larg_max_pt:.0f}mm "
                     f"(o '{vao_alvo.nome_vao}' possui {vao_alvo.largura:.1f}mm). Divida o vão antes!"
                 )
 
         if tipo_op in ("GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA"):
-            if vao_alvo.largura < 250.0 or vao_alvo.largura > 1200.0:
+            larg_min_gav = float(self.perfil.obter("limites_engenharia.largura_min_gaveta_mm"))
+            larg_max_gav = float(self.perfil.obter("limites_engenharia.largura_max_gaveta_mm"))
+            if vao_alvo.largura < larg_min_gav or vao_alvo.largura > larg_max_gav:
                 raise ErroGeometriaCAD(
                     f"🚨 [LARGURA INVÁLIDA] O '{vao_alvo.nome_vao}' possui {vao_alvo.largura:.1f}mm. "
-                    f"Componentes corrediços exigem vão livre entre 250mm e 1200mm."
+                    f"Componentes corrediços exigem vão livre entre {larg_min_gav:.0f}mm e {larg_max_gav:.0f}mm."
                 )

@@ -19,6 +19,7 @@ let ambienteCache = { paredes: [] };
 let modulosCache = [];
 let moduloAtivo = null;
 let idsSelecionados = new Set();
+let idsModulosOcultos = new Set();
 let vaoSelecionadoId = null;
 
 let pontoInicialParede2D = null;
@@ -44,6 +45,14 @@ function inicializarPalco3D() {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.target.set(1600, 600, 800);
     controls.update();
+
+    // Botão do Meio = Rotacionar (Orbit), Scroll = Zoom, Botão Direito = Pan
+    controls.mouseButtons = {
+        LEFT: null,
+        MIDDLE: THREE.MOUSE.ROTATE,
+        RIGHT: THREE.MOUSE.PAN
+    };
+    renderer.domElement.addEventListener("contextmenu", (e) => e.preventDefault());
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.72));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
@@ -141,8 +150,14 @@ function coletarOverridesPerfilUI() {
 
 function alternarFamiliaUI() {
     const fam = document.getElementById("sel_familia").value;
+    
     document.getElementById("card_opcoes_painel").style.display = (fam === "MODULO_PAINEL") ? "flex" : "none";
     document.getElementById("card_opcoes_avulso").style.display = (fam === "MODULO_AVULSO") ? "flex" : "none";
+    document.getElementById("card_opcoes_canto").style.display = (fam === "MODULO_CANTO_RETO") ? "flex" : "none";
+    if (fam === "MODULO_CANTO_RETO") {
+        document.getElementById("inp_largura").value = 1000;
+        document.getElementById("inp_elevacao_z").value = 0;
+    }
     document.getElementById("card_caixaria_fabrica").style.display =
         (fam === "MODULO_PAINEL" || fam === "MODULO_AVULSO") ? "none" : "flex";
 
@@ -216,7 +231,16 @@ async function fabricarModuloAtual(forcarAutoSnap = false) {
         orientacao_espacial: document.getElementById("sel_orient_painel").value,
         nome_personalizado: document.getElementById("inp_nome_painel").value,
         subtipo_avulso: document.getElementById("sel_subtipo_avulso").value,
-        quantidade_avulso: parseInt(document.getElementById("inp_qtd_avulso").value)
+        quantidade_avulso: parseInt(document.getElementById("inp_qtd_avulso").value),
+        subfamilia_canto: document.getElementById("sel_canto_subfamilia").value,
+        lado_cego: document.getElementById("sel_canto_lado").value,
+        tipo_porta_cega: document.getElementById("sel_canto_tipo_cega").value,
+        largura_area_cega_mm: parseFloat(document.getElementById("inp_canto_area_cega").value) || 580,
+        largura_batente_mm: parseFloat(document.getElementById("inp_canto_larg_bat").value) || 70,
+        avanco_frontal_batente_mm: parseFloat(document.getElementById("inp_canto_avanco_bat").value) || 40,
+        qtd_portas_canto: parseInt(document.getElementById("inp_canto_qtd_portas").value) || 1,
+        qtd_prateleiras_canto: parseInt(document.getElementById("inp_canto_qtd_prats").value) || 0,
+        deslocamento_x_afastador_mm: parseFloat(document.getElementById("inp_canto_desloc_x_afast").value) || 0
     };
 
     const payload = {
@@ -374,6 +398,28 @@ function limparSelecaoMultipla() {
     atualizarListaModulosDOM();
 }
 
+function alternarOcultarModuloSelecionado() {
+    const ids = obterListaIdsAlvo();
+    if (ids.length === 0) return;
+
+    ids.forEach(id => {
+        if (idsModulosOcultos.has(id)) idsModulosOcultos.delete(id);
+        else idsModulosOcultos.add(id);
+    });
+    atualizarListaModulosDOM();
+    renderizarCenaCompleta();
+    document.getElementById("txt_resposta_copiloto").innerText =
+        `🙈 ${idsModulosOcultos.size} módulo(s) oculto(s). Pressione Shift+H para reexibir todos.`;
+}
+
+function reexibirTodosModulosOcultos() {
+    if (idsModulosOcultos.size === 0) return;
+    idsModulosOcultos.clear();
+    atualizarListaModulosDOM();
+    renderizarCenaCompleta();
+    document.getElementById("txt_resposta_copiloto").innerText = "👁️ Todos os módulos ocultos foram reexibidos!";
+}
+
 function alternarCheckboxModulo(idMod, event) {
     event.stopPropagation();
     if (idsSelecionados.has(idMod)) idsSelecionados.delete(idMod);
@@ -447,6 +493,17 @@ function atualizarListaModulosDOM() {
             <span style="color:#4CE660;">${mod.lista_de_pecas.length}pç</span>
         `;
         container.appendChild(div);
+        
+        const estaOculto = idsModulosOcultos.has(mod.id_modulo);
+        div.style.opacity = estaOculto ? "0.45" : "1.0";
+        div.innerHTML = `
+            <input type="checkbox" class="chk-sel" ${ehMarcado ? 'checked' : ''} onclick="alternarCheckboxModulo('${mod.id_modulo}', event)">
+            <span style="flex:1;" onclick="selecionarModuloDaFila('${mod.id_modulo}', false)">
+                <strong>#${mod.id_modulo}</strong> ${estaOculto ? '🙈 ' : ''}${mod.familia.replace('MODULO_', '')} (${mod.dimensoes_ocupadas.largura_x}mm)
+                <small style="color:#80D8FF;">[${pos.nome_parede || 'Livre'} X:${pos.distancia_x_parede || 0} Z:${pos.elevacao_z || 0}]</small>
+            </span>
+            <span style="color:#4CE660;">${mod.lista_de_pecas.length}pç</span>
+        `;
     });
 }
 
@@ -484,6 +541,7 @@ function selecionarModuloDaFila(idMod, somarSelecao = false) {
     if (achado.prompt_original) document.getElementById("inp_prompt").value = achado.prompt_original;
 
     sincronizarInputsPosicao(achado);
+    sincronizarMenuMateriaisComModulo(achado);
     atualizarContadorSelecaoUI();
     atualizarListaModulosDOM();
     renderizarCenaCompleta();
@@ -541,6 +599,7 @@ function renderizarCenaCompleta() {
         const grupoMod = construirGrupo3DDoModulo(mod, ehAtivo, ehMultiSel);
 
         if (modoCamera !== "ISOLADO" && mod.posicionamento_ambiente) {
+            if (idsModulosOcultos.has(mod.id_modulo)) return;
             const pos = mod.posicionamento_ambiente;
             grupoMod.position.set(pos.x_ambiente, pos.z_ambiente, pos.y_ambiente);
             grupoMod.rotation.y = -THREE.MathUtils.degToRad(pos.rotacao_graus || 0);
@@ -819,8 +878,7 @@ function desenharNoEspacialRecursivo(no, profTotal, grupoMod) {
 
 function atualizarCinematica3D() {
     const fatorExplosao = parseFloat(document.getElementById("rng_explosao").value);
-    const pctAbertura = parseFloat(document.getElementById("rng_abertura_portas").value) / 100.0;
-
+    const pctAbertura = parseFloat(document.getElementById("rng_abertura_portas")?.value || 0)
     grupoAmbienteModulos.children.forEach(grupoMod => {
         grupoMod.children.forEach(container => {
             if (!container.userData || !container.userData.peca) return;
@@ -948,6 +1006,16 @@ function configurarEventosMouseETeclado() {
         if (intMod.length > 0) {
             const idModClicado = intMod[0].object.userData.idModulo;
             if (idModClicado) selecionarModuloDaFila(idModClicado, event.shiftKey);
+        } else if (!event.shiftKey) {
+            // Clicou no vazio: limpa a seleção do módulo e o destaque no palco 3D
+            moduloAtivo = null;
+            idsSelecionados.clear();
+            pecaIndividualSelecionada = null;
+            document.getElementById("lista_pecas_modulo").innerHTML = "";
+            document.getElementById("qtd_pecas_mod").innerText = "0";
+            atualizarContadorSelecaoUI();
+            atualizarListaModulosDOM();
+            renderizarCenaCompleta();
         }
     });
 
@@ -978,7 +1046,20 @@ function configurarEventosMouseETeclado() {
         } else if (e.key.toLowerCase() === "r") {
             e.preventDefault();
             girarSelecionados(45);
-        }
+        } else if (e.key === "0") {
+            e.preventDefault();
+            girarSelecionados(-45);
+        } else if (e.key === "9") {
+            e.preventDefault();
+            girarSelecionados(45);
+        } else if (e.key.toLowerCase() === "h") {
+            e.preventDefault();
+            if (e.shiftKey) {
+                reexibirTodosModulosOcultos();
+            } else {
+                alternarOcultarModuloSelecionado();
+            }
+        } 
     });
 }
 
@@ -1217,7 +1298,9 @@ function selecionarPecaParaPintura(pecaDict) {
 }
 
 async function aplicarZonasMateriaisModulo() {
-    if (!moduloAtivo) return;
+    const ids = obterListaIdsAlvo();
+    if (ids.length === 0) return;
+
     const zonas = {
         cor_caixaria: document.getElementById("mat_zona_caixaria").value,
         cor_frentes: document.getElementById("mat_zona_frentes").value,
@@ -1232,12 +1315,18 @@ async function aplicarZonasMateriaisModulo() {
     const resp = await fetch("/api/modulo/pintar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_modulo: moduloAtivo.id_modulo, zonas_materiais: zonas })
+        body: JSON.stringify({
+            ids_modulos: ids,
+            id_modulo: ids[0],
+            zonas_materiais: zonas
+        })
     });
     const dados = await resp.json();
     if (dados.sucesso) {
-        moduloAtivo = dados.modulo;
+        if (ids.length === 1) moduloAtivo = dados.modulo;
         await carregarEstadoAmbiente();
+        document.getElementById("txt_resposta_copiloto").innerText =
+            `🎨 Materiais aplicados com sucesso em ${dados.total_pintados} módulo(s)!`;
     }
 }
 

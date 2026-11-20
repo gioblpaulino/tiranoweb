@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/caixaria.py
 # RESPONSABILIDADE: Construir a estrutura externa para Balcão Inferior, Aéreo e
-# Torre, incluindo Mão Amiga 45°, Travessas de Duplo Reforço em Torres, opção
-# Sem Travessa Traseira no Balcão e correção de Teto em Lateral Passante.
+# Torre 100% Data-Driven (guiada exclusivamente pelo Perfil JSON).
 # =============================================================================
 
 from typing import Dict, List, Tuple
@@ -39,13 +38,16 @@ class ConstrutorCaixaria:
         modo_teto_balcao = str(self.perfil.obter("geometria_caixaria.montagem_teto_balcao")).strip().upper()
         pos_sarrafo_tras = str(self.perfil.obter("geometria_caixaria.posicao_sarrafo_traseiro_balcao")).strip().upper()
         modo_fundo = str(self.perfil.obter("geometria_caixaria.tipo_montagem_fundo")).strip().upper()
+        folga_fundo_sobreposto = float(self.perfil.obter("geometria_caixaria.folga_fundo_sobreposto_cada_lado"))
 
         fixacao_aereo = str(self.perfil.obter("geometria_caixaria.sistema_fixacao_aereo")).strip().upper()
         alt_total_mao_amiga = float(self.perfil.obter("geometria_caixaria.altura_total_mao_amiga"))
         folga_mao_amiga = float(self.perfil.obter("geometria_caixaria.folga_encaixe_mao_amiga"))
+        folga_lat_mao_amiga = float(self.perfil.obter("geometria_caixaria.folga_lateral_mao_amiga_parede"))
 
         reforco_torre = str(self.perfil.obter("geometria_caixaria.reforco_traseiro_torre")).strip().upper()
         alt_travessa_torre = float(self.perfil.obter("geometria_caixaria.altura_travessa_reforco_torre"))
+        fator_z_reforco_inf = float(self.perfil.obter("geometria_caixaria.fator_z_reforco_inferior_torre"))
 
         if not com_fundo:
             modo_fundo = "SEM_FUNDO"
@@ -57,7 +59,7 @@ class ConstrutorCaixaria:
         larg_canal = float(self.perfil.obter("parametros_usinagem.largura_canal_fundo"))
         prof_canal = float(self.perfil.obter("parametros_usinagem.profundidade_canal_fundo"))
 
-        tem_veio_caixa = not any(cor in mat_caixa.upper() for cor in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_caixa = self.perfil.material_possui_veio(mat_caixa)
 
         eh_aereo = (familia == "MODULO_AEREO")
         eh_torre = (familia in ("MODULO_ALTO", "MODULO_TORRE"))
@@ -65,13 +67,11 @@ class ConstrutorCaixaria:
         base_eh_passante = (modo_base == "BASE_PASSANTE")
         tem_rasgo_fundo = (modo_fundo == "ENCAIXADO_RASGO")
 
-        # Se for Aéreo com Mão Amiga 45° ou Torre com Reforço Traseiro atrás do fundo,
-        # garante que o recuo do canal comporte a espessura da régua/travessa traseira!
         precisa_recuo_espessura_mdf = (
             (eh_aereo and fixacao_aereo == "REGUA_MAO_AMIGA_45") or
             (eh_torre and reforco_torre in ("TRAVESSA_DUPLO_REFORCO", "TRAVESSA_SIMPLES_TOPO"))
         )
-        recuo_fundo_efetivo = max(recuo_fundo_padrao, esp_mdf + 1.0) if precisa_recuo_espessura_mdf else recuo_fundo_padrao
+        recuo_fundo_efetivo = max(recuo_fundo_padrao, esp_mdf + folga_fundo) if precisa_recuo_espessura_mdf else recuo_fundo_padrao
 
         largura_vao_interno = round(largura_x - (2.0 * esp_mdf), 2)
         cota_y_canal_fundo = round(profundidade_z - recuo_fundo_efetivo - esp_fundo, 2) if tem_rasgo_fundo else profundidade_z
@@ -81,7 +81,6 @@ class ConstrutorCaixaria:
                 f"🚨 Profundidade ({profundidade_z}mm) insuficiente para a estrutura e recuo de fundo."
             )
 
-        # Correção de Lateral Passante: Na Lateral Passante, tanto a Base quanto o Teto ficam ENTRE as laterais!
         z_inicio_lateral = esp_mdf if base_eh_passante else 0.0
         desconto_topo_lateral = esp_mdf if (usa_teto_inteiro and base_eh_passante) else 0.0
         altura_lateral = round(altura_y - z_inicio_lateral - desconto_topo_lateral, 2)
@@ -156,7 +155,6 @@ class ConstrutorCaixaria:
             mapa_estrutural["base_superior"] = base_sup
             peca_vizinha_topo = base_sup
         else:
-            # 4A. Sarrafo Frontal (Sempre presente no Balcão)
             sarrafo_front = Peca(
                 categoria_industrial="sarrafo_frontal",
                 nome_comercial=self.perfil.obter_nome_peca("sarrafo_frontal"),
@@ -171,7 +169,6 @@ class ConstrutorCaixaria:
             mapa_estrutural["sarrafo_frontal"] = sarrafo_front
             peca_vizinha_topo = sarrafo_front
 
-            # 4B. Sarrafo Traseiro do Balcão: DEITADO, EM_PE ou SEM_TRAVESSA_TRASEIRA!
             if pos_sarrafo_tras == "SEM_TRAVESSA_TRASEIRA":
                 pass
             elif pos_sarrafo_tras == "EM_PE":
@@ -214,7 +211,6 @@ class ConstrutorCaixaria:
                 z_mao_movel = round(altura_y - esp_mdf - alt_cada_mao_amiga, 2)
                 z_mao_parede = round(z_mao_movel - alt_cada_mao_amiga - folga_mao_amiga, 2)
 
-                # Metade Superior (Presa no Móvel)
                 regua_movel = Peca(
                     categoria_industrial="regua_mao_amiga_movel",
                     nome_comercial=self.perfil.obter_nome_peca("regua_mao_amiga_movel"),
@@ -226,12 +222,11 @@ class ConstrutorCaixaria:
                 )
                 regua_movel.fitas.base = True
 
-                # Metade Inferior (Vai presa na Parede)
                 regua_parede = Peca(
                     categoria_industrial="regua_mao_amiga_parede",
                     nome_comercial=self.perfil.obter_nome_peca("regua_mao_amiga_parede"),
-                    dim_3d=(largura_vao_interno - 10.0, esp_mdf, alt_cada_mao_amiga),
-                    pos_3d=(esp_mdf + 5.0, y_mao_amiga, z_mao_parede),
+                    dim_3d=(round(largura_vao_interno - (2.0 * folga_lat_mao_amiga), 2), esp_mdf, alt_cada_mao_amiga),
+                    pos_3d=(round(esp_mdf + folga_lat_mao_amiga, 2), y_mao_amiga, z_mao_parede),
                     material=mat_caixa,
                     id_pai=id_modulo,
                     tem_veio=tem_veio_caixa
@@ -279,7 +274,7 @@ class ConstrutorCaixaria:
             mapa_estrutural["travessa_reforco_torre_sup"] = trav_sup
 
             if reforco_torre == "TRAVESSA_DUPLO_REFORCO":
-                z_ref_inf = round(altura_y * 0.45, 2)
+                z_ref_inf = round(altura_y * fator_z_reforco_inf, 2)
                 trav_inf = Peca(
                     categoria_industrial="travessa_reforco_torre_inf",
                     nome_comercial=self.perfil.obter_nome_peca("travessa_reforco_torre_inf"),
@@ -317,8 +312,12 @@ class ConstrutorCaixaria:
             fundo = Peca(
                 categoria_industrial="fundo_costa",
                 nome_comercial=f"{self.perfil.obter_nome_peca('fundo_costa')} (Sobreposto)",
-                dim_3d=(round(largura_x - 2.0, 2), esp_fundo, round(altura_y - 2.0, 2)),
-                pos_3d=(1.0, profundidade_z, 1.0),
+                dim_3d=(
+                    round(largura_x - (2.0 * folga_fundo_sobreposto), 2),
+                    esp_fundo,
+                    round(altura_y - (2.0 * folga_fundo_sobreposto), 2)
+                ),
+                pos_3d=(folga_fundo_sobreposto, profundidade_z, folga_fundo_sobreposto),
                 material=mat_fundo,
                 id_pai=id_modulo
             )

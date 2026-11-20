@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/tamponamentos.py
 # RESPONSABILIDADE: Construir Tamponamentos Agregados (Individual ou Lote),
-# com opção de Profundidade Customizada nas Laterais (Reguinha de Parede),
-# Fechamentos/Afastadores, Vista em "L" e Redimensionamento por Peça.
+# Fechamentos/Afastadores e Vista em "L" 100% Data-Driven pelo Perfil JSON.
 # =============================================================================
 
 import math
@@ -50,11 +49,18 @@ class ConstrutorTamponamento:
         if not config_tamp or not config_tamp.get("ativo", False):
             return []
 
-        esp_tamp = float(config_tamp.get("espessura_mm", 18.0))
-        avanco_frontal = float(config_tamp.get("avanco_frontal_mm", 18.0))
-        subida_topo = float(config_tamp.get("subida_topo_mm", 70.0))
+        esp_padrao = float(self.perfil.obter("regras_tamponamento.espessura_padrao_mm"))
+        avanco_padrao = float(self.perfil.obter("regras_tamponamento.avanco_frontal_padrao_mm"))
+        subida_padrao = float(self.perfil.obter("regras_tamponamento.subida_topo_padrao_mm"))
+        aba_l_padrao = float(self.perfil.obter("regras_tamponamento.largura_aba_l_padrao_mm"))
+        alt_min_vista_l = float(self.perfil.obter("regras_tamponamento.altura_minima_vista_l_mm"))
+        larg_fech_padrao = float(self.perfil.obter("regras_tamponamento.largura_fechamento_padrao_mm"))
+
+        esp_tamp = float(config_tamp.get("espessura_mm", esp_padrao))
+        avanco_frontal = float(config_tamp.get("avanco_frontal_mm", avanco_padrao))
+        subida_topo = float(config_tamp.get("subida_topo_mm", subida_padrao))
         descida_base = float(config_tamp.get("descida_base_mm", 0.0))
-        larg_aba_l = float(config_tamp.get("largura_aba_l_mm", 60.0))
+        larg_aba_l = float(config_tamp.get("largura_aba_l_mm", aba_l_padrao))
         prof_custom_lat = float(config_tamp.get("profundidade_lateral_mm", 0.0))
 
         tem_lat_esq = bool(config_tamp.get("lateral_esquerda", False))
@@ -64,7 +70,7 @@ class ConstrutorTamponamento:
 
         tem_fech_esq = bool(config_tamp.get("fechamento_esquerda", False))
         tem_fech_dir = bool(config_tamp.get("fechamento_direita", False))
-        larg_fech = float(config_tamp.get("largura_fechamento_mm", 50.0))
+        larg_fech = float(config_tamp.get("largura_fechamento_mm", larg_fech_padrao))
         esp_fech = float(config_tamp.get("espessura_fechamento_mm", esp_tamp))
 
         largura_conjunto = float(config_tamp.get("largura_conjunto_mm") or largura_mod)
@@ -79,10 +85,9 @@ class ConstrutorTamponamento:
         mat_tamp = str(
             config_tamp.get("material") or self.perfil.obter("materiais_padrao.material_frentes")
         )
-        tem_veio = not any(c in mat_tamp.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "GRAFITE", "TX"])
+        tem_veio = self.perfil.material_possui_veio(mat_tamp)
 
         prof_total_padrao = round(profundidade_mod + avanco_frontal, 2)
-        # Se o usuário definiu uma profundidade customizada (> 0), usa como reguinha ou painel sob medida!
         prof_lateral_efetiva = round(prof_custom_lat, 2) if prof_custom_lat > 0.0 else prof_total_padrao
 
         alt_total_lat = round(altura_mod + subida_topo + descida_base, 2)
@@ -91,11 +96,11 @@ class ConstrutorTamponamento:
 
         pecas: List[Peca] = []
 
-        # 1. TAMPONAMENTO LATERAL ESQUERDO (Inteiro ou Reguinha Frontal)
+        # 1. TAMPONAMENTO LATERAL ESQUERDO
         if tem_lat_esq:
             tamp_esq = Peca(
                 categoria_industrial="painel_tamponamento",
-                nome_comercial="Tamponamento Lateral (Esq)",
+                nome_comercial=self.perfil.obter_nome_peca("tamponamento_lateral_esq"),
                 dim_3d=(esp_tamp, prof_lateral_efetiva, alt_total_lat),
                 pos_3d=(-esp_tamp, y_inicio_tamp, z_inicio_lat),
                 material=mat_tamp,
@@ -107,11 +112,11 @@ class ConstrutorTamponamento:
             self._aplicar_override_dimensional_tamp(tamp_esq, overrides_pecas_tamp)
             pecas.append(tamp_esq)
 
-        # 2. TAMPONAMENTO LATERAL DIREITO (Inteiro ou Reguinha Frontal)
+        # 2. TAMPONAMENTO LATERAL DIREITO
         if tem_lat_dir:
             tamp_dir = Peca(
                 categoria_industrial="painel_tamponamento",
-                nome_comercial="Tamponamento Lateral (Dir)",
+                nome_comercial=self.perfil.obter_nome_peca("tamponamento_lateral_dir"),
                 dim_3d=(esp_tamp, prof_lateral_efetiva, alt_total_lat),
                 pos_3d=(largura_mod, y_inicio_tamp, z_inicio_lat),
                 material=mat_tamp,
@@ -128,7 +133,7 @@ class ConstrutorTamponamento:
             x_fech_esq = (-esp_tamp - larg_fech) if tem_lat_esq else -larg_fech
             fech_esq = Peca(
                 categoria_industrial="painel_tamponamento",
-                nome_comercial="Fechamento Parede (Esq)",
+                nome_comercial=self.perfil.obter_nome_peca("fechamento_parede_esq"),
                 dim_3d=(larg_fech, esp_fech, alt_total_lat),
                 pos_3d=(round(x_fech_esq, 2), y_inicio_tamp, z_inicio_lat),
                 material=mat_tamp,
@@ -143,7 +148,7 @@ class ConstrutorTamponamento:
             x_fech_dir = (largura_mod + esp_tamp) if tem_lat_dir else largura_mod
             fech_dir = Peca(
                 categoria_industrial="painel_tamponamento",
-                nome_comercial="Fechamento Parede (Dir)",
+                nome_comercial=self.perfil.obter_nome_peca("fechamento_parede_dir"),
                 dim_3d=(larg_fech, esp_fech, alt_total_lat),
                 pos_3d=(round(x_fech_dir, 2), y_inicio_tamp, z_inicio_lat),
                 material=mat_tamp,
@@ -155,13 +160,15 @@ class ConstrutorTamponamento:
             pecas.append(fech_dir)
 
         # 4. VISTA SUPERIOR EM "L"
-        if tem_vista_l and subida_topo >= 25.0:
+        if tem_vista_l and subida_topo >= alt_min_vista_l:
             x_ini_vista = 0.0 if tem_lat_esq else -esp_tamp
             x_fim_vista = largura_conjunto if ultimo_tem_lat_dir else (largura_conjunto + esp_tamp)
             larg_total_vista = round(x_fim_vista - x_ini_vista, 2)
 
             qtd_segmentos = max(1, math.ceil(larg_total_vista / limite_util_chapa))
             larg_segmento = round(larg_total_vista / float(qtd_segmentos), 2)
+            nome_vista_front = self.perfil.obter_nome_peca("vista_superior_l_frontal")
+            nome_vista_base = self.perfil.obter_nome_peca("vista_superior_l_base")
 
             for idx_seg in range(qtd_segmentos):
                 sufixo_seg = f" {idx_seg + 1}" if qtd_segmentos > 1 else ""
@@ -169,7 +176,7 @@ class ConstrutorTamponamento:
 
                 vista_frontal = Peca(
                     categoria_industrial="painel_tamponamento",
-                    nome_comercial=f"Vista Superior Frontal (Perfil L){sufixo_seg}",
+                    nome_comercial=f"{nome_vista_front}{sufixo_seg}",
                     dim_3d=(larg_segmento, esp_tamp, subida_topo),
                     pos_3d=(x_seg, y_inicio_tamp, altura_mod),
                     material=mat_tamp,
@@ -182,7 +189,7 @@ class ConstrutorTamponamento:
 
                 aba_deitada_l = Peca(
                     categoria_industrial="painel_tamponamento",
-                    nome_comercial=f"Travessa Base da Vista em L{sufixo_seg}",
+                    nome_comercial=f"{nome_vista_base}{sufixo_seg}",
                     dim_3d=(larg_segmento, larg_aba_l, esp_tamp),
                     pos_3d=(x_seg, round(y_inicio_tamp + esp_tamp, 2), altura_mod),
                     material=mat_tamp,
@@ -201,13 +208,14 @@ class ConstrutorTamponamento:
 
             qtd_seg_t = max(1, math.ceil(larg_total_topo / limite_util_chapa))
             larg_seg_t = round(larg_total_topo / float(qtd_seg_t), 2)
+            nome_tamp_sup = self.perfil.obter_nome_peca("tamponamento_superior")
 
             for idx_seg in range(qtd_seg_t):
                 sufixo_seg = f" {idx_seg + 1}" if qtd_seg_t > 1 else ""
                 x_seg = round(x_ini_t + (idx_seg * larg_seg_t), 2)
                 tamp_sup = Peca(
                     categoria_industrial="painel_tamponamento",
-                    nome_comercial=f"Tamponamento Superior{sufixo_seg}",
+                    nome_comercial=f"{nome_tamp_sup}{sufixo_seg}",
                     dim_3d=(larg_seg_t, prof_total_padrao, esp_tamp),
                     pos_3d=(x_seg, y_inicio_tamp, altura_mod),
                     material=mat_tamp,

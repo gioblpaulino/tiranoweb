@@ -1,10 +1,10 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/gavetas.py
-# RESPONSABILIDADE: Construir Gaveteiros Externos, Gaveteiros Internos (com
-# espaçadores laterais para dobradiça e vão puxador) e Sapateiras Corrediças.
+# RESPONSABILIDADE: Construir Gaveteiros Externos, Gaveteiros Internos e
+# Sapateiras Corrediças 100% Data-Driven pelo Perfil JSON.
 # =============================================================================
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from tiranocad_core.gerenciador_perfis import GerenciadorPerfis
 from tiranocad_core.modelos.entidades import ErroGeometriaCAD, Peca
 from tiranocad_core.modelos.no_espacial import NoEspacial
@@ -15,17 +15,60 @@ class ConstrutorGavetas:
     Especialista na fabricação paramétrica de gavetas externas, internas e sapateiras.
     """
 
-    TRILHOS_COMERCIAIS_MM = [600.0, 550.0, 500.0, 450.0, 400.0, 350.0, 300.0, 250.0, 200.0]
-
     def __init__(self, perfil: GerenciadorPerfis):
         self.perfil = perfil
 
+    @staticmethod
+    def _resolver_alturas_customizadas(
+        quantidade: int,
+        altura_total_disponivel: float,
+        alturas_custom: Optional[List[Optional[float]]] = None,
+        altura_minima_item: float = 70.0
+    ) -> List[float]:
+        """
+        Distribui a altura disponível entre N gavetas.
+        Itens com valor > 0 ficam travados na medida informada;
+        itens com 0 ou None ('Auto') dividem igualmente o espaço restante.
+        """
+        if not alturas_custom:
+            return [round(altura_total_disponivel / float(quantidade), 2)] * quantidade
+
+        # Normaliza o tamanho da lista para bater com a quantidade de gavetas
+        lista_norm: List[float] = []
+        for i in range(quantidade):
+            val = alturas_custom[i] if i < len(alturas_custom) else 0.0
+            lista_norm.append(float(val) if val and float(val) > 0.0 else 0.0)
+
+        soma_fixas = sum(h for h in lista_norm if h > 0.0)
+        qtd_autos = sum(1 for h in lista_norm if h <= 0.0)
+
+        if qtd_autos == 0:
+            if abs(soma_fixas - altura_total_disponivel) > 2.0:
+                raise ErroGeometriaCAD(
+                    f"🚨 [ALTURAS DE GAVETA] A soma das alturas fixas ({soma_fixas:.1f}mm) "
+                    f"não bate com o espaço disponível ({altura_total_disponivel:.1f}mm). "
+                    f"Deixe pelo menos 1 gaveta em 0 (Auto) para absorver a diferença!"
+                )
+            return [round(h, 2) for h in lista_norm]
+
+        restante = altura_total_disponivel - soma_fixas
+        altura_cada_auto = round(restante / float(qtd_autos), 2)
+
+        if altura_cada_auto < altura_minima_item:
+            raise ErroGeometriaCAD(
+                f"🚨 [ALTURAS DE GAVETA] Sobrou apenas {altura_cada_auto:.1f}mm para cada gaveta Auto "
+                f"(mínimo permitido: {altura_minima_item:.0f}mm). Reduza as alturas fixas ou a quantidade."
+            )
+
+        return [round(h, 2) if h > 0.0 else altura_cada_auto for h in lista_norm]
+    
     def construir_gaveteiro(
-        self,
-        id_modulo: str,
-        vao_alvo: NoEspacial,
-        quantidade_gavetas: int
-    ) -> List[Peca]:
+     self,
+     id_modulo: str,
+     vao_alvo: NoEspacial,
+     quantidade_gavetas: int,
+     alturas_custom: Optional[List[Optional[float]]] = None
+ ) -> List[Peca]:
         """Constrói bateria de gavetas com frentes externas (Sobrepostas ou Embutidas)."""
         if quantidade_gavetas <= 0:
             return []
@@ -46,23 +89,26 @@ class ConstrutorGavetas:
         gap_entre = float(self.perfil.obter("folgas_frentes.gap_entre_frentes"))
         afast_frontal = float(self.perfil.obter("folgas_frentes.afastamento_frontal_caixa"))
 
+        trilhos_comerciais = [float(t) for t in self.perfil.obter("regras_gaveta.trilhos_comerciais_mm")]
         folga_corredica = float(self.perfil.obter("regras_gaveta.folga_corredica_cada_lado"))
         recuo_caixote = float(self.perfil.obter("regras_gaveta.recuo_frontal_caixote"))
         folga_prof_traseira = float(self.perfil.obter("regras_gaveta.folga_profundidade_traseira"))
         folga_alt_caixote = float(self.perfil.obter("regras_gaveta.folga_altura_caixote"))
+        rebaixo_ctrf_tras = float(self.perfil.obter("regras_gaveta.rebaixo_contra_frente_traseira"))
         elevacao_base_z = float(self.perfil.obter("regras_gaveta.elevacao_base_caixote_z"))
         offset_corredica_z = float(self.perfil.obter("regras_gaveta.offset_eixo_corredica_z"))
         recuo_canal_gav = float(self.perfil.obter("regras_gaveta.recuo_canal_fundo_gaveta"))
 
         larg_canal = float(self.perfil.obter("parametros_usinagem.largura_canal_fundo"))
         prof_canal = float(self.perfil.obter("parametros_usinagem.profundidade_canal_fundo"))
+        margem_canal_gav = float(self.perfil.obter("parametros_usinagem.margem_furo_acima_canal_gaveta"))
         folga_encaixe_fundo = float(self.perfil.obter("geometria_caixaria.folga_encaixe_fundo"))
 
-        tem_veio_caixa = not any(c in mat_caixa.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
-        tem_veio_frente = not any(c in mat_frente.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_caixa = self.perfil.material_possui_veio(mat_caixa)
+        tem_veio_frente = self.perfil.material_possui_veio(mat_frente)
 
         prof_max_permitida = vao_alvo.profundidade - recuo_caixote - folga_prof_traseira
-        prof_caixote = next((t for t in self.TRILHOS_COMERCIAIS_MM if t <= prof_max_permitida), 0.0)
+        prof_caixote = next((t for t in sorted(trilhos_comerciais, reverse=True) if t <= prof_max_permitida), 0.0)
         if prof_caixote <= 0.0:
             raise ErroGeometriaCAD(
                 f"🚨 Profundidade do '{vao_alvo.nome_vao}' ({vao_alvo.profundidade}mm) não comporta corrediça comercial."
@@ -86,13 +132,19 @@ class ConstrutorGavetas:
         largura_frente = round(vao_alvo.largura + cob_esq + cob_dir, 2)
         altura_total_cobertura = vao_alvo.altura + cob_inf + cob_sup
         soma_gaps_internos = (quantidade_gavetas - 1) * gap_entre
-        altura_frente = round((altura_total_cobertura - soma_gaps_internos) / float(quantidade_gavetas), 2)
+        altura_liquida_frentes = round(altura_total_cobertura - soma_gaps_internos, 2)
+
+        alturas_frentes = self._resolver_alturas_customizadas(
+            quantidade_gavetas, altura_liquida_frentes, alturas_custom
+        )
+        soma_frentes = sum(alturas_frentes)
+        alturas_nichos = [round(vao_alvo.altura * (hf / soma_frentes), 2) for hf in alturas_frentes]
 
         altura_nicho_unitario = vao_alvo.altura / float(quantidade_gavetas)
         altura_lateral_gav = round(altura_nicho_unitario - folga_alt_caixote, 2)
-        altura_traseira_ctrf = round(altura_lateral_gav - 5.0, 2)
+        altura_traseira_ctrf = round(altura_lateral_gav - rebaixo_ctrf_tras, 2)
 
-        if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + 12.0):
+        if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + margem_canal_gav):
             raise ErroGeometriaCAD(
                 f"🚨 As {quantidade_gavetas} gavetas ficaram baixas demais ({altura_lateral_gav}mm) para o vão ({vao_alvo.altura}mm)."
             )
@@ -105,14 +157,32 @@ class ConstrutorGavetas:
         pecas_gaveteiro: List[Peca] = []
         metadados_corredicas: List[Dict[str, Any]] = []
 
+        z_cursor_nicho = vao_alvo.z
+        z_cursor_frente = vao_alvo.z - cob_inf
+
         for i in range(quantidade_gavetas):
             num_gav = i + 1
-            z_base_nicho = vao_alvo.z + (i * altura_nicho_unitario)
+            altura_frente = alturas_frentes[i]
+            altura_nicho_unitario = alturas_nichos[i]
+
+            altura_lateral_gav = round(altura_nicho_unitario - folga_alt_caixote, 2)
+            altura_traseira_ctrf = round(altura_lateral_gav - rebaixo_ctrf_tras, 2)
+
+            if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + margem_canal_gav):
+                raise ErroGeometriaCAD(
+                    f"🚨 A gaveta {num_gav} ficou baixa demais ({altura_lateral_gav}mm) para o rasgo de fundo."
+                )
+
+            z_base_nicho = z_cursor_nicho
             z_base_caixote = round(z_base_nicho + elevacao_base_z, 2)
             y_inicio_caixote = round(vao_alvo.y + recuo_caixote, 2)
 
-            z_frente = round((vao_alvo.z - cob_inf) + i * (altura_frente + gap_entre), 2)
+            z_frente = round(z_cursor_frente, 2)
             x_frente = round(vao_alvo.x - cob_esq, 2)
+
+            # Avança os cursores para a próxima gaveta acima
+            z_cursor_nicho += altura_nicho_unitario
+            z_cursor_frente += altura_frente + gap_entre
 
             frente_gav = Peca(
                 categoria_industrial="frente_gaveta",
@@ -219,7 +289,8 @@ class ConstrutorGavetas:
         self,
         id_modulo: str,
         vao_alvo: NoEspacial,
-        quantidade_gavetas: int
+        quantidade_gavetas: int,
+        alturas_custom: Optional[List[Optional[float]]] = None
     ) -> List[Peca]:
         """Constrói Gavetas Internas recuadas com espaçadores laterais para dobradiças."""
         if quantidade_gavetas <= 0:
@@ -231,8 +302,10 @@ class ConstrutorGavetas:
         mat_caixa = str(self.perfil.obter("materiais_padrao.material_caixaria"))
         mat_fundo = str(self.perfil.obter("materiais_padrao.material_fundo"))
 
+        trilhos_comerciais = [float(t) for t in self.perfil.obter("regras_gaveta.trilhos_comerciais_mm")]
         folga_corredica = float(self.perfil.obter("regras_gaveta.folga_corredica_cada_lado"))
         folga_prof_traseira = float(self.perfil.obter("regras_gaveta.folga_profundidade_traseira"))
+        rebaixo_ctrf_tras = float(self.perfil.obter("regras_gaveta.rebaixo_contra_frente_traseira"))
         elevacao_base_z = float(self.perfil.obter("regras_gaveta.elevacao_base_caixote_z"))
         offset_corredica_z = float(self.perfil.obter("regras_gaveta.offset_eixo_corredica_z"))
         recuo_canal_gav = float(self.perfil.obter("regras_gaveta.recuo_canal_fundo_gaveta"))
@@ -240,15 +313,19 @@ class ConstrutorGavetas:
         recuo_frontal_int = float(self.perfil.obter("regras_gaveta.recuo_frontal_gaveta_interna"))
         esp_engrosso = float(self.perfil.obter("regras_gaveta.espessura_engrosso_gaveta_interna"))
         vao_puxador = float(self.perfil.obter("regras_gaveta.vao_puxador_gaveta_interna"))
+        folga_lat_frente_int = float(self.perfil.obter("regras_gaveta.folga_lateral_frente_interna"))
+        dif_alt_lat_int = float(self.perfil.obter("regras_gaveta.diferenca_altura_lateral_interna"))
+        elev_frente_int_z = float(self.perfil.obter("regras_gaveta.elevacao_frente_interna_z"))
 
         larg_canal = float(self.perfil.obter("parametros_usinagem.largura_canal_fundo"))
         prof_canal = float(self.perfil.obter("parametros_usinagem.profundidade_canal_fundo"))
+        margem_canal_gav = float(self.perfil.obter("parametros_usinagem.margem_furo_acima_canal_gaveta"))
         folga_encaixe_fundo = float(self.perfil.obter("geometria_caixaria.folga_encaixe_fundo"))
 
-        tem_veio_caixa = not any(c in mat_caixa.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_caixa = self.perfil.material_possui_veio(mat_caixa)
 
         prof_max = vao_alvo.profundidade - recuo_frontal_int - esp_frente - folga_prof_traseira
-        prof_caixote = next((t for t in self.TRILHOS_COMERCIAIS_MM if t <= prof_max), 0.0)
+        prof_caixote = next((t for t in sorted(trilhos_comerciais, reverse=True) if t <= prof_max), 0.0)
         if prof_caixote <= 0.0:
             raise ErroGeometriaCAD(
                 f"🚨 Profundidade do '{vao_alvo.nome_vao}' ({vao_alvo.profundidade}mm) insuficiente para Gaveta Interna."
@@ -278,13 +355,13 @@ class ConstrutorGavetas:
         larg_util_entre_engrossos = round(vao_alvo.largura - (2.0 * esp_engrosso), 2)
         x_util_inicio = round(vao_alvo.x + esp_engrosso, 2)
 
-        largura_frente_int = round(larg_util_entre_engrossos - 4.0, 2)
+        largura_frente_int = round(larg_util_entre_engrossos - (2.0 * folga_lat_frente_int), 2)
         altura_nicho = vao_alvo.altura / float(quantidade_gavetas)
         altura_frente_int = round(altura_nicho - vao_puxador, 2)
-        altura_lateral_gav = round(altura_frente_int - 15.0, 2)
-        altura_traseira_ctrf = round(altura_lateral_gav - 5.0, 2)
+        altura_lateral_gav = round(altura_frente_int - dif_alt_lat_int, 2)
+        altura_traseira_ctrf = round(altura_lateral_gav - rebaixo_ctrf_tras, 2)
 
-        if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + 10.0):
+        if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + margem_canal_gav):
             raise ErroGeometriaCAD(
                 f"🚨 As {quantidade_gavetas} gavetas internas ficaram baixas demais para o vão ({vao_alvo.altura}mm)."
             )
@@ -294,7 +371,25 @@ class ConstrutorGavetas:
         larg_fundo_gav = round(largura_ctrf_traseira + (2.0 * penetracao), 2)
         prof_fundo_gav = round(prof_caixote - (2.0 * esp_caixa) + (2.0 * penetracao), 2)
 
+        alturas_nichos = self._resolver_alturas_customizadas(
+         quantidade_gavetas, vao_alvo.altura, alturas_custom
+        )
+        z_cursor_nicho = vao_alvo.z
+     
         for i in range(quantidade_gavetas):
+            altura_nicho = alturas_nichos[i]
+            altura_frente_int = round(altura_nicho - vao_puxador, 2)
+            altura_lateral_gav = round(altura_frente_int - dif_alt_lat_int, 2)
+            altura_traseira_ctrf = round(altura_lateral_gav - rebaixo_ctrf_tras, 2)
+
+            if altura_traseira_ctrf <= (recuo_canal_gav + larg_canal + margem_canal_gav):
+                raise ErroGeometriaCAD(
+                    f"🚨 A gaveta interna {num_gav} ficou baixa demais para o rasgo de fundo."
+                )
+
+            z_base_nicho = z_cursor_nicho
+            z_base_caixote = round(z_base_nicho + elevacao_base_z, 2)
+            z_cursor_nicho += altura_nicho
             num_gav = i + 1
             z_base_nicho = vao_alvo.z + (i * altura_nicho)
             z_base_caixote = round(z_base_nicho + elevacao_base_z, 2)
@@ -303,7 +398,11 @@ class ConstrutorGavetas:
                 categoria_industrial="frente_gaveta_interna",
                 nome_comercial=f"{self.perfil.obter_nome_peca('frente_gaveta_interna')} {num_gav}",
                 dim_3d=(largura_frente_int, esp_frente, altura_frente_int),
-                pos_3d=(round(x_util_inicio + 2.0, 2), round(vao_alvo.y + recuo_frontal_int, 2), round(z_base_nicho + 5.0, 2)),
+                pos_3d=(
+                    round(x_util_inicio + folga_lat_frente_int, 2),
+                    round(vao_alvo.y + recuo_frontal_int, 2),
+                    round(z_base_nicho + elev_frente_int_z, 2)
+                ),
                 material=mat_caixa,
                 id_pai=id_modulo,
                 tem_veio=tem_veio_caixa
@@ -398,7 +497,7 @@ class ConstrutorGavetas:
         vao_alvo: NoEspacial,
         quantidade_sapateiras: int
     ) -> List[Peca]:
-        """Constrói Bandejas Sapateiras Extraíveis com laterais baixas (80mm)."""
+        """Constrói Bandejas Sapateiras Extraíveis com medidas 100% do Perfil JSON."""
         if quantidade_sapateiras <= 0:
             return []
 
@@ -407,10 +506,13 @@ class ConstrutorGavetas:
         mat_caixa = str(self.perfil.obter("materiais_padrao.material_caixaria"))
         mat_fundo = str(self.perfil.obter("materiais_padrao.material_fundo"))
 
+        trilhos_comerciais = [float(t) for t in self.perfil.obter("regras_gaveta.trilhos_comerciais_mm")]
         folga_corredica = float(self.perfil.obter("regras_gaveta.folga_corredica_cada_lado"))
         folga_traseira = float(self.perfil.obter("regras_gaveta.folga_profundidade_traseira"))
+        rebaixo_ctrf_tras = float(self.perfil.obter("regras_gaveta.rebaixo_contra_frente_traseira"))
         recuo_sap = float(self.perfil.obter("regras_gaveta.recuo_frontal_sapateira"))
         alt_lat_sap = float(self.perfil.obter("regras_gaveta.altura_lateral_sapateira"))
+        elev_base_sap_z = float(self.perfil.obter("regras_gaveta.elevacao_base_sapateira_z"))
         recuo_canal = float(self.perfil.obter("regras_gaveta.recuo_canal_fundo_gaveta"))
         offset_corredica_z = float(self.perfil.obter("regras_gaveta.offset_eixo_corredica_z"))
 
@@ -418,10 +520,10 @@ class ConstrutorGavetas:
         prof_canal = float(self.perfil.obter("parametros_usinagem.profundidade_canal_fundo"))
         folga_fundo = float(self.perfil.obter("geometria_caixaria.folga_encaixe_fundo"))
 
-        tem_veio_caixa = not any(c in mat_caixa.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_caixa = self.perfil.material_possui_veio(mat_caixa)
 
         prof_max = vao_alvo.profundidade - recuo_sap - folga_traseira
-        prof_bandeja = next((t for t in self.TRILHOS_COMERCIAIS_MM if t <= prof_max), 0.0)
+        prof_bandeja = next((t for t in sorted(trilhos_comerciais, reverse=True) if t <= prof_max), 0.0)
         if prof_bandeja <= 0.0:
             raise ErroGeometriaCAD(f"🚨 Profundidade insuficiente no '{vao_alvo.nome_vao}' para Sapateira.")
 
@@ -434,7 +536,7 @@ class ConstrutorGavetas:
 
         for i in range(quantidade_sapateiras):
             num_s = i + 1
-            z_base = round(vao_alvo.z + (i * altura_nicho) + 20.0, 2)
+            z_base = round(vao_alvo.z + (i * altura_nicho) + elev_base_sap_z, 2)
             y_ini = round(vao_alvo.y + recuo_sap, 2)
             x_esq = round(vao_alvo.x + folga_corredica, 2)
             x_dir = round(vao_alvo.x + vao_alvo.largura - folga_corredica - esp_caixa, 2)
@@ -469,7 +571,7 @@ class ConstrutorGavetas:
             frente_s = Peca(
                 categoria_industrial="frente_sapateira",
                 nome_comercial=f"{self.perfil.obter_nome_peca('frente_sapateira')} {num_s}",
-                dim_3d=(larg_interna, esp_caixa, alt_lat_sap - 5.0),
+                dim_3d=(larg_interna, esp_caixa, round(alt_lat_sap - rebaixo_ctrf_tras, 2)),
                 pos_3d=(x_meio, y_ini, z_base),
                 material=mat_caixa,
                 id_pai=id_modulo,
@@ -481,7 +583,7 @@ class ConstrutorGavetas:
             tras_s = Peca(
                 categoria_industrial="traseira_sapateira",
                 nome_comercial=f"{self.perfil.obter_nome_peca('traseira_sapateira')} {num_s}",
-                dim_3d=(larg_interna, esp_caixa, alt_lat_sap - 5.0),
+                dim_3d=(larg_interna, esp_caixa, round(alt_lat_sap - rebaixo_ctrf_tras, 2)),
                 pos_3d=(x_meio, round(y_ini + prof_bandeja - esp_caixa, 2), z_base),
                 material=mat_caixa,
                 id_pai=id_modulo,

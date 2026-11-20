@@ -80,6 +80,14 @@ class GerenciadorPerfis:
     def obter_nome_peca(self, categoria_industrial: str) -> str:
         """Retorna o nome comercial padronizado para a categoria industrial da peça."""
         return str(self.obter(f"nomenclatura.{categoria_industrial}"))
+    
+    def material_possui_veio(self, nome_material: str) -> bool:
+        """Verifica se o material possui sentido de veio com base nos padrões lisos do perfil."""
+        if not nome_material:
+            return False
+        padroes_lisos = self.obter("materiais_padrao.padroes_sem_veio")
+        mat_upper = str(nome_material).upper()
+        return not any(str(p).upper() in mat_upper for p in padroes_lisos)
 
     def calcular_qtd_dobradicas(self, altura_porta_mm: float) -> int:
         """Determina a quantidade de dobradiças com base nas faixas de altura do perfil."""

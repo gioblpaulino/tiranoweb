@@ -1,7 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/porta_tempero.py
 # RESPONSABILIDADE: Construir o Porta-Tempero / Porta-Óleo extraível lendo 100%
-# das medidas e nomenclaturas do Perfil JSON, com estrutura colada na Frente.
+# das medidas, trilhos e nomenclaturas do Perfil JSON.
 # =============================================================================
 
 from typing import List
@@ -13,10 +13,8 @@ from tiranocad_core.modelos.no_espacial import NoEspacial
 class ConstrutorPortaTempero:
     """
     Construtor paramétrico de Porta-Tempero extraível lateral.
-    Zero magic numbers: todas as alturas, folgas e nomes vêm do Perfil JSON.
+    Zero magic numbers: todas as alturas, trilhos, folgas e nomes vêm do Perfil JSON.
     """
-
-    TRILHOS_COMERCIAIS_MM = [500.0, 450.0, 400.0, 350.0, 300.0, 250.0]
 
     def __init__(self, perfil: GerenciadorPerfis):
         self.perfil = perfil
@@ -35,13 +33,12 @@ class ConstrutorPortaTempero:
         folga_traseira = float(self.perfil.obter("regras_gaveta.folga_profundidade_traseira"))
         elevacao_base_z = float(self.perfil.obter("regras_gaveta.elevacao_base_caixote_z"))
 
-        # Parâmetros exclusivos do Porta-Tempero vindos do Perfil JSON
+        trilhos_comerciais = [float(t) for t in self.perfil.obter("regras_porta_tempero.trilhos_comerciais_mm")]
         recuo_estrutura_y = float(self.perfil.obter("regras_porta_tempero.recuo_frontal_estrutura"))
         folga_topo_z = float(self.perfil.obter("regras_porta_tempero.folga_topo_estrutura"))
         alt_guarda_lat = float(self.perfil.obter("regras_porta_tempero.altura_guarda_lateral"))
+        vao_livre_guarda_z = float(self.perfil.obter("regras_porta_tempero.vao_livre_abaixo_guarda_z"))
         fator_nivel_meio = float(self.perfil.obter("regras_porta_tempero.cota_z_prateleira_intermediaria_fator"))
-        off_corr_inf_z = float(self.perfil.obter("regras_porta_tempero.offset_corredica_inferior_z"))
-        off_corr_sup_topo = float(self.perfil.obter("regras_porta_tempero.offset_corredica_superior_topo_z"))
 
         modo_frente = str(self.perfil.obter("folgas_frentes.tipo_montagem_frente")).strip().upper()
         gap_sup = float(self.perfil.obter("folgas_frentes.gap_superior"))
@@ -51,10 +48,11 @@ class ConstrutorPortaTempero:
         gap_entre = float(self.perfil.obter("folgas_frentes.gap_entre_frentes"))
         afast_frontal = float(self.perfil.obter("folgas_frentes.afastamento_frontal_caixa"))
 
-        tem_veio_frente = not any(c in mat_frente.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_caixa = self.perfil.material_possui_veio(mat_caixa)
+        tem_veio_frente = self.perfil.material_possui_veio(mat_frente)
 
         prof_max_permitida = vao_alvo.profundidade - recuo_estrutura_y - folga_traseira
-        prof_quadro = next((t for t in self.TRILHOS_COMERCIAIS_MM if t <= prof_max_permitida), 0.0)
+        prof_quadro = next((t for t in sorted(trilhos_comerciais, reverse=True) if t <= prof_max_permitida), 0.0)
         if prof_quadro <= 0.0:
             raise ErroGeometriaCAD(
                 f"🚨 Profundidade do '{vao_alvo.nome_vao}' ({vao_alvo.profundidade}mm) insuficiente para Porta-Tempero."
@@ -98,7 +96,7 @@ class ConstrutorPortaTempero:
         frente_pt.fitas.topo = frente_pt.fitas.base = frente_pt.fitas.esquerda = frente_pt.fitas.direita = True
         pecas_geradas.append(frente_pt)
 
-        # 2. COLUNAS VERTICAIS FRONTAL E TRASEIRA (Encostadas na Frente em Y = vao_alvo.y!)
+        # 2. COLUNAS VERTICAIS FRONTAL E TRASEIRA
         larg_util_interna = round(vao_alvo.largura - (2.0 * folga_corredica), 2)
         alt_quadro = round(vao_alvo.altura - elevacao_base_z - folga_topo_z, 2)
         x_quadro = round(vao_alvo.x + folga_corredica, 2)
@@ -111,7 +109,8 @@ class ConstrutorPortaTempero:
             dim_3d=(larg_util_interna, esp_caixa, alt_quadro),
             pos_3d=(x_quadro, y_ini, z_ini),
             material=mat_caixa,
-            id_pai=id_modulo
+            id_pai=id_modulo,
+            tem_veio=tem_veio_caixa
         )
         col_frontal.fitas.topo = col_frontal.fitas.esquerda = col_frontal.fitas.direita = True
 
@@ -121,12 +120,13 @@ class ConstrutorPortaTempero:
             dim_3d=(larg_util_interna, esp_caixa, alt_quadro),
             pos_3d=(x_quadro, round(y_ini + prof_quadro - esp_caixa, 2), z_ini),
             material=mat_caixa,
-            id_pai=id_modulo
+            id_pai=id_modulo,
+            tem_veio=tem_veio_caixa
         )
         col_traseira.fitas.topo = col_traseira.fitas.esquerda = col_traseira.fitas.direita = True
         pecas_geradas.extend([col_frontal, col_traseira])
 
-        # 3. DOIS NÍVEIS DE BANDEJAS + GUARDAS LATERAIS (Com medidas e nomes do Perfil JSON)
+        # 3. DOIS NÍVEIS DE BANDEJAS + GUARDAS LATERAIS
         comp_bandeja_y = round(prof_quadro - (2.0 * esp_caixa), 2)
         larg_base_interna = round(larg_util_interna - (2.0 * esp_caixa), 2)
         y_bandeja = round(y_ini + esp_caixa, 2)
@@ -136,30 +136,29 @@ class ConstrutorPortaTempero:
         nome_guarda_esq = self.perfil.obter_nome_peca("guarda_lateral_porta_tempero_esq")
         nome_guarda_dir = self.perfil.obter_nome_peca("guarda_lateral_porta_tempero_dir")
 
-        # Lê o vãozinho livre entre a base do nível e a guarda lateral (ex: 15mm)
-        vao_livre_guarda_z = float(self.perfil.obter("regras_porta_tempero.vao_livre_abaixo_guarda_z"))
-
         lista_guardas_esq: List[Peca] = []
         lista_guardas_dir: List[Peca] = []
         cotas_z_eixo_corredica: List[float] = []
+        tem_vao_livre = vao_livre_guarda_z > 0.0
 
         for idx, z_nivel in enumerate(cotas_z_niveis):
             num_n = idx + 1
+            larg_efetiva_base = larg_util_interna if tem_vao_livre else larg_base_interna
+            x_efetivo_base = round(x_quadro, 2) if tem_vao_livre else round(x_quadro + esp_caixa, 2)
+
             base_nivel = Peca(
                 categoria_industrial="prateleira_interna_tempero",
                 nome_comercial=f"{nome_base_nivel} {num_n}",
-                dim_3d=(larg_base_interna + esp_caixa * 2.0, comp_bandeja_y, esp_caixa),
-                pos_3d=(round(x_quadro, 2), y_bandeja, z_nivel),
+                dim_3d=(larg_efetiva_base, comp_bandeja_y, esp_caixa),
+                pos_3d=(x_efetivo_base, y_bandeja, z_nivel),
                 material=mat_caixa,
-                id_pai=id_modulo
+                id_pai=id_modulo,
+                tem_veio=tem_veio_caixa
             )
+            if tem_vao_livre:
+                base_nivel.fitas.esquerda = base_nivel.fitas.direita = True
 
-            base_nivel.fitas.esquerda = base_nivel.fitas.direita = True
-            
-            # A guarda sobe acima da base_nivel (esp_caixa) + o vãozinho livre configurado!
             z_guarda = round(z_nivel + esp_caixa + vao_livre_guarda_z, 2)
-
-            # O eixo da corrediça telescópica acompanha exatamente o MEIO da altura da guarda!
             z_centro_trilho = round(z_guarda + (alt_guarda_lat / 2.0), 2)
             cotas_z_eixo_corredica.append(z_centro_trilho)
 
@@ -170,11 +169,12 @@ class ConstrutorPortaTempero:
                 pos_3d=(x_quadro, y_bandeja, z_guarda),
                 material=mat_caixa,
                 id_pai=id_modulo,
+                tem_veio=tem_veio_caixa,
                 espelhar_cam_x=False
             )
             guarda_esq.fitas.topo = True
-            if vao_livre_guarda_z > 0:
-                guarda_esq.fitas.base = True  # Se tem vão livre embaixo, fita a base da guarda também!
+            if tem_vao_livre:
+                guarda_esq.fitas.base = True
 
             guarda_dir = Peca(
                 categoria_industrial="lateral_gaveta_direita",
@@ -183,10 +183,11 @@ class ConstrutorPortaTempero:
                 pos_3d=(round(x_quadro + larg_util_interna - esp_caixa, 2), y_bandeja, z_guarda),
                 material=mat_caixa,
                 id_pai=id_modulo,
+                tem_veio=tem_veio_caixa,
                 espelhar_cam_x=True
             )
             guarda_dir.fitas.topo = True
-            if vao_livre_guarda_z > 0:
+            if tem_vao_livre:
                 guarda_dir.fitas.base = True
 
             lista_guardas_esq.append(guarda_esq)

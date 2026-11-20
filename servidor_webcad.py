@@ -65,6 +65,8 @@ METADADOS_PROJETO = {
 
 ELEMENTOS_PAREDE_ATIVOS = []
 
+ID_PERFIL_GLOBAL_ATIVO = "padrao_convencional_15mm"
+
 HISTORICO_UNDO = []
 HISTORICO_REDO = []
 MAX_HISTORICO = 40
@@ -484,7 +486,7 @@ def api_fabricar_modulo():
         altura_y = float(dados.get("altura_y", 700.0))
         profundidade_z = float(dados.get("profundidade_z", 550.0))
         com_fundo = bool(dados.get("com_fundo", True))
-        id_perfil = str(dados.get("id_perfil", "padrao_convencional_15mm")).strip()
+        id_perfil = str(dados.get("id_perfil", ID_PERFIL_GLOBAL_ATIVO)).strip()
 
         overrides_perfil = dados.get("overrides_perfil") or {}
         mat_caixa_ui = str(dados.get("material_caixaria", "")).strip()
@@ -523,7 +525,7 @@ def api_fabricar_modulo():
 
         prompt_copiloto = str(dados.get("prompt_copiloto", "")).strip()
         msg_copiloto = None
-        if prompt_copiloto and familia not in ("MODULO_PAINEL", "MODULO_AVULSO", "MODULO_BANCADA_PEDRA", "MODULO_RODAPE"):
+        if prompt_copiloto and familia not in ("MODULO_PAINEL", "MODULO_AVULSO", "MODULO_BANCADA_PEDRA", "MODULO_RODAPE", "MODULO_CANTO_RETO"):
             interpretacao = copiloto.interpretar_comando(prompt_copiloto)
             msg_copiloto = interpretacao["mensagem_copiloto"]
             operacoes_internas = interpretacao["operacoes_internas"]
@@ -603,31 +605,21 @@ def api_fabricar_modulo():
 @app.route("/api/modulo/pintar", methods=["POST"])
 def api_pintar_modulo_ou_peca():
     dados = request.get_json(silent=True) or {}
-    id_mod = str(dados.get("id_modulo", "")).strip()
-    if id_mod not in COFRE_MODULOS_ATIVOS:
-        return jsonify({"sucesso": False, "erro_engenharia": "Módulo não encontrado."}), 404
+
+    # Aceita tanto lista de módulos (Lote) quanto um único id_modulo
+    ids_alvo = [
+        str(i).strip() for i in dados.get("ids_modulos", [])
+        if str(i).strip() in COFRE_MODULOS_ATIVOS
+    ]
+    if not ids_alvo:
+        id_mod = str(dados.get("id_modulo", "")).strip()
+        if id_mod in COFRE_MODULOS_ATIVOS:
+            ids_alvo = [id_mod]
+
+    if not ids_alvo:
+        return jsonify({"sucesso": False, "erro_engenharia": "Nenhum módulo válido encontrado."}), 404
 
     registrar_acao_historico()
-    mod = COFRE_MODULOS_ATIVOS[id_mod]
-    params = mod.setdefault("parametros", {})
-    zonas_atuais = params.setdefault("zonas_materiais", {})
-    overrides_pecas = params.setdefault("overrides_pecas", {})
-
-    if "zonas_materiais" in dados and isinstance(dados["zonas_materiais"], dict):
-        zonas_atuais.update(dados["zonas_materiais"])
-
-    if "override_peca" in dados and isinstance(dados["override_peca"], dict):
-        ov = dados["override_peca"]
-        nome_peca = str(ov.get("nome_comercial", "")).strip()
-        if nome_peca:
-            overrides_pecas[nome_peca] = {
-                "material": ov.get("material"),
-                "cor_fita_borda": ov.get("cor_fita_borda"),
-                "fitas_borda": ov.get("fitas_borda")
-            }
-
-    if dados.get("resetar_pecas_individuais"):
-        overrides_pecas.clear()
 
     def possui_veio(nome_mat: str) -> bool:
         return not any(iso in nome_mat.upper() for iso in ["BRANCO", "CRU", "PRETO", "CINZA", "GRAFITE", "TX"])
@@ -640,43 +632,70 @@ def api_pintar_modulo_ou_peca():
     }
     cats_frentes = {
         "porta_giro_esquerda", "porta_giro_direita", "porta_basculante",
-        "frente_gaveta", "frente_porta_tempero", "painel_tamponamento"
+        "porta_correr_frente", "porta_correr_tras", "porta_cega_canto",
+        "afastador_canto", "frente_gaveta", "frente_porta_tempero", "painel_tamponamento"
     }
     cats_fundo_gaveta = {"fundo_gaveta", "fundo_sapateira"}
 
-    for p_dict in mod.get("lista_de_pecas", []):
-        cat = str(p_dict.get("categoria_industrial", "")).lower()
-        nome_com = p_dict.get("nome_comercial", "")
+    for id_m in ids_alvo:
+        mod = COFRE_MODULOS_ATIVOS[id_m]
+        params = mod.setdefault("parametros", {})
+        zonas_atuais = params.setdefault("zonas_materiais", {})
+        overrides_pecas = params.setdefault("overrides_pecas", {})
 
-        if cat in cats_caixaria:
-            if zonas_atuais.get("cor_caixaria"): p_dict["material"] = zonas_atuais["cor_caixaria"]
-            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frontal_caixaria") or p_dict["material"]
-        elif cat in cats_frentes:
-            if zonas_atuais.get("cor_frentes"): p_dict["material"] = zonas_atuais["cor_frentes"]
-            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frentes") or p_dict["material"]
-        elif cat in cats_fundo_gaveta:
-            if zonas_atuais.get("cor_fundo_gaveta"): p_dict["material"] = zonas_atuais["cor_fundo_gaveta"]
-            p_dict["cor_fita_borda"] = "SEM_FITA"
-        elif cat == "fundo_costa":
-            if zonas_atuais.get("cor_fundo_costa"): p_dict["material"] = zonas_atuais["cor_fundo_costa"]
-            p_dict["cor_fita_borda"] = "SEM_FITA"
-        else:
-            if zonas_atuais.get("cor_internos"): p_dict["material"] = zonas_atuais["cor_internos"]
-            p_dict["cor_fita_borda"] = zonas_atuais.get("fita_internos") or p_dict["material"]
+        if "zonas_materiais" in dados and isinstance(dados["zonas_materiais"], dict):
+            zonas_atuais.update(dados["zonas_materiais"])
 
-        p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
+        if "override_peca" in dados and isinstance(dados["override_peca"], dict):
+            ov = dados["override_peca"]
+            nome_peca = str(ov.get("nome_comercial", "")).strip()
+            if nome_peca:
+                overrides_pecas[nome_peca] = {
+                    "material": ov.get("material"),
+                    "cor_fita_borda": ov.get("cor_fita_borda"),
+                    "fitas_borda": ov.get("fitas_borda")
+                }
 
-        if nome_com in overrides_pecas:
-            ov_p = overrides_pecas[nome_com]
-            if ov_p.get("material"):
-                p_dict["material"] = ov_p["material"]
-                p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
-            if ov_p.get("cor_fita_borda"):
-                p_dict["cor_fita_borda"] = ov_p["cor_fita_borda"]
-            if isinstance(ov_p.get("fitas_borda"), dict):
-                p_dict["fitas_borda"].update(ov_p["fitas_borda"])
+        if dados.get("resetar_pecas_individuais"):
+            overrides_pecas.clear()
 
-    return jsonify({"sucesso": True, "modulo": mod}), 200
+        for p_dict in mod.get("lista_de_pecas", []):
+            cat = str(p_dict.get("categoria_industrial", "")).lower()
+            nome_com = p_dict.get("nome_comercial", "")
+
+            if cat in cats_caixaria:
+                if zonas_atuais.get("cor_caixaria"): p_dict["material"] = zonas_atuais["cor_caixaria"]
+                p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frontal_caixaria") or p_dict["material"]
+            elif cat in cats_frentes:
+                if zonas_atuais.get("cor_frentes"): p_dict["material"] = zonas_atuais["cor_frentes"]
+                p_dict["cor_fita_borda"] = zonas_atuais.get("fita_frentes") or p_dict["material"]
+            elif cat in cats_fundo_gaveta:
+                if zonas_atuais.get("cor_fundo_gaveta"): p_dict["material"] = zonas_atuais["cor_fundo_gaveta"]
+                p_dict["cor_fita_borda"] = "SEM_FITA"
+            elif cat == "fundo_costa":
+                if zonas_atuais.get("cor_fundo_costa"): p_dict["material"] = zonas_atuais["cor_fundo_costa"]
+                p_dict["cor_fita_borda"] = "SEM_FITA"
+            else:
+                if zonas_atuais.get("cor_internos"): p_dict["material"] = zonas_atuais["cor_internos"]
+                p_dict["cor_fita_borda"] = zonas_atuais.get("fita_internos") or p_dict["material"]
+
+            p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
+
+            if nome_com in overrides_pecas:
+                ov_p = overrides_pecas[nome_com]
+                if ov_p.get("material"):
+                    p_dict["material"] = ov_p["material"]
+                    p_dict["tem_veio"] = False if "fundo" in cat else possui_veio(p_dict["material"])
+                if ov_p.get("cor_fita_borda"):
+                    p_dict["cor_fita_borda"] = ov_p["cor_fita_borda"]
+                if isinstance(ov_p.get("fitas_borda"), dict):
+                    p_dict["fitas_borda"].update(ov_p["fitas_borda"])
+
+    return jsonify({
+        "sucesso": True,
+        "total_pintados": len(ids_alvo),
+        "modulo": COFRE_MODULOS_ATIVOS[ids_alvo[0]]
+    }), 200
 
 
 def _reconstruir_modulo_preservando_estado(mod: dict, cfg_tamp: dict) -> dict:
@@ -877,6 +896,103 @@ def api_posicionar_modulo():
     )
     return jsonify({"sucesso": True, "posicionamento": pos, "modulo": mod}), 200
 
+# =============================================================================
+# 2B. CLONAGEM (CTRL+C / CTRL+V) E CÓPIAS EM SÉRIE (ARRANJO LINEAR X / Y / Z)
+# =============================================================================
+def _gerar_proximo_id_modulo() -> str:
+    """Retorna o próximo ID numérico de 3 dígitos livre no cofre."""
+    proximo_num = 1
+    while f"{proximo_num:03d}" in COFRE_MODULOS_ATIVOS:
+        proximo_num += 1
+    return f"{proximo_num:03d}"
+
+
+@app.route("/api/modulo/clonar", methods=["POST"])
+def api_clonar_modulo_ou_arranjo():
+    """
+    Clona um módulo existente 1 ou N vezes (Arranjo em Série), gerando ID único
+    para cada cópia e posicionando-as na direção e espaçamento escolhidos.
+    """
+    import uuid
+    dados = request.get_json(silent=True) or {}
+    id_origem = str(dados.get("id_modulo_origem", "")).strip()
+
+    if id_origem not in COFRE_MODULOS_ATIVOS:
+        return jsonify({"sucesso": False, "erro_engenharia": "Módulo de origem não encontrado."}), 404
+
+    quantidade = max(1, min(20, int(dados.get("quantidade", 1))))
+    direcao = str(dados.get("direcao", "AUTO_SNAP")).strip().upper()
+    espacamento = float(dados.get("espacamento_mm", 0.0))
+
+    registrar_acao_historico()
+    mod_orig = COFRE_MODULOS_ATIVOS[id_origem]
+    pos_orig = mod_orig.get("posicionamento_ambiente") or {}
+    dims = mod_orig.get("dimensoes_ocupadas") or {}
+
+    larg_x = float(dims.get("largura_x", 800.0))
+    alt_y = float(dims.get("altura_y", 700.0))
+    prof_z = float(dims.get("profundidade_z", 550.0))
+
+    id_parede_orig = pos_orig.get("id_parede")
+    dist_x_orig = float(pos_orig.get("distancia_x_parede", 0.0))
+    afast_y_orig = float(pos_orig.get("afastamento_parede", 0.0))
+    elev_z_orig = float(pos_orig.get("elevacao_z", 0.0))
+    rot_orig = float(pos_orig.get("rotacao_offset_graus", 0.0))
+
+    ids_criados = []
+    ultimo_criado = None
+
+    for i in range(1, quantidade + 1):
+        novo_id = _gerar_proximo_id_modulo()
+        copia = copy.deepcopy(mod_orig)
+        copia["id_modulo"] = novo_id
+        copia["guid"] = str(uuid.uuid4())
+        copia["resposta_copiloto"] = f"📑 Cópia #{novo_id} gerada a partir do item #{id_origem}."
+
+        # Atualiza o vínculo de todas as peças para o novo ID único (essencial para o TiranoCut!)
+        for peca in copia.get("lista_de_pecas", []):
+            peca["id_pai"] = novo_id
+            if isinstance(peca.get("id_peca"), str):
+                peca["id_peca"] = peca["id_peca"].replace(f"_{id_origem}_", f"_{novo_id}_", 1)
+
+        usar_snap = (direcao == "AUTO_SNAP")
+        novo_x = dist_x_orig
+        novo_y = afast_y_orig
+        novo_z = elev_z_orig
+
+        if direcao == "+X":
+            novo_x = round(dist_x_orig + i * (larg_x + espacamento), 2)
+        elif direcao == "-X":
+            novo_x = round(max(0.0, dist_x_orig - i * (larg_x + espacamento)), 2)
+        elif direcao == "+Z":
+            novo_z = round(elev_z_orig + i * (alt_y + espacamento), 2)
+        elif direcao == "-Z":
+            novo_z = round(max(0.0, elev_z_orig - i * (alt_y + espacamento)), 2)
+        elif direcao == "+Y":
+            novo_y = round(afast_y_orig + i * (prof_z + espacamento), 2)
+        elif direcao == "-Y":
+            novo_y = round(afast_y_orig - i * (prof_z + espacamento), 2)
+
+        orq_ambiente.ancorar_modulo_na_parede(
+            modulo_dict=copia,
+            modulos_ativos=COFRE_MODULOS_ATIVOS,
+            id_parede=id_parede_orig,
+            distancia_x_parede=None if usar_snap else novo_x,
+            elevacao_z=novo_z,
+            afastamento_parede=novo_y,
+            rotacao_offset_graus=rot_orig,
+            usar_autosnap=usar_snap
+        )
+
+        COFRE_MODULOS_ATIVOS[novo_id] = copia
+        ids_criados.append(novo_id)
+        ultimo_criado = copia
+
+    return jsonify({
+        "sucesso": True,
+        "ids_criados": ids_criados,
+        "modulo": ultimo_criado
+    }), 200
 
 # =============================================================================
 # 3. ROTAS DE UNDO / REDO, PROJETOS SALVOS E INTEGRAÇÃO TIRANOCUT
@@ -918,6 +1034,7 @@ def api_criar_novo_projeto():
     METADADOS_PROJETO["arquivo_salvo"] = None
 
     COFRE_MODULOS_ATIVOS.clear()
+    ELEMENTOS_PAREDE_ATIVOS.clear()
     orq_ambiente.construtor_paredes.pe_direito_padrao = pe_dir
     orq_ambiente.construtor_paredes.gerar_preset_ambiente(formato, larg_a, larg_b)
 
@@ -1120,6 +1237,92 @@ def api_excluir_favorito():
         os.remove(caminho)
     return jsonify({"sucesso": True}), 200
 
+# =============================================================================
+# 5. GESTÃO DE PERFIS MULTI-MARCENARIA (LISTAR, ATIVAR, EDITAR E CLONAR JSON)
+# =============================================================================
+@app.route("/api/perfis/listar", methods=["GET"])
+def api_listar_perfis():
+    """Lista todos os perfis JSON disponíveis na pasta de catálogos."""
+    perfis = []
+    for arq in sorted(os.listdir(PASTA_PERFIS)):
+        if not arq.endswith(".json"):
+            continue
+        caminho = os.path.join(PASTA_PERFIS, arq)
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            id_p = d.get("id_perfil", arq.replace(".json", ""))
+            perfis.append({
+                "id_perfil": id_p,
+                "nome_exibicao": d.get("nome_exibicao", id_p),
+                "arquivo": arq
+            })
+        except Exception:
+            continue
+    return jsonify({
+        "sucesso": True,
+        "perfil_ativo": ID_PERFIL_GLOBAL_ATIVO,
+        "perfis": perfis
+    }), 200
+
+
+@app.route("/api/perfis/obter/<id_perfil>", methods=["GET"])
+def api_obter_perfil(id_perfil):
+    """Retorna o JSON completo de um perfil específico para edição na UI."""
+    id_limpo = re.sub(r"[^a-zA-Z0-9_-]", "", str(id_perfil).replace(".json", ""))
+    caminho = os.path.join(PASTA_PERFIS, f"{id_limpo}.json")
+    if not os.path.exists(caminho):
+        return jsonify({"sucesso": False, "erro_engenharia": f"Perfil '{id_limpo}' não encontrado."}), 404
+
+    with open(caminho, "r", encoding="utf-8") as f:
+        dados_json = json.load(f)
+    return jsonify({"sucesso": True, "perfil": dados_json}), 200
+
+
+@app.route("/api/perfis/ativar", methods=["POST"])
+def api_ativar_perfil():
+    """Define qual perfil de marcenaria será usado como padrão nas próximas fabricações."""
+    global ID_PERFIL_GLOBAL_ATIVO
+    dados = request.get_json(silent=True) or {}
+    id_alvo = re.sub(r"[^a-zA-Z0-9_-]", "", str(dados.get("id_perfil", "")).replace(".json", ""))
+    caminho = os.path.join(PASTA_PERFIS, f"{id_alvo}.json")
+    if not os.path.exists(caminho):
+        return jsonify({"sucesso": False, "erro_engenharia": "Perfil não encontrado."}), 404
+
+    ID_PERFIL_GLOBAL_ATIVO = id_alvo
+    with open(caminho, "r", encoding="utf-8") as f:
+        dados_json = json.load(f)
+
+    return jsonify({"sucesso": True, "perfil_ativo": ID_PERFIL_GLOBAL_ATIVO, "perfil": dados_json}), 200
+
+
+@app.route("/api/perfis/salvar", methods=["POST"])
+def api_salvar_perfil():
+    """Salva alterações no perfil atual ou cria um novo perfil clonado para outra marcenaria."""
+    global ID_PERFIL_GLOBAL_ATIVO
+    dados = request.get_json(silent=True) or {}
+    dados_perfil = dados.get("dados_perfil")
+    if not isinstance(dados_perfil, dict):
+        return jsonify({"sucesso": False, "erro_engenharia": "Dados do perfil inválidos."}), 400
+
+    nome_exibicao = str(dados.get("nome_exibicao") or dados_perfil.get("nome_exibicao", "Novo Perfil")).strip()
+    id_bruto = str(dados.get("id_perfil") or nome_exibicao).strip().lower()
+    id_limpo = re.sub(r"[^a-z0-9_-]", "_", id_bruto).strip("_") or "perfil_marcenaria"
+
+    dados_perfil["id_perfil"] = id_limpo
+    dados_perfil["nome_exibicao"] = nome_exibicao
+
+    caminho = os.path.join(PASTA_PERFIS, f"{id_limpo}.json")
+    with open(caminho, "w", encoding="utf-8") as f:
+        json.dump(dados_perfil, f, ensure_ascii=False, indent=2)
+
+    ID_PERFIL_GLOBAL_ATIVO = id_limpo
+    return jsonify({
+        "sucesso": True,
+        "id_perfil": id_limpo,
+        "nome_exibicao": nome_exibicao
+    }), 200
+    
 @app.route("/api/modulos", methods=["GET"])
 def listar_todos_modulos():
     """Retorna apenas os módulos e peças de MDF para o TiranoCut (ignora pedras/cubas)."""

@@ -1,8 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/internos.py
 # RESPONSABILIDADE: Inserir Divisórias Verticais, Divisórias Horizontais
-# Estruturais (que fatiaram o NoEspacial) e Prateleiras Internas (que ocupam o
-# vão sem destruir o nó folha, permitindo Portas de Giro/Basculantes no vão!).
+# Estruturais e Prateleiras Internas 100% Data-Driven pelo Perfil JSON.
 # =============================================================================
 
 from typing import List, Optional, Tuple
@@ -34,15 +33,18 @@ class ConstrutorInternos:
         mat_caixa = str(self.perfil.obter("materiais_padrao.material_caixaria"))
         recuo_frontal = float(self.perfil.obter("geometria_caixaria.recuo_frontal_divisoria"))
         recuo_traseiro = float(self.perfil.obter("geometria_caixaria.recuo_traseiro_divisoria"))
+        prof_min_div = float(self.perfil.obter("limites_engenharia.profundidade_min_divisoria_mm"))
 
-        tem_veio = not any(cor in mat_caixa.upper() for cor in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio = self.perfil.material_possui_veio(mat_caixa)
 
         cota_x_local = ((vao_alvo.largura - esp_mdf) / 2.0) if posicao_x_relativa is None else float(posicao_x_relativa)
         prof_divisoria = round(vao_alvo.profundidade - recuo_frontal - recuo_traseiro, 2)
         alt_divisoria = vao_alvo.altura
 
-        if prof_divisoria <= 50.0:
-            raise ErroGeometriaCAD(f"🚨 Profundidade resultante da divisória ({prof_divisoria}mm) é inválida.")
+        if prof_divisoria <= prof_min_div:
+            raise ErroGeometriaCAD(
+                f"🚨 Profundidade resultante da divisória ({prof_divisoria}mm) é menor que o mínimo ({prof_min_div:.0f}mm)."
+            )
 
         divisoria = Peca(
             categoria_industrial="divisoria_vertical",
@@ -65,10 +67,6 @@ class ConstrutorInternos:
         fixa: bool = True,
         posicao_z_relativa: Optional[float] = None
     ) -> Tuple[Peca, List[NoEspacial]]:
-        """
-        Usado para DIVISORIA_HORIZONTAL estrutural (ex: separar os andares de uma
-        Torre Quente), fatiando o NoEspacial em sub-vão Inferior (.0) e Superior (.1).
-        """
         if not vao_alvo.eh_folha:
             raise ErroGeometriaCAD(f"🚨 O vão '{vao_alvo.nome_vao}' já foi subdividido.")
 
@@ -77,13 +75,14 @@ class ConstrutorInternos:
         recuo_frontal = float(self.perfil.obter("geometria_caixaria.recuo_frontal_prateleira"))
         recuo_traseiro = float(self.perfil.obter("geometria_caixaria.recuo_traseiro_prateleira"))
         max_vao_sem_apoio = float(self.perfil.obter("restricoes_chapa.largura_max_vao_livre_sem_apoio"))
+        prof_min_prat = float(self.perfil.obter("limites_engenharia.profundidade_min_prateleira_mm"))
 
-        tem_veio = not any(cor in mat_caixa.upper() for cor in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio = self.perfil.material_possui_veio(mat_caixa)
         recuo_f_aplicado = 0.0 if fixa else recuo_frontal
         cota_z_local = ((vao_alvo.altura - esp_mdf) / 2.0) if posicao_z_relativa is None else float(posicao_z_relativa)
 
         larg_prateleira = vao_alvo.largura
-        prof_prateleira = max(60.0, round(vao_alvo.profundidade - recuo_f_aplicado - recuo_traseiro, 2))
+        prof_prateleira = max(prof_min_prat, round(vao_alvo.profundidade - recuo_f_aplicado - recuo_traseiro, 2))
         categoria = "prateleira_fixa" if fixa else "prateleira_livre"
 
         prateleira = Peca(
@@ -110,13 +109,9 @@ class ConstrutorInternos:
         id_modulo: str,
         vao_alvo: NoEspacial,
         quantidade: int,
-        fixas: bool = False
+        fixas: bool = False,
+        recuo_frontal_override: Optional[float] = None
     ) -> List[Peca]:
-        """
-        Distribui N prateleiras igualmente espaçadas dentro do 'vao_alvo' SEM
-        quebrar o nó folha do NoEspacial, permitindo que o mesmo vão receba
-        Portas de Giro ou Basculantes cobrindo o vão inteiro!
-        """
         if quantidade <= 0:
             return []
 
@@ -125,17 +120,19 @@ class ConstrutorInternos:
         recuo_frontal = float(self.perfil.obter("geometria_caixaria.recuo_frontal_prateleira"))
         recuo_traseiro = float(self.perfil.obter("geometria_caixaria.recuo_traseiro_prateleira"))
         max_vao_sem_apoio = float(self.perfil.obter("restricoes_chapa.largura_max_vao_livre_sem_apoio"))
+        prof_min_prat = float(self.perfil.obter("limites_engenharia.profundidade_min_prateleira_mm"))
+        alt_min_nicho = float(self.perfil.obter("limites_engenharia.altura_min_nicho_prateleira_mm"))
 
         altura_total_disp = vao_alvo.altura - (quantidade * esp_mdf)
-        if altura_total_disp <= (quantidade + 1) * 40.0:
+        if altura_total_disp <= (quantidade + 1) * alt_min_nicho:
             raise ErroGeometriaCAD(
                 f"🚨 Altura do '{vao_alvo.nome_vao}' ({vao_alvo.altura}mm) não comporta {quantidade} prateleira(s)."
             )
 
-        tem_veio = not any(cor in mat_caixa.upper() for cor in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
-        recuo_f = 0.0 if fixas else recuo_frontal
+        tem_veio = self.perfil.material_possui_veio(mat_caixa)
+        recuo_f = float(recuo_frontal_override) if recuo_frontal_override is not None else (0.0 if fixas else recuo_frontal)
         larg_prat = vao_alvo.largura
-        prof_prat = max(60.0, round(vao_alvo.profundidade - recuo_f - recuo_traseiro, 2))
+        prof_prat = max(prof_min_prat, round(vao_alvo.profundidade - recuo_f - recuo_traseiro, 2))
         categoria = "prateleira_fixa" if fixas else "prateleira_livre"
 
         altura_nicho = altura_total_disp / float(quantidade + 1)

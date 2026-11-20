@@ -106,10 +106,31 @@ atualizarCinematica3D = function () {
 
     const categoriasFrentesExternas = [
         "porta_giro_esquerda", "porta_giro_direita", "porta_basculante",
+        "porta_correr_frente", "porta_correr_tras",
         "frente_gaveta", "frente_porta_tempero"
     ];
 
+    const idsAlvo = obterListaIdsAlvo();
+
+    // Verifica se o usuário clicou em uma frente específica (porta ou gaveta) para abrir só ela!
+    const catPecaSel = pecaIndividualSelecionada ? (pecaIndividualSelecionada.categoria_industrial || "").toLowerCase() : "";
+    const ehFrenteEspecificaSel = Boolean(
+        pecaIndividualSelecionada && (
+            catPecaSel.includes("porta") ||
+            catPecaSel.includes("gaveta") ||
+            catPecaSel.includes("sapateira") ||
+            catPecaSel.includes("tempero")
+        )
+    );
+    const nomePecaSel = ehFrenteEspecificaSel ? pecaIndividualSelecionada.nome_comercial : null;
+    // Se selecionou "Frente Gaveta 2", extrai o número "2" para puxar o corpo da gaveta 2 junto!
+    const matchNumGav = nomePecaSel ? nomePecaSel.match(/(\d+)\s*$/) : null;
+    const numGavSel = matchNumGav ? matchNumGav[1] : null;
+
     grupoAmbienteModulos.children.forEach(grupoMod => {
+        const idMod = grupoMod.userData ? grupoMod.userData.idModulo : null;
+        const modSelecionado = idsAlvo.includes(idMod);
+
         grupoMod.children.forEach(container => {
             if (!container.userData || !container.userData.peca) return;
             const orig = container.userData.posOriginal;
@@ -124,16 +145,40 @@ atualizarCinematica3D = function () {
                 container.visible = true;
             }
 
-            const baseX = orig.x + dir.x * fatorExplosao;
-            const baseY = orig.y + dir.y * fatorExplosao;
-            const baseZ = orig.z + dir.z * fatorExplosao;
+            // Explosão e cinemática atuam apenas no(s) módulo(s) selecionado(s)
+            const expEfetiva = modSelecionado ? fatorExplosao : 0.0;
+            const baseX = orig.x + dir.x * expEfetiva;
+            const baseY = orig.y + dir.y * expEfetiva;
+            const baseZ = orig.z + dir.z * expEfetiva;
 
             container.rotation.set(0, 0, 0);
+
+            if (!modSelecionado) {
+                container.position.set(baseX, baseY, baseZ);
+                return;
+            }
+
+            // Define se esta peça específica deve animar (se houver uma frente selecionada, só ela anima)
+            let deveAnimarPeca = true;
+            if (ehFrenteEspecificaSel) {
+                if (cat.includes("porta")) {
+                    deveAnimarPeca = (p.nome_comercial === nomePecaSel);
+                } else if (cat.includes("gaveta") || cat.includes("sapateira")) {
+                    deveAnimarPeca = numGavSel
+                        ? p.nome_comercial.endsWith(` ${numGavSel}`)
+                        : (p.nome_comercial === nomePecaSel);
+                } else if (cat.includes("tempero")) {
+                    deveAnimarPeca = catPecaSel.includes("tempero");
+                }
+            }
+
+            const pPortas = deveAnimarPeca ? pctPortas : 0.0;
+            const pGavetas = deveAnimarPeca ? pctGavetas : 0.0;
 
             // 1. Movimento exclusivo de Gavetas, Sapateiras e Porta-Tempero
             if (cat.includes("gaveta") || cat.includes("tempero") || cat.includes("sapateira")) {
                 if (!cat.includes("engrosso")) {
-                    container.position.set(baseX, baseY, baseZ + (pctGavetas * 340.0));
+                    container.position.set(baseX, baseY, baseZ + (pGavetas * 340.0));
                 } else {
                     container.position.set(baseX, baseY, baseZ);
                 }
@@ -141,7 +186,7 @@ atualizarCinematica3D = function () {
             // 2. Movimento exclusivo de Porta Basculante
             else if (cat.includes("porta_basculante")) {
                 const meiaAlt = p.dimensoes.z / 2.0;
-                const anguloBasc = pctPortas * ((95.0 * Math.PI) / 180.0);
+                const anguloBasc = pPortas * ((95.0 * Math.PI) / 180.0);
                 const yDobradicaTopo = baseY + meiaAlt;
                 const dyCentro = baseY - yDobradicaTopo;
 
@@ -156,7 +201,7 @@ atualizarCinematica3D = function () {
             else if (cat.includes("porta_giro")) {
                 const ehDireita = cat.includes("direita");
                 const meiaLarg = p.dimensoes.x / 2.0;
-                const angulo = pctPortas * ((92.0 * Math.PI) / 180.0) * (ehDireita ? 1.0 : -1.0);
+                const angulo = pPortas * ((92.0 * Math.PI) / 180.0) * (ehDireita ? 1.0 : -1.0);
                 const xDobradica = ehDireita ? (baseX + meiaLarg) : (baseX - meiaLarg);
                 const dxCentro = baseX - xDobradica;
 
@@ -166,6 +211,13 @@ atualizarCinematica3D = function () {
                     baseZ - dxCentro * Math.sin(angulo)
                 );
                 container.rotation.y = angulo;
+            }
+            // 4. Movimento exclusivo de Portas de Correr (sempre deslizando para dentro do módulo)
+            else if (cat.includes("porta_correr")) {
+                const cursoX = p.dimensoes.x * 0.85;
+                const sentidoCentro = (dir.x > 0.05) ? -1.0 : 1.0;
+                const fatorTrilho = cat.includes("frente") ? 1.0 : 0.0;
+                container.position.set(baseX + (pPortas * cursoX * sentidoCentro * fatorTrilho), baseY, baseZ);
             } else {
                 container.position.set(baseX, baseY, baseZ);
             }
@@ -618,6 +670,19 @@ window.addEventListener("load", () => {
     scene.add(grupoPreviewParedeVerde);
     const container = document.getElementById("canvas-container");
 
+    // Botão Direito na Planta 2D: encerra o desenho contínuo da parede e volta para o Ambiente 3D!
+    container.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        if (modoCamera === "PLANTA_2D") {
+            pontoInicialParede2D = null;
+            ultimoVerticeSnapped2D = null;
+            grupoPreviewParedeVerde.clear();
+            const st = document.getElementById("status_desenho_2d");
+            if (st) st.innerText = "✅ Desenho de paredes encerrado.";
+            mudarModoCamera("AMBIENTE_3D");
+        }
+    });
+
     // A) INTERCEPTA O CLIQUE NA PLANTA 2D EM FASE DE CAPTURA (Garante Trava Ortogonal 90°/0° Cravada!)
     container.addEventListener("pointerup", async (event) => {
         if (modoCamera === "PLANTA_2D" && event.button === 0) {
@@ -691,7 +756,7 @@ window.addEventListener("load", () => {
 
     // B) INÍCIO DO ARRASTE 3D DE MÓDULO E SELEÇÃO DIRETA DE PEÇA NO 3D
     container.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0 || modoCamera === "PLANTA_2D" || mostrarVaos) return;
+        if (event.button !== 0 || modoCamera === "PLANTA_2D" || mostrarVaos || event.ctrlKey) return;
 
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -1823,6 +1888,15 @@ abrirPainelVao = function (no) {
     const inpA = document.getElementById("inp_vao_alt_interna");
     const lblDica = document.getElementById("lbl_dica_edicao_vao");
 
+    const opGavExistente = (moduloAtivo?.operacoes_internas || []).find(
+        o => o.id_vao === no.id_vao && ["GAVETEIRO", "GAVETEIRO_INTERNO"].includes(o.tipo)
+    );
+    if (opGavExistente && opGavExistente.quantidade) {
+        const inpQ = document.getElementById("inp_vao_qtd_itens");
+        if (inpQ) inpQ.value = opGavExistente.quantidade;
+    }
+    renderizarInputsAlturasGavetas(opGavExistente ? opGavExistente.alturas_gavetas : []);
+
     if (inpL) inpL.value = g.largura;
     if (inpA) inpA.value = g.altura;
 
@@ -1954,6 +2028,30 @@ async function redimensionarMedidaInternaDoVao() {
     if (noAtualizado) abrirPainelVao(noAtualizado);
 }
 
+function renderizarInputsAlturasGavetas(alturasSalvas = []) {
+    const container = document.getElementById("container_alturas_gavetas");
+    const inpQtd = document.getElementById("inp_vao_qtd_itens");
+    if (!container || !inpQtd) return;
+
+    const qtd = Math.max(1, Math.min(8, parseInt(inpQtd.value) || 3));
+    container.innerHTML = "";
+    for (let i = 0; i < qtd; i++) {
+        const val = (alturasSalvas && alturasSalvas[i]) ? alturasSalvas[i] : 0;
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+            <label style="font-size:9px; color:#90A4AE;">G${i + 1}${i === 0 ? ' (Base)' : ''}</label>
+            <input type="number" class="inp-alt-gav-item" value="${val}" min="0" step="10" placeholder="Auto" style="padding:3px 4px; font-size:10px;">
+        `;
+        container.appendChild(wrap);
+    }
+}
+
+function coletarAlturasGavetasUI() {
+    const inputs = document.querySelectorAll("#container_alturas_gavetas .inp-alt-gav-item");
+    const lista = Array.from(inputs).map(el => parseFloat(el.value) || 0);
+    return lista.some(v => v > 0) ? lista : null;
+}
+
 // Subdivisão e inserção usando as chaves oficiais do orquestrador_modulo.py ('posicao_x' e 'posicao_z')!
 async function aplicarOperacaoVaoParametrica(tipoOp, extras = {}) {
     const cotaDiv = parseFloat(document.getElementById("inp_vao_cota_div").value) || 0;
@@ -1966,8 +2064,18 @@ async function aplicarOperacaoVaoParametrica(tipoOp, extras = {}) {
         paramsExtras.posicao_z = cotaDiv; // Chave exata da linha 172 do orquestrador_modulo.py!
     }
 
-    if (["GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA", "PRATELEIRAS", "PORTAS_BASCULANTES"].includes(tipoOp)) {
-        paramsExtras.quantidade = qtdItens;
+    if (tipoOp === "PORTAS_CORRER") {
+      const elTrilho = document.getElementById("sel_vao_trilho_correr");
+      if (elTrilho) paramsExtras.disposicao_trilhos = elTrilho.value;
+    }
+
+    if (["GAVETEIRO", "GAVETEIRO_INTERNO"].includes(tipoOp)) {
+        const alts = coletarAlturasGavetasUI();
+        if (alts) paramsExtras.alturas_gavetas = alts;
+    }
+    
+    if (["GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA", "PRATELEIRAS", "PORTAS_BASCULANTES", "PORTAS_CORRER"].includes(tipoOp)) {
+     paramsExtras.quantidade = qtdItens;
     }
 
     await aplicarOperacaoNoVao(tipoOp, paramsExtras);
@@ -2014,3 +2122,400 @@ async function limparOperacoesDoVaoSelecionado() {
         await carregarEstadoAmbiente();
     }
 }
+
+async function preencherSobraParedeComModulo() {
+    if (!moduloAtivo || !moduloAtivo.posicionamento_ambiente) return;
+    const sobra = Math.round(moduloAtivo.posicionamento_ambiente.sobra_parede_mm || 0);
+    if (sobra < 150) {
+        alert(`Espaço restante na parede (${sobra}mm) é menor que 150mm!`);
+        return;
+    }
+    document.getElementById("inp_largura").value = Math.min(sobra, 2710);
+    criarNovoSlotModulo();
+}
+
+// =============================================================================
+// 13. SELETOR E EDITOR DATA-DRIVEN DE PERFIS MULTI-MARCENARIA
+// =============================================================================
+let perfilEmEdicaoJSON = null;
+let abaAtualEditorPerfil = "geometria_caixaria";
+
+async function carregarListaPerfisUI() {
+    const resp = await fetch("/api/perfis/listar");
+    const dados = await resp.json();
+    if (!dados.sucesso) return;
+
+    const sel = document.getElementById("sel_perfil_ativo_topo");
+    if (!sel) return;
+    sel.innerHTML = "";
+
+    (dados.perfis || []).forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id_perfil;
+        opt.innerText = `🏭 ${p.nome_exibicao}`;
+        if (p.id_perfil === dados.perfil_ativo) opt.selected = true;
+        sel.appendChild(opt);
+    });
+}
+
+function sincronizarInputsEngenhariaComPerfil(perfil) {
+    if (!perfil) return;
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val !== undefined && val !== null) el.value = val;
+    };
+
+    setVal("sel_sistema_fixacao", perfil.tipo_montagem_caixa);
+    if (perfil.materiais_padrao) {
+        setVal("sel_esp_caixa", Number(perfil.materiais_padrao.espessura_estrutural_mm).toFixed(1));
+        setVal("sel_esp_frente", Number(perfil.materiais_padrao.espessura_frente_mm).toFixed(1));
+    }
+    if (perfil.geometria_caixaria) {
+        const gc = perfil.geometria_caixaria;
+        setVal("sel_modo_base", gc.montagem_base_inferior);
+        setVal("sel_modo_fundo", gc.tipo_montagem_fundo);
+        setVal("sel_fixacao_aereo", gc.sistema_fixacao_aereo);
+        setVal("sel_reforco_torre", gc.reforco_traseiro_torre);
+        setVal("inp_larg_sarrafo", gc.largura_sarrafo);
+        setVal("inp_recuo_prat", gc.recuo_frontal_prateleira);
+        setVal("inp_recuo_fundo", gc.recuo_canal_fundo);
+        if (gc.montagem_teto_balcao === "TAMPO_INTEIRO") {
+            setVal("sel_topo_balcao", "TAMPO_INTEIRO");
+        } else {
+            setVal("sel_topo_balcao", gc.posicao_sarrafo_traseiro_balcao || "DEITADO");
+        }
+    }
+    if (perfil.folgas_frentes) {
+        const ff = perfil.folgas_frentes;
+        setVal("sel_modo_frente", ff.tipo_montagem_frente);
+        setVal("inp_gap_esq", ff.gap_lateral_esquerda);
+        setVal("inp_gap_dir", ff.gap_lateral_direita);
+        setVal("inp_gap_vert", ff.gap_superior);
+        setVal("inp_gap_entre", ff.gap_entre_frentes);
+    }
+    if (perfil.regras_gaveta) {
+        setVal("inp_folga_corredica", perfil.regras_gaveta.folga_corredica_cada_lado);
+    }
+    if (perfil.parametros_usinagem) {
+        const pu = perfil.parametros_usinagem;
+        setVal("inp_larg_canal", pu.largura_canal_fundo);
+        setVal("inp_prof_canal", pu.profundidade_canal_fundo);
+        setVal("inp_broca_estrut", pu.broca_parafuso_estrutural);
+        setVal("inp_cota_caneco", pu.distancia_centro_caneco_borda);
+    }
+}
+
+async function trocarPerfilAtivoUI(idPerfil) {
+    const resp = await fetch("/api/perfis/ativar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_perfil: idPerfil })
+    });
+    const dados = await resp.json();
+    if (dados.sucesso) {
+        sincronizarInputsEngenhariaComPerfil(dados.perfil);
+        document.getElementById("txt_resposta_copiloto").innerText =
+            `🏭 Perfil ativo alterado para: ${dados.perfil.nome_exibicao}`;
+    }
+}
+
+async function abrirEditorPerfisUI() {
+    const sel = document.getElementById("sel_perfil_ativo_topo");
+    const idAtivo = sel ? sel.value : "padrao_convencional_15mm";
+    const resp = await fetch(`/api/perfis/obter/${idAtivo}`);
+    const dados = await resp.json();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || "Erro ao carregar perfil.");
+        return;
+    }
+
+    perfilEmEdicaoJSON = dados.perfil;
+    document.getElementById("inp_perf_nome_exibicao").value = perfilEmEdicaoJSON.nome_exibicao || "";
+    document.getElementById("inp_perf_id_arquivo").value = perfilEmEdicaoJSON.id_perfil || "";
+
+    renderizarCamposAbaEditorPerfil(abaAtualEditorPerfil);
+    document.getElementById("modal_editor_perfis").style.display = "block";
+}
+
+function fecharEditorPerfisUI() {
+    document.getElementById("modal_editor_perfis").style.display = "none";
+}
+
+function selecionarAbaEditorPerfil(nomeSecao, btnEl) {
+    abaAtualEditorPerfil = nomeSecao;
+    document.querySelectorAll("#abas_editor_perfil .btn").forEach(b => b.classList.remove("ativo"));
+    if (btnEl) btnEl.classList.add("ativo");
+    renderizarCamposAbaEditorPerfil(nomeSecao);
+}
+
+function formatarRotuloChaveJSON(chave) {
+    return chave.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+}
+
+function renderizarCamposAbaEditorPerfil(secao) {
+    const grid = document.getElementById("grid_campos_editor_perfil");
+    if (!grid || !perfilEmEdicaoJSON) return;
+    grid.innerHTML = "";
+
+    const bloco = perfilEmEdicaoJSON[secao];
+    if (!bloco || typeof bloco !== "object") {
+        grid.innerHTML = `<div style="color:#90A4AE;">Seção '${secao}' não encontrada neste perfil.</div>`;
+        return;
+    }
+
+    Object.entries(bloco).forEach(([chave, valor]) => {
+        const div = document.createElement("div");
+        const label = document.createElement("label");
+        label.innerText = formatarRotuloChaveJSON(chave);
+        div.appendChild(label);
+
+        const inp = document.createElement("input");
+        if (typeof valor === "number") {
+            inp.type = "number";
+            inp.step = "any";
+            inp.value = valor;
+            inp.oninput = () => {
+                const n = parseFloat(inp.value);
+                if (!isNaN(n)) perfilEmEdicaoJSON[secao][chave] = n;
+            };
+        } else if (Array.isArray(valor)) {
+            inp.type = "text";
+            inp.value = valor.join(", ");
+            inp.title = "Valores separados por vírgula";
+            inp.onchange = () => {
+                const itens = inp.value.split(",").map(v => v.trim()).filter(Boolean);
+                const ehNum = itens.every(v => !isNaN(parseFloat(v)));
+                perfilEmEdicaoJSON[secao][chave] = ehNum ? itens.map(Number) : itens;
+            };
+        } else {
+            inp.type = "text";
+            inp.value = String(valor);
+            inp.oninput = () => {
+                perfilEmEdicaoJSON[secao][chave] = inp.value;
+            };
+        }
+
+        div.appendChild(inp);
+        grid.appendChild(div);
+    });
+}
+
+async function salvarPerfilEditadoUI(comoNovo) {
+    if (!perfilEmEdicaoJSON) return;
+
+    let nomeExib = document.getElementById("inp_perf_nome_exibicao").value.trim();
+    let idArq = document.getElementById("inp_perf_id_arquivo").value.trim();
+
+    if (comoNovo) {
+        const novoNome = prompt("Digite o Nome da Nova Marcenaria / Perfil:", `${nomeExib} (Cópia)`);
+        if (!novoNome) return;
+        nomeExib = novoNome.trim();
+        idArq = nomeExib.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_");
+    }
+
+    const resp = await fetch("/api/perfis/salvar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_perfil: idArq,
+            nome_exibicao: nomeExib,
+            dados_perfil: perfilEmEdicaoJSON
+        })
+    });
+    const dados = await resp.json();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || "Erro ao salvar perfil.");
+        return;
+    }
+
+    await carregarListaPerfisUI();
+    sincronizarInputsEngenhariaComPerfil(perfilEmEdicaoJSON);
+    fecharEditorPerfisUI();
+    document.getElementById("txt_resposta_copiloto").innerText =
+        `🏭 Perfil '${dados.nome_exibicao}' salvo e ativado!`;
+}
+
+// Carrega os perfis automaticamente ao iniciar o estúdio
+window.addEventListener("load", () => {
+    carregarListaPerfisUI();
+});
+
+// =============================================================================
+// 14. COPIAR / COLAR (CTRL+C / CTRL+V) E ARRANJO EM SÉRIE COM ID ÚNICO
+// =============================================================================
+let idModuloCopiadoClipboard = null;
+
+async function clonarModuloServidor(idOrigem, quantidade = 1, direcao = "AUTO_SNAP", espacamento = 0) {
+    const resp = await fetch("/api/modulo/clonar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id_modulo_origem: idOrigem,
+            quantidade: quantidade,
+            direcao: direcao,
+            espacamento_mm: espacamento
+        })
+    });
+    const dados = await resp.json();
+    if (!dados.sucesso) {
+        alert(dados.erro_engenharia || dados.erro_interno || "Erro ao clonar módulo.");
+        return;
+    }
+
+    if (dados.modulo) {
+        moduloAtivo = dados.modulo;
+        idsSelecionados.clear();
+        (dados.ids_criados || []).forEach(id => idsSelecionados.add(id));
+    }
+    await carregarEstadoAmbiente();
+    document.getElementById("txt_resposta_copiloto").innerText =
+        `📑 ${dados.ids_criados.length} cópia(s) criada(s): #${dados.ids_criados.join(", #")}`;
+}
+
+function abrirModalArranjoUI() {
+    if (!moduloAtivo) {
+        alert("Selecione um módulo no ambiente para fazer cópias em série!");
+        return;
+    }
+    document.getElementById("lbl_mod_arranjo").innerText = `#${moduloAtivo.id_modulo}`;
+    document.getElementById("modal_arranjo_copias").style.display = "block";
+}
+
+function fecharModalArranjoUI() {
+    document.getElementById("modal_arranjo_copias").style.display = "none";
+}
+
+async function executarArranjoUI() {
+    if (!moduloAtivo) return;
+    const qtd = parseInt(document.getElementById("inp_arranjo_qtd").value) || 1;
+    const espaco = parseFloat(document.getElementById("inp_arranjo_espaco").value) || 0;
+    const dir = document.getElementById("sel_arranjo_direcao").value;
+
+    await clonarModuloServidor(moduloAtivo.id_modulo, qtd, dir, espaco);
+    fecharModalArranjoUI();
+}
+
+window.addEventListener("keydown", (e) => {
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+        if (!moduloAtivo) return;
+        e.preventDefault();
+        idModuloCopiadoClipboard = moduloAtivo.id_modulo;
+        document.getElementById("txt_resposta_copiloto").innerText =
+            `📋 Módulo #${idModuloCopiadoClipboard} copiado! Pressione Ctrl+V para colar com novo ID.`;
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v") {
+        if (!idModuloCopiadoClipboard) return;
+        e.preventDefault();
+        clonarModuloServidor(idModuloCopiadoClipboard, 1, "AUTO_SNAP", 0);
+    }
+});
+
+// =============================================================================
+// 15. SELEÇÃO POR CAIXA (CTRL + ARRASTAR) E INDICADOR DE LOTE EM MATERIAIS
+// =============================================================================
+const _atualizarContadorOrig = atualizarContadorSelecaoUI;
+atualizarContadorSelecaoUI = function () {
+    _atualizarContadorOrig();
+    const lblMat = document.getElementById("lbl_mod_mat");
+    if (lblMat) {
+        const qtd = idsSelecionados.size;
+        lblMat.innerText = qtd > 1 ? `${qtd} Módulos (Lote)` : (moduloAtivo ? `#${moduloAtivo.id_modulo}` : "Nenhum");
+    }
+};
+
+window.addEventListener("load", () => {
+    const container = document.getElementById("canvas-container");
+    if (!container) return;
+
+    // Cria o retângulo visual de seleção (Marquee)
+    const caixaEl = document.createElement("div");
+    caixaEl.id = "caixa_selecao_marquee";
+    caixaEl.style.cssText = `
+        position: fixed;
+        display: none;
+        border: 1.5px dashed #00E5FF;
+        background: rgba(0, 229, 255, 0.14);
+        pointer-events: none;
+        z-index: 9999;
+    `;
+    document.body.appendChild(caixaEl);
+
+    let marqueeAtivo = null;
+
+    container.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0 || !e.ctrlKey || modoCamera === "PLANTA_2D") return;
+        e.stopImmediatePropagation();
+        marqueeAtivo = { xIni: e.clientX, yIni: e.clientY, xFim: e.clientX, yFim: e.clientY };
+        caixaEl.style.left = `${e.clientX}px`;
+        caixaEl.style.top = `${e.clientY}px`;
+        caixaEl.style.width = "0px";
+        caixaEl.style.height = "0px";
+        caixaEl.style.display = "block";
+    }, true);
+
+    window.addEventListener("pointermove", (e) => {
+        if (!marqueeAtivo) return;
+        marqueeAtivo.xFim = e.clientX;
+        marqueeAtivo.yFim = e.clientY;
+
+        const left = Math.min(marqueeAtivo.xIni, marqueeAtivo.xFim);
+        const top = Math.min(marqueeAtivo.yIni, marqueeAtivo.yFim);
+        const width = Math.abs(marqueeAtivo.xFim - marqueeAtivo.xIni);
+        const height = Math.abs(marqueeAtivo.yFim - marqueeAtivo.yIni);
+
+        caixaEl.style.left = `${left}px`;
+        caixaEl.style.top = `${top}px`;
+        caixaEl.style.width = `${width}px`;
+        caixaEl.style.height = `${height}px`;
+    });
+
+    window.addEventListener("pointerup", (e) => {
+        if (!marqueeAtivo) return;
+        const left = Math.min(marqueeAtivo.xIni, marqueeAtivo.xFim);
+        const right = Math.max(marqueeAtivo.xIni, marqueeAtivo.xFim);
+        const top = Math.min(marqueeAtivo.yIni, marqueeAtivo.yFim);
+        const bottom = Math.max(marqueeAtivo.yIni, marqueeAtivo.yFim);
+
+        caixaEl.style.display = "none";
+        marqueeAtivo = null;
+
+        // Ignora cliques curtos sem arrastar
+        if ((right - left) < 8 && (bottom - top) < 8) return;
+
+        const rectCanvas = renderer.domElement.getBoundingClientRect();
+        if (!e.shiftKey) idsSelecionados.clear();
+
+        const box3 = new THREE.Box3();
+        const centro3D = new THREE.Vector3();
+
+        grupoAmbienteModulos.children.forEach(grupoMod => {
+            const idMod = grupoMod.userData ? grupoMod.userData.idModulo : null;
+            if (!idMod || idsModulosOcultos.has(idMod)) return;
+
+            box3.setFromObject(grupoMod);
+            box3.getCenter(centro3D);
+            centro3D.project(camera);
+
+            const sx = ((centro3D.x + 1) / 2) * rectCanvas.width + rectCanvas.left;
+            const sy = ((-centro3D.y + 1) / 2) * rectCanvas.height + rectCanvas.top;
+
+            if (sx >= left && sx <= right && sy >= top && sy <= bottom) {
+                idsSelecionados.add(idMod);
+            }
+        });
+
+        if (idsSelecionados.size > 0) {
+            const primeiroId = Array.from(idsSelecionados)[0];
+            moduloAtivo = modulosCache.find(m => m.id_modulo === primeiroId) || moduloAtivo;
+            document.getElementById("txt_resposta_copiloto").innerText =
+                `🔲 ${idsSelecionados.size} módulo(s) selecionado(s) por caixa!`;
+        } else {
+            moduloAtivo = null;
+        }
+
+        atualizarContadorSelecaoUI();
+        atualizarListaModulosDOM();
+        renderizarCenaCompleta();
+    });
+});

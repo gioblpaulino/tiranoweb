@@ -1,0 +1,5058 @@
+{
+  "metadados": {
+    "nome_cliente": "Cliente TiranoGio",
+    "nome_ambiente": "Cozinha Planejada",
+    "arquivo_salvo": "cliente_tiranogio_cozinha_planejada.json",
+    "estilo_piso": "GRADE_TECNICA",
+    "cor_parede": "#263238"
+  },
+  "ambiente": {
+    "pe_direito_padrao": 2700.0,
+    "espessura_padrao": 150.0,
+    "total_paredes": 2,
+    "paredes": [
+      {
+        "id_parede": "par_b73866",
+        "nome": "Parede A",
+        "x1": 0.0,
+        "y1": 0.0,
+        "x2": 3600.0,
+        "y2": 0.0,
+        "comprimento": 3600.0,
+        "angulo_graus": 0.0,
+        "pe_direito": 2700.0,
+        "espessura": 150.0,
+        "vetor_direcao": {
+          "ux": 1.0,
+          "uy": 0.0
+        },
+        "vetor_normal_interno": {
+          "nx": -0.0,
+          "ny": 1.0
+        },
+        "aberturas": []
+      },
+      {
+        "id_parede": "par_af7ce6",
+        "nome": "Parede B",
+        "x1": 3600.0,
+        "y1": 0.0,
+        "x2": 3600.0,
+        "y2": 2600.0,
+        "comprimento": 2600.0,
+        "angulo_graus": 90.0,
+        "pe_direito": 2700.0,
+        "espessura": 150.0,
+        "vetor_direcao": {
+          "ux": 0.0,
+          "uy": 1.0
+        },
+        "vetor_normal_interno": {
+          "nx": -1.0,
+          "ny": 0.0
+        },
+        "aberturas": []
+      }
+    ]
+  },
+  "modulos": {
+    "001": {
+      "id_modulo": "001",
+      "guid": "4113a102-b5c1-4d3b-b67c-e546754cf1ca",
+      "nome_projeto": "Cliente TiranoGio - Cozinha Planejada",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 800.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "folgas_frentes": {
+            "afastamento_frontal_caixa": 1.5,
+            "gap_entre_frentes": 4,
+            "gap_inferior": 3,
+            "gap_lateral_direita": 3,
+            "gap_lateral_esquerda": 3,
+            "gap_superior": 3,
+            "recuo_frente_embutida": 2,
+            "tipo_montagem_frente": "SOBREPOSTA"
+          },
+          "geometria_caixaria": {
+            "altura_cava_puxador": 35,
+            "altura_total_mao_amiga": 120,
+            "altura_travessa_reforco_torre": 70,
+            "fator_z_reforco_inferior_torre": 0.45,
+            "folga_encaixe_fundo": 1,
+            "folga_encaixe_mao_amiga": 2,
+            "folga_fundo_sobreposto_cada_lado": 1,
+            "folga_lateral_mao_amiga_parede": 50,
+            "largura_regua_afastador": 60,
+            "largura_sarrafo": 70,
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "recuo_canal_fundo": 15,
+            "recuo_frontal_divisoria": 0,
+            "recuo_frontal_prateleira": 20,
+            "recuo_traseiro_divisoria": 1.0,
+            "recuo_traseiro_prateleira": 1.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO"
+          },
+          "id_perfil": "padrao_convencional_15mm",
+          "limites_engenharia": {
+            "altura_min_nicho_prateleira_mm": 40,
+            "largura_max_gaveta_mm": 1200,
+            "largura_max_porta_tempero_mm": 350,
+            "largura_min_gaveta_mm": 250,
+            "largura_min_porta_dupla_mm": 80,
+            "largura_min_porta_tempero_mm": 110,
+            "medida_min_bancada_rodape_mm": 50,
+            "medida_minima_vao_mm": 50,
+            "profundidade_max_aereo_mm": 600,
+            "profundidade_min_divisoria_mm": 50,
+            "profundidade_min_prateleira_mm": 60
+          },
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15,
+            "espessura_fita_borda_mm": 0.45,
+            "espessura_frente_mm": 15,
+            "espessura_fundo_mm": 6,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm",
+            "padroes_sem_veio": [
+              "BRANCO",
+              "CRU",
+              "PRETO",
+              "CINZA",
+              "GRAFITE",
+              "TX"
+            ]
+          },
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "nomenclatura": {
+            "afastador_canto": "Afastador Frontal (Canto)",
+            "base_inferior": "Base Inferior",
+            "base_nivel_porta_tempero": "Base Nível Porta-Tempero",
+            "base_superior": "Base Superior / Teto",
+            "batente_canto": "Batente / Montante de Canto",
+            "coluna_frontal_porta_tempero": "Coluna Frontal Porta-Tempero",
+            "coluna_traseira_porta_tempero": "Coluna Traseira Porta-Tempero",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "divisoria_vertical": "Divisória Vertical",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "fechamento_parede_dir": "Fechamento Parede (Dir)",
+            "fechamento_parede_esq": "Fechamento Parede (Esq)",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_avulsa": "Frente de Gaveta Avulsa",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "frente_porta_tempero": "Frente Porta-Tempero",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "fundo_costa": "Fundo Costa",
+            "fundo_gaveta": "Fundo Gaveta",
+            "fundo_sapateira": "Fundo Sapateira",
+            "guarda_lateral_porta_tempero_dir": "Lateral Porta-Tempero (Dir)",
+            "guarda_lateral_porta_tempero_esq": "Lateral Porta-Tempero (Esq)",
+            "lateral_avulsa": "Painel / Lateral Avulsa",
+            "lateral_direita": "Lateral Direita",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "marmoraria_bancada": "Tampo Bancada de Pedra",
+            "marmoraria_cascata_dir": "Cascata Lateral Pedra (Dir)",
+            "marmoraria_cascata_esq": "Cascata Lateral Pedra (Esq)",
+            "marmoraria_frontao_dir": "Frontão Lateral (Dir)",
+            "marmoraria_frontao_esq": "Frontão Lateral (Esq)",
+            "marmoraria_frontao_traseiro": "Frontão / Rodopia Traseiro",
+            "marmoraria_saia": "Saia Frontal Bancada (Testeira)",
+            "porta_basculante": "Porta Basculante",
+            "porta_cega_canto": "Fechamento Cego (Canto)",
+            "porta_giro_direita": "Porta Direita",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "prateleira_avulsa": "Prateleira / Base Avulsa",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "rodape_calco_estrutural": "Calço Estrutural Rodapé",
+            "rodape_frontal": "Rodapé Frontal",
+            "rodape_lateral_dir": "Lateral Rodapé (Dir)",
+            "rodape_lateral_esq": "Lateral Rodapé (Esq)",
+            "rodape_traseiro": "Rodapé Traseiro",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "tamponamento_lateral_dir": "Tamponamento Lateral (Dir)",
+            "tamponamento_lateral_esq": "Tamponamento Lateral (Esq)",
+            "tamponamento_superior": "Tamponamento Superior",
+            "traseira_gaveta": "Traseira Gaveta",
+            "traseira_sapateira": "Traseira Sapateira",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "vista_superior_l_base": "Travessa Base da Vista em L",
+            "vista_superior_l_frontal": "Vista Superior Frontal (Perfil L)",
+            "porta_correr": "Porta de Correr"
+          },
+          "parametros_usinagem": {
+            "broca_caneco_dobradica": 35,
+            "broca_cavilha": 8,
+            "broca_marcacao_guia": 3,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_tambor_minifix": 15,
+            "cota_pistao_gas_frente": 55,
+            "cota_pistao_gas_topo": 80,
+            "distancia_centro_caneco_borda": 22.5,
+            "distancia_centro_minifix_borda": 34,
+            "distancia_max_entre_furos": 250,
+            "largura_canal_fundo": 7,
+            "margem_furo_acima_canal_gaveta": 12,
+            "margem_seguranca_borda_furo": 2,
+            "offset_cavilha_parafuso": 32,
+            "profundidade_canal_fundo": 8,
+            "profundidade_caneco_dobradica": 11.5,
+            "profundidade_cavilha": 12,
+            "profundidade_marcacao_guia": 2,
+            "profundidade_tambor_minifix": 12.5,
+            "recuo_calco_dobradica_frontal": 37,
+            "recuo_dobradica_topo_base": 100,
+            "recuo_furo_estrutural_frontal": 50,
+            "recuo_furo_estrutural_traseiro": 50,
+            "recuo_furo_gaveta": 30,
+            "recuo_furo_sarrafo_deitado": 20,
+            "recuo_furo_travessa_em_pe": 15
+          },
+          "regras_bancada_rodape": {
+            "altura_bojo_cuba_mm": 180,
+            "altura_frontao_padrao_mm": 100,
+            "altura_instalacao_bancada_z_mm": 900,
+            "altura_saia_frontal_padrao_mm": 40,
+            "distancia_max_entre_calcos_rodape_mm": 600,
+            "espessura_cooktop_mm": 12,
+            "espessura_pedra_padrao_mm": 20,
+            "largura_cooktop_padrao_mm": 600,
+            "largura_cuba_padrao_mm": 560,
+            "margem_min_borda_acessorio_mm": 50,
+            "profundidade_cooktop_padrao_mm": 450,
+            "profundidade_cuba_padrao_mm": 340,
+            "profundidade_min_quadro_rodape_mm": 100,
+            "recuo_frontal_rodape_padrao_mm": 50,
+            "recuo_traseiro_rodape_padrao_mm": 20
+          },
+          "regras_canto_reto": {
+            "avanco_frontal_batente_mm": 40,
+            "deslocamento_x_afastador_mm": 50,
+            "largura_area_cega_padrao_mm": 580,
+            "largura_batente_padrao_mm": 70,
+            "tipo_porta_cega_padrao": "EXTERNA"
+          },
+          "regras_porta_correr": {
+            "sistema_padrao": "RO_65_EMBUTIDA",
+            "espaco_trilho_frontal_mm": 60.0,
+            "desconto_altura_trilhos_mm": 35.0,
+            "folga_inferior_trilho_mm": 18.0,
+            "transpasse_entre_portas_mm": 20.0,
+            "folga_lateral_trilho_mm": 2.0,
+            "distancia_entre_planos_y_mm": 22.0,
+            "largura_min_folha_mm": 350.0,
+            "disposicao_trilhos_padrao": "MEIO_FRENTE"
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000,
+              "quantidade": 5
+            }
+          ],
+          "regras_gaveta": {
+            "altura_lateral_sapateira": 80,
+            "diferenca_altura_lateral_interna": 15,
+            "elevacao_base_caixote_z": 15,
+            "elevacao_base_sapateira_z": 20,
+            "elevacao_frente_interna_z": 5,
+            "espessura_engrosso_gaveta_interna": 25,
+            "folga_altura_caixote": 30,
+            "folga_corredica_cada_lado": 13,
+            "folga_lateral_frente_interna": 2,
+            "folga_profundidade_traseira": 10,
+            "offset_eixo_corredica_z": 45,
+            "profundidade_engrosso_gaveta_interna": 450,
+            "rebaixo_contra_frente_traseira": 5,
+            "recuo_canal_fundo_gaveta": 15,
+            "recuo_frontal_caixote": 0,
+            "recuo_frontal_gaveta_interna": 35,
+            "recuo_frontal_sapateira": 30,
+            "recuo_trilho_frontal": 37,
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "trilhos_comerciais_mm": [
+              600,
+              550,
+              500,
+              450,
+              400,
+              350,
+              300,
+              250,
+              200
+            ],
+            "vao_puxador_gaveta_interna": 28
+          },
+          "regras_porta_tempero": {
+            "altura_guarda_lateral": 70,
+            "cota_z_prateleira_intermediaria_fator": 0.52,
+            "folga_topo_estrutura": 25,
+            "recuo_frontal_estrutura": 0,
+            "trilhos_comerciais_mm": [
+              500,
+              450,
+              400,
+              350,
+              300,
+              250
+            ],
+            "vao_livre_abaixo_guarda_z": 15
+          },
+          "regras_tamponamento": {
+            "altura_minima_vista_l_mm": 25,
+            "avanco_frontal_padrao_mm": 18,
+            "espessura_padrao_mm": 18,
+            "largura_aba_l_padrao_mm": 60,
+            "largura_fechamento_padrao_mm": 50,
+            "subida_topo_padrao_mm": 70
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750,
+            "fator_perda_corte_bom": 1.15,
+            "largura_max_mdf": 1830,
+            "largura_max_vao_livre_sem_apoio": 850,
+            "perda_destopo_fita_por_borda_mm": 30,
+            "refilo_seguranca": 20
+          },
+          "tipo_montagem_caixa": "Parafuso_Soberbo"
+        },
+        "zonas_materiais": {
+          "cor_caixaria": "duratex_grafite_trama",
+          "cor_internos": "duratex_grafite_trama",
+          "fita_frontal_caixaria": "duratex_carvalho_avela",
+          "fita_internos": "duratex_grafite_trama",
+          "cor_frentes": "duratex_carvalho_avela",
+          "fita_frentes": "duratex_carvalho_avela",
+          "cor_fundo_gaveta": "duratex_grafite_trama",
+          "cor_fundo_costa": "duratex_grafite_trama"
+        },
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "PRATELEIRAS",
+          "quantidade": 2,
+          "fixas": false,
+          "id_vao": "raiz"
+        },
+        {
+          "tipo": "PORTAS_GIRO",
+          "abertura": "DUPLA",
+          "id_vao": "raiz"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": true,
+        "ocupacao_interna": null,
+        "tem_portas": true,
+        "tipo_divisao": null,
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 770.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "direita": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "base": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "topo": "05c6129d-ddc2-4839-b6b4-6ca36a22569a"
+        },
+        "filhos": []
+      },
+      "alertas_engenharia": [],
+      "lista_de_pecas": [
+        {
+          "id_peca": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 800.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 800.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "9b8850d6-c8e7-4537-944c-485d215b3106",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c071cea8-99cb-40b7-8dc3-ee9bfed948c3",
+                "x": 792.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c5cdf107-dc5e-43c2-859b-6c946b24608e",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "56dd0e6b-3f11-4f85-abb9-2fa41855862d",
+                "x": 792.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "63f4844a-fc30-42d7-b0fa-671a66fccd0d",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c61636a9-838d-47c4-93b3-05fc0f31aa3f",
+                "x": 792.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 800.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 800.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c9140523-a0f7-4546-bdda-8a035f521997",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "31ef0fdf-1566-41e1-b0cf-3e83fa362dba",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9addee92-183b-4e5b-b295-5efe926bfba4",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b705aa5-4565-4a4a-982b-15d93f254616",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6c5684a4-f9b9-478e-832c-c64913076901",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a8069720-63af-4c44-903c-36c3b6518f94",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "02e52016-d53a-4491-a06c-1a76363e2956",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f3fb3aa9-33dc-468b-967d-650e4aee64cb",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "efd9af3a-78d3-407e-a246-bacd9b469583",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f5418926-6470-44e6-ac8d-ee8e94874875",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 785.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "a41b3a3d-d4d0-4b09-93ba-26e0388d164b",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "cd84d72a-1c10-4618-96c1-45b150640237",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b2e82aa-4614-4d10-8929-7840a44f05ad",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f51326c1-2103-4d34-bfe9-3054b622c551",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "59697a78-10df-4754-89d6-49789eaa7a11",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9074b4d4-29ca-47bb-a5a3-314db029d55d",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e93a46f0-2ed8-44aa-8c79-5eaec5ec8e3a",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "97c1190f-7e84-4f55-8aa2-3f01ca025229",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "000b0f55-50ca-4d10-87b4-6b38100a96ee",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d6f2aa11-dfd7-45aa-844d-617e9582ed9b",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 785.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "05c6129d-ddc2-4839-b6b4-6ca36a22569a",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "0072872d-7007-489b-afbb-8035f98c4182",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "420f34e5-5ec3-4aab-aaa4-958f76f37a73",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 784.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 784.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "3cb98e3a-824e-42cb-8cc1-5fa50d1a93d8",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 228.33
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "e213a347-512a-4f90-b3e5-c0b4b63b4cc9",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 456.67
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "b89ee421-a5c9-462c-bd62-f015fd8ce199",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_esquerda",
+          "nome_comercial": "Porta Esquerda 1",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "7d3cd4de-5b2f-4da1-9896-a115a0e72899",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "7a8ce5db-bcdd-4f82-95b7-cf96a5174fe6",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "8740f7e3-a342-4527-8936-d7ec0e77921e",
+          "id_pai": "001",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_direita",
+          "nome_comercial": "Porta Direita 2",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 402.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "6f6eddfc-ea66-4764-baf5-1b3cf453cd96",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "d44f5f87-64b8-4f82-82e2-e3265e946b55",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "🤖 Copiloto executou: 2 prateleira(s) no Vão Principal | Porta (DUPLA) no Vão Principal.",
+      "prompt_original": "Coloque 2 prateleiras e 2 portas",
+      "posicionamento_ambiente": {
+        "id_parede": "par_b73866",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 0.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 0.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 2800.0
+      },
+      "cliente": "Cliente TiranoGio",
+      "nome_cliente": "Cliente TiranoGio"
+    },
+    "002": {
+      "id_modulo": "002",
+      "guid": "c32b9aab-2aa3-48ed-8263-f0bcbb2245d3",
+      "nome_projeto": "Cliente TiranoGio - Cozinha Planejada",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 800.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "folgas_frentes": {
+            "afastamento_frontal_caixa": 1.5,
+            "gap_entre_frentes": 4,
+            "gap_inferior": 3,
+            "gap_lateral_direita": 3,
+            "gap_lateral_esquerda": 3,
+            "gap_superior": 3,
+            "recuo_frente_embutida": 2,
+            "tipo_montagem_frente": "SOBREPOSTA"
+          },
+          "geometria_caixaria": {
+            "altura_cava_puxador": 35,
+            "altura_total_mao_amiga": 120,
+            "altura_travessa_reforco_torre": 70,
+            "fator_z_reforco_inferior_torre": 0.45,
+            "folga_encaixe_fundo": 1,
+            "folga_encaixe_mao_amiga": 2,
+            "folga_fundo_sobreposto_cada_lado": 1,
+            "folga_lateral_mao_amiga_parede": 50,
+            "largura_regua_afastador": 60,
+            "largura_sarrafo": 70,
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "recuo_canal_fundo": 15,
+            "recuo_frontal_divisoria": 0,
+            "recuo_frontal_prateleira": 20,
+            "recuo_traseiro_divisoria": 1.0,
+            "recuo_traseiro_prateleira": 1.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO"
+          },
+          "id_perfil": "padrao_convencional_15mm",
+          "limites_engenharia": {
+            "altura_min_nicho_prateleira_mm": 40,
+            "largura_max_gaveta_mm": 1200,
+            "largura_max_porta_tempero_mm": 350,
+            "largura_min_gaveta_mm": 250,
+            "largura_min_porta_dupla_mm": 80,
+            "largura_min_porta_tempero_mm": 110,
+            "medida_min_bancada_rodape_mm": 50,
+            "medida_minima_vao_mm": 50,
+            "profundidade_max_aereo_mm": 600,
+            "profundidade_min_divisoria_mm": 50,
+            "profundidade_min_prateleira_mm": 60
+          },
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15,
+            "espessura_fita_borda_mm": 0.45,
+            "espessura_frente_mm": 15,
+            "espessura_fundo_mm": 6,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm",
+            "padroes_sem_veio": [
+              "BRANCO",
+              "CRU",
+              "PRETO",
+              "CINZA",
+              "GRAFITE",
+              "TX"
+            ]
+          },
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "nomenclatura": {
+            "afastador_canto": "Afastador Frontal (Canto)",
+            "base_inferior": "Base Inferior",
+            "base_nivel_porta_tempero": "Base Nível Porta-Tempero",
+            "base_superior": "Base Superior / Teto",
+            "batente_canto": "Batente / Montante de Canto",
+            "coluna_frontal_porta_tempero": "Coluna Frontal Porta-Tempero",
+            "coluna_traseira_porta_tempero": "Coluna Traseira Porta-Tempero",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "divisoria_vertical": "Divisória Vertical",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "fechamento_parede_dir": "Fechamento Parede (Dir)",
+            "fechamento_parede_esq": "Fechamento Parede (Esq)",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_avulsa": "Frente de Gaveta Avulsa",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "frente_porta_tempero": "Frente Porta-Tempero",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "fundo_costa": "Fundo Costa",
+            "fundo_gaveta": "Fundo Gaveta",
+            "fundo_sapateira": "Fundo Sapateira",
+            "guarda_lateral_porta_tempero_dir": "Lateral Porta-Tempero (Dir)",
+            "guarda_lateral_porta_tempero_esq": "Lateral Porta-Tempero (Esq)",
+            "lateral_avulsa": "Painel / Lateral Avulsa",
+            "lateral_direita": "Lateral Direita",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "marmoraria_bancada": "Tampo Bancada de Pedra",
+            "marmoraria_cascata_dir": "Cascata Lateral Pedra (Dir)",
+            "marmoraria_cascata_esq": "Cascata Lateral Pedra (Esq)",
+            "marmoraria_frontao_dir": "Frontão Lateral (Dir)",
+            "marmoraria_frontao_esq": "Frontão Lateral (Esq)",
+            "marmoraria_frontao_traseiro": "Frontão / Rodopia Traseiro",
+            "marmoraria_saia": "Saia Frontal Bancada (Testeira)",
+            "porta_basculante": "Porta Basculante",
+            "porta_cega_canto": "Fechamento Cego (Canto)",
+            "porta_giro_direita": "Porta Direita",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "prateleira_avulsa": "Prateleira / Base Avulsa",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "rodape_calco_estrutural": "Calço Estrutural Rodapé",
+            "rodape_frontal": "Rodapé Frontal",
+            "rodape_lateral_dir": "Lateral Rodapé (Dir)",
+            "rodape_lateral_esq": "Lateral Rodapé (Esq)",
+            "rodape_traseiro": "Rodapé Traseiro",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "tamponamento_lateral_dir": "Tamponamento Lateral (Dir)",
+            "tamponamento_lateral_esq": "Tamponamento Lateral (Esq)",
+            "tamponamento_superior": "Tamponamento Superior",
+            "traseira_gaveta": "Traseira Gaveta",
+            "traseira_sapateira": "Traseira Sapateira",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "vista_superior_l_base": "Travessa Base da Vista em L",
+            "vista_superior_l_frontal": "Vista Superior Frontal (Perfil L)",
+            "porta_correr": "Porta de Correr"
+          },
+          "parametros_usinagem": {
+            "broca_caneco_dobradica": 35,
+            "broca_cavilha": 8,
+            "broca_marcacao_guia": 3,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_tambor_minifix": 15,
+            "cota_pistao_gas_frente": 55,
+            "cota_pistao_gas_topo": 80,
+            "distancia_centro_caneco_borda": 22.5,
+            "distancia_centro_minifix_borda": 34,
+            "distancia_max_entre_furos": 250,
+            "largura_canal_fundo": 7,
+            "margem_furo_acima_canal_gaveta": 12,
+            "margem_seguranca_borda_furo": 2,
+            "offset_cavilha_parafuso": 32,
+            "profundidade_canal_fundo": 8,
+            "profundidade_caneco_dobradica": 11.5,
+            "profundidade_cavilha": 12,
+            "profundidade_marcacao_guia": 2,
+            "profundidade_tambor_minifix": 12.5,
+            "recuo_calco_dobradica_frontal": 37,
+            "recuo_dobradica_topo_base": 100,
+            "recuo_furo_estrutural_frontal": 50,
+            "recuo_furo_estrutural_traseiro": 50,
+            "recuo_furo_gaveta": 30,
+            "recuo_furo_sarrafo_deitado": 20,
+            "recuo_furo_travessa_em_pe": 15
+          },
+          "regras_bancada_rodape": {
+            "altura_bojo_cuba_mm": 180,
+            "altura_frontao_padrao_mm": 100,
+            "altura_instalacao_bancada_z_mm": 900,
+            "altura_saia_frontal_padrao_mm": 40,
+            "distancia_max_entre_calcos_rodape_mm": 600,
+            "espessura_cooktop_mm": 12,
+            "espessura_pedra_padrao_mm": 20,
+            "largura_cooktop_padrao_mm": 600,
+            "largura_cuba_padrao_mm": 560,
+            "margem_min_borda_acessorio_mm": 50,
+            "profundidade_cooktop_padrao_mm": 450,
+            "profundidade_cuba_padrao_mm": 340,
+            "profundidade_min_quadro_rodape_mm": 100,
+            "recuo_frontal_rodape_padrao_mm": 50,
+            "recuo_traseiro_rodape_padrao_mm": 20
+          },
+          "regras_canto_reto": {
+            "avanco_frontal_batente_mm": 40,
+            "deslocamento_x_afastador_mm": 50,
+            "largura_area_cega_padrao_mm": 580,
+            "largura_batente_padrao_mm": 70,
+            "tipo_porta_cega_padrao": "EXTERNA"
+          },
+          "regras_porta_correr": {
+            "sistema_padrao": "RO_65_EMBUTIDA",
+            "espaco_trilho_frontal_mm": 60.0,
+            "desconto_altura_trilhos_mm": 35.0,
+            "folga_inferior_trilho_mm": 18.0,
+            "transpasse_entre_portas_mm": 20.0,
+            "folga_lateral_trilho_mm": 2.0,
+            "distancia_entre_planos_y_mm": 22.0,
+            "largura_min_folha_mm": 350.0,
+            "disposicao_trilhos_padrao": "MEIO_FRENTE"
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000,
+              "quantidade": 5
+            }
+          ],
+          "regras_gaveta": {
+            "altura_lateral_sapateira": 80,
+            "diferenca_altura_lateral_interna": 15,
+            "elevacao_base_caixote_z": 15,
+            "elevacao_base_sapateira_z": 20,
+            "elevacao_frente_interna_z": 5,
+            "espessura_engrosso_gaveta_interna": 25,
+            "folga_altura_caixote": 30,
+            "folga_corredica_cada_lado": 13,
+            "folga_lateral_frente_interna": 2,
+            "folga_profundidade_traseira": 10,
+            "offset_eixo_corredica_z": 45,
+            "profundidade_engrosso_gaveta_interna": 450,
+            "rebaixo_contra_frente_traseira": 5,
+            "recuo_canal_fundo_gaveta": 15,
+            "recuo_frontal_caixote": 0,
+            "recuo_frontal_gaveta_interna": 35,
+            "recuo_frontal_sapateira": 30,
+            "recuo_trilho_frontal": 37,
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "trilhos_comerciais_mm": [
+              600,
+              550,
+              500,
+              450,
+              400,
+              350,
+              300,
+              250,
+              200
+            ],
+            "vao_puxador_gaveta_interna": 28
+          },
+          "regras_porta_tempero": {
+            "altura_guarda_lateral": 70,
+            "cota_z_prateleira_intermediaria_fator": 0.52,
+            "folga_topo_estrutura": 25,
+            "recuo_frontal_estrutura": 0,
+            "trilhos_comerciais_mm": [
+              500,
+              450,
+              400,
+              350,
+              300,
+              250
+            ],
+            "vao_livre_abaixo_guarda_z": 15
+          },
+          "regras_tamponamento": {
+            "altura_minima_vista_l_mm": 25,
+            "avanco_frontal_padrao_mm": 18,
+            "espessura_padrao_mm": 18,
+            "largura_aba_l_padrao_mm": 60,
+            "largura_fechamento_padrao_mm": 50,
+            "subida_topo_padrao_mm": 70
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750,
+            "fator_perda_corte_bom": 1.15,
+            "largura_max_mdf": 1830,
+            "largura_max_vao_livre_sem_apoio": 850,
+            "perda_destopo_fita_por_borda_mm": 30,
+            "refilo_seguranca": 20
+          },
+          "tipo_montagem_caixa": "Parafuso_Soberbo"
+        },
+        "zonas_materiais": {
+          "cor_caixaria": "duratex_grafite_trama",
+          "cor_internos": "duratex_grafite_trama",
+          "fita_frontal_caixaria": "duratex_carvalho_avela",
+          "fita_internos": "duratex_grafite_trama",
+          "cor_frentes": "duratex_carvalho_avela",
+          "fita_frentes": "duratex_carvalho_avela",
+          "cor_fundo_gaveta": "duratex_grafite_trama",
+          "cor_fundo_costa": "duratex_grafite_trama"
+        },
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "PRATELEIRAS",
+          "quantidade": 2,
+          "fixas": false,
+          "id_vao": "raiz"
+        },
+        {
+          "tipo": "PORTAS_GIRO",
+          "abertura": "DUPLA",
+          "id_vao": "raiz"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": true,
+        "ocupacao_interna": null,
+        "tem_portas": true,
+        "tipo_divisao": null,
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 770.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "direita": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "base": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "topo": "05c6129d-ddc2-4839-b6b4-6ca36a22569a"
+        },
+        "filhos": []
+      },
+      "alertas_engenharia": [],
+      "lista_de_pecas": [
+        {
+          "id_peca": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 800.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 800.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "9b8850d6-c8e7-4537-944c-485d215b3106",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c071cea8-99cb-40b7-8dc3-ee9bfed948c3",
+                "x": 792.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c5cdf107-dc5e-43c2-859b-6c946b24608e",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "56dd0e6b-3f11-4f85-abb9-2fa41855862d",
+                "x": 792.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "63f4844a-fc30-42d7-b0fa-671a66fccd0d",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c61636a9-838d-47c4-93b3-05fc0f31aa3f",
+                "x": 792.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 800.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 800.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c9140523-a0f7-4546-bdda-8a035f521997",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "31ef0fdf-1566-41e1-b0cf-3e83fa362dba",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9addee92-183b-4e5b-b295-5efe926bfba4",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b705aa5-4565-4a4a-982b-15d93f254616",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6c5684a4-f9b9-478e-832c-c64913076901",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a8069720-63af-4c44-903c-36c3b6518f94",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "02e52016-d53a-4491-a06c-1a76363e2956",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f3fb3aa9-33dc-468b-967d-650e4aee64cb",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "efd9af3a-78d3-407e-a246-bacd9b469583",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f5418926-6470-44e6-ac8d-ee8e94874875",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 785.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "a41b3a3d-d4d0-4b09-93ba-26e0388d164b",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "cd84d72a-1c10-4618-96c1-45b150640237",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b2e82aa-4614-4d10-8929-7840a44f05ad",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f51326c1-2103-4d34-bfe9-3054b622c551",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "59697a78-10df-4754-89d6-49789eaa7a11",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9074b4d4-29ca-47bb-a5a3-314db029d55d",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e93a46f0-2ed8-44aa-8c79-5eaec5ec8e3a",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "97c1190f-7e84-4f55-8aa2-3f01ca025229",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "000b0f55-50ca-4d10-87b4-6b38100a96ee",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d6f2aa11-dfd7-45aa-844d-617e9582ed9b",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 785.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "05c6129d-ddc2-4839-b6b4-6ca36a22569a",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "0072872d-7007-489b-afbb-8035f98c4182",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "420f34e5-5ec3-4aab-aaa4-958f76f37a73",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 784.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 784.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "3cb98e3a-824e-42cb-8cc1-5fa50d1a93d8",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 228.33
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "e213a347-512a-4f90-b3e5-c0b4b63b4cc9",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 456.67
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "b89ee421-a5c9-462c-bd62-f015fd8ce199",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_esquerda",
+          "nome_comercial": "Porta Esquerda 1",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "7d3cd4de-5b2f-4da1-9896-a115a0e72899",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "7a8ce5db-bcdd-4f82-95b7-cf96a5174fe6",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "8740f7e3-a342-4527-8936-d7ec0e77921e",
+          "id_pai": "002",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_direita",
+          "nome_comercial": "Porta Direita 2",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 402.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "6f6eddfc-ea66-4764-baf5-1b3cf453cd96",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "d44f5f87-64b8-4f82-82e2-e3265e946b55",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "📑 Cópia #002 gerada a partir do item #001.",
+      "prompt_original": "Coloque 2 prateleiras e 2 portas",
+      "posicionamento_ambiente": {
+        "id_parede": "par_b73866",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 800.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 800.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 2000.0
+      },
+      "cliente": "Cliente TiranoGio",
+      "nome_cliente": "Cliente TiranoGio"
+    },
+    "003": {
+      "id_modulo": "003",
+      "guid": "1c1c667c-e811-4adf-8a02-0520385edba8",
+      "nome_projeto": "Cliente TiranoGio - Cozinha Planejada",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 800.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "folgas_frentes": {
+            "afastamento_frontal_caixa": 1.5,
+            "gap_entre_frentes": 4,
+            "gap_inferior": 3,
+            "gap_lateral_direita": 3,
+            "gap_lateral_esquerda": 3,
+            "gap_superior": 3,
+            "recuo_frente_embutida": 2,
+            "tipo_montagem_frente": "SOBREPOSTA"
+          },
+          "geometria_caixaria": {
+            "altura_cava_puxador": 35,
+            "altura_total_mao_amiga": 120,
+            "altura_travessa_reforco_torre": 70,
+            "fator_z_reforco_inferior_torre": 0.45,
+            "folga_encaixe_fundo": 1,
+            "folga_encaixe_mao_amiga": 2,
+            "folga_fundo_sobreposto_cada_lado": 1,
+            "folga_lateral_mao_amiga_parede": 50,
+            "largura_regua_afastador": 60,
+            "largura_sarrafo": 70,
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "recuo_canal_fundo": 15,
+            "recuo_frontal_divisoria": 0,
+            "recuo_frontal_prateleira": 20,
+            "recuo_traseiro_divisoria": 1.0,
+            "recuo_traseiro_prateleira": 1.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO"
+          },
+          "id_perfil": "padrao_convencional_15mm",
+          "limites_engenharia": {
+            "altura_min_nicho_prateleira_mm": 40,
+            "largura_max_gaveta_mm": 1200,
+            "largura_max_porta_tempero_mm": 350,
+            "largura_min_gaveta_mm": 250,
+            "largura_min_porta_dupla_mm": 80,
+            "largura_min_porta_tempero_mm": 110,
+            "medida_min_bancada_rodape_mm": 50,
+            "medida_minima_vao_mm": 50,
+            "profundidade_max_aereo_mm": 600,
+            "profundidade_min_divisoria_mm": 50,
+            "profundidade_min_prateleira_mm": 60
+          },
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15,
+            "espessura_fita_borda_mm": 0.45,
+            "espessura_frente_mm": 15,
+            "espessura_fundo_mm": 6,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm",
+            "padroes_sem_veio": [
+              "BRANCO",
+              "CRU",
+              "PRETO",
+              "CINZA",
+              "GRAFITE",
+              "TX"
+            ]
+          },
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "nomenclatura": {
+            "afastador_canto": "Afastador Frontal (Canto)",
+            "base_inferior": "Base Inferior",
+            "base_nivel_porta_tempero": "Base Nível Porta-Tempero",
+            "base_superior": "Base Superior / Teto",
+            "batente_canto": "Batente / Montante de Canto",
+            "coluna_frontal_porta_tempero": "Coluna Frontal Porta-Tempero",
+            "coluna_traseira_porta_tempero": "Coluna Traseira Porta-Tempero",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "divisoria_vertical": "Divisória Vertical",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "fechamento_parede_dir": "Fechamento Parede (Dir)",
+            "fechamento_parede_esq": "Fechamento Parede (Esq)",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_avulsa": "Frente de Gaveta Avulsa",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "frente_porta_tempero": "Frente Porta-Tempero",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "fundo_costa": "Fundo Costa",
+            "fundo_gaveta": "Fundo Gaveta",
+            "fundo_sapateira": "Fundo Sapateira",
+            "guarda_lateral_porta_tempero_dir": "Lateral Porta-Tempero (Dir)",
+            "guarda_lateral_porta_tempero_esq": "Lateral Porta-Tempero (Esq)",
+            "lateral_avulsa": "Painel / Lateral Avulsa",
+            "lateral_direita": "Lateral Direita",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "marmoraria_bancada": "Tampo Bancada de Pedra",
+            "marmoraria_cascata_dir": "Cascata Lateral Pedra (Dir)",
+            "marmoraria_cascata_esq": "Cascata Lateral Pedra (Esq)",
+            "marmoraria_frontao_dir": "Frontão Lateral (Dir)",
+            "marmoraria_frontao_esq": "Frontão Lateral (Esq)",
+            "marmoraria_frontao_traseiro": "Frontão / Rodopia Traseiro",
+            "marmoraria_saia": "Saia Frontal Bancada (Testeira)",
+            "porta_basculante": "Porta Basculante",
+            "porta_cega_canto": "Fechamento Cego (Canto)",
+            "porta_giro_direita": "Porta Direita",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "prateleira_avulsa": "Prateleira / Base Avulsa",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "rodape_calco_estrutural": "Calço Estrutural Rodapé",
+            "rodape_frontal": "Rodapé Frontal",
+            "rodape_lateral_dir": "Lateral Rodapé (Dir)",
+            "rodape_lateral_esq": "Lateral Rodapé (Esq)",
+            "rodape_traseiro": "Rodapé Traseiro",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "tamponamento_lateral_dir": "Tamponamento Lateral (Dir)",
+            "tamponamento_lateral_esq": "Tamponamento Lateral (Esq)",
+            "tamponamento_superior": "Tamponamento Superior",
+            "traseira_gaveta": "Traseira Gaveta",
+            "traseira_sapateira": "Traseira Sapateira",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "vista_superior_l_base": "Travessa Base da Vista em L",
+            "vista_superior_l_frontal": "Vista Superior Frontal (Perfil L)",
+            "porta_correr": "Porta de Correr"
+          },
+          "parametros_usinagem": {
+            "broca_caneco_dobradica": 35,
+            "broca_cavilha": 8,
+            "broca_marcacao_guia": 3,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_tambor_minifix": 15,
+            "cota_pistao_gas_frente": 55,
+            "cota_pistao_gas_topo": 80,
+            "distancia_centro_caneco_borda": 22.5,
+            "distancia_centro_minifix_borda": 34,
+            "distancia_max_entre_furos": 250,
+            "largura_canal_fundo": 7,
+            "margem_furo_acima_canal_gaveta": 12,
+            "margem_seguranca_borda_furo": 2,
+            "offset_cavilha_parafuso": 32,
+            "profundidade_canal_fundo": 8,
+            "profundidade_caneco_dobradica": 11.5,
+            "profundidade_cavilha": 12,
+            "profundidade_marcacao_guia": 2,
+            "profundidade_tambor_minifix": 12.5,
+            "recuo_calco_dobradica_frontal": 37,
+            "recuo_dobradica_topo_base": 100,
+            "recuo_furo_estrutural_frontal": 50,
+            "recuo_furo_estrutural_traseiro": 50,
+            "recuo_furo_gaveta": 30,
+            "recuo_furo_sarrafo_deitado": 20,
+            "recuo_furo_travessa_em_pe": 15
+          },
+          "regras_bancada_rodape": {
+            "altura_bojo_cuba_mm": 180,
+            "altura_frontao_padrao_mm": 100,
+            "altura_instalacao_bancada_z_mm": 900,
+            "altura_saia_frontal_padrao_mm": 40,
+            "distancia_max_entre_calcos_rodape_mm": 600,
+            "espessura_cooktop_mm": 12,
+            "espessura_pedra_padrao_mm": 20,
+            "largura_cooktop_padrao_mm": 600,
+            "largura_cuba_padrao_mm": 560,
+            "margem_min_borda_acessorio_mm": 50,
+            "profundidade_cooktop_padrao_mm": 450,
+            "profundidade_cuba_padrao_mm": 340,
+            "profundidade_min_quadro_rodape_mm": 100,
+            "recuo_frontal_rodape_padrao_mm": 50,
+            "recuo_traseiro_rodape_padrao_mm": 20
+          },
+          "regras_canto_reto": {
+            "avanco_frontal_batente_mm": 40,
+            "deslocamento_x_afastador_mm": 50,
+            "largura_area_cega_padrao_mm": 580,
+            "largura_batente_padrao_mm": 70,
+            "tipo_porta_cega_padrao": "EXTERNA"
+          },
+          "regras_porta_correr": {
+            "sistema_padrao": "RO_65_EMBUTIDA",
+            "espaco_trilho_frontal_mm": 60.0,
+            "desconto_altura_trilhos_mm": 35.0,
+            "folga_inferior_trilho_mm": 18.0,
+            "transpasse_entre_portas_mm": 20.0,
+            "folga_lateral_trilho_mm": 2.0,
+            "distancia_entre_planos_y_mm": 22.0,
+            "largura_min_folha_mm": 350.0,
+            "disposicao_trilhos_padrao": "MEIO_FRENTE"
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000,
+              "quantidade": 5
+            }
+          ],
+          "regras_gaveta": {
+            "altura_lateral_sapateira": 80,
+            "diferenca_altura_lateral_interna": 15,
+            "elevacao_base_caixote_z": 15,
+            "elevacao_base_sapateira_z": 20,
+            "elevacao_frente_interna_z": 5,
+            "espessura_engrosso_gaveta_interna": 25,
+            "folga_altura_caixote": 30,
+            "folga_corredica_cada_lado": 13,
+            "folga_lateral_frente_interna": 2,
+            "folga_profundidade_traseira": 10,
+            "offset_eixo_corredica_z": 45,
+            "profundidade_engrosso_gaveta_interna": 450,
+            "rebaixo_contra_frente_traseira": 5,
+            "recuo_canal_fundo_gaveta": 15,
+            "recuo_frontal_caixote": 0,
+            "recuo_frontal_gaveta_interna": 35,
+            "recuo_frontal_sapateira": 30,
+            "recuo_trilho_frontal": 37,
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "trilhos_comerciais_mm": [
+              600,
+              550,
+              500,
+              450,
+              400,
+              350,
+              300,
+              250,
+              200
+            ],
+            "vao_puxador_gaveta_interna": 28
+          },
+          "regras_porta_tempero": {
+            "altura_guarda_lateral": 70,
+            "cota_z_prateleira_intermediaria_fator": 0.52,
+            "folga_topo_estrutura": 25,
+            "recuo_frontal_estrutura": 0,
+            "trilhos_comerciais_mm": [
+              500,
+              450,
+              400,
+              350,
+              300,
+              250
+            ],
+            "vao_livre_abaixo_guarda_z": 15
+          },
+          "regras_tamponamento": {
+            "altura_minima_vista_l_mm": 25,
+            "avanco_frontal_padrao_mm": 18,
+            "espessura_padrao_mm": 18,
+            "largura_aba_l_padrao_mm": 60,
+            "largura_fechamento_padrao_mm": 50,
+            "subida_topo_padrao_mm": 70
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750,
+            "fator_perda_corte_bom": 1.15,
+            "largura_max_mdf": 1830,
+            "largura_max_vao_livre_sem_apoio": 850,
+            "perda_destopo_fita_por_borda_mm": 30,
+            "refilo_seguranca": 20
+          },
+          "tipo_montagem_caixa": "Parafuso_Soberbo"
+        },
+        "zonas_materiais": {
+          "cor_caixaria": "duratex_grafite_trama",
+          "cor_internos": "duratex_grafite_trama",
+          "fita_frontal_caixaria": "duratex_carvalho_avela",
+          "fita_internos": "duratex_grafite_trama",
+          "cor_frentes": "duratex_carvalho_avela",
+          "fita_frentes": "duratex_carvalho_avela",
+          "cor_fundo_gaveta": "duratex_grafite_trama",
+          "cor_fundo_costa": "duratex_grafite_trama"
+        },
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "PRATELEIRAS",
+          "quantidade": 2,
+          "fixas": false,
+          "id_vao": "raiz"
+        },
+        {
+          "tipo": "PORTAS_GIRO",
+          "abertura": "DUPLA",
+          "id_vao": "raiz"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": true,
+        "ocupacao_interna": null,
+        "tem_portas": true,
+        "tipo_divisao": null,
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 770.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "direita": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "base": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "topo": "05c6129d-ddc2-4839-b6b4-6ca36a22569a"
+        },
+        "filhos": []
+      },
+      "alertas_engenharia": [],
+      "lista_de_pecas": [
+        {
+          "id_peca": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 800.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 800.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "9b8850d6-c8e7-4537-944c-485d215b3106",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c071cea8-99cb-40b7-8dc3-ee9bfed948c3",
+                "x": 792.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c5cdf107-dc5e-43c2-859b-6c946b24608e",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "56dd0e6b-3f11-4f85-abb9-2fa41855862d",
+                "x": 792.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "63f4844a-fc30-42d7-b0fa-671a66fccd0d",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c61636a9-838d-47c4-93b3-05fc0f31aa3f",
+                "x": 792.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 800.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 800.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c9140523-a0f7-4546-bdda-8a035f521997",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "31ef0fdf-1566-41e1-b0cf-3e83fa362dba",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9addee92-183b-4e5b-b295-5efe926bfba4",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b705aa5-4565-4a4a-982b-15d93f254616",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6c5684a4-f9b9-478e-832c-c64913076901",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a8069720-63af-4c44-903c-36c3b6518f94",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "02e52016-d53a-4491-a06c-1a76363e2956",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f3fb3aa9-33dc-468b-967d-650e4aee64cb",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "efd9af3a-78d3-407e-a246-bacd9b469583",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f5418926-6470-44e6-ac8d-ee8e94874875",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 785.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "a41b3a3d-d4d0-4b09-93ba-26e0388d164b",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "cd84d72a-1c10-4618-96c1-45b150640237",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b2e82aa-4614-4d10-8929-7840a44f05ad",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f51326c1-2103-4d34-bfe9-3054b622c551",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "59697a78-10df-4754-89d6-49789eaa7a11",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9074b4d4-29ca-47bb-a5a3-314db029d55d",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e93a46f0-2ed8-44aa-8c79-5eaec5ec8e3a",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "97c1190f-7e84-4f55-8aa2-3f01ca025229",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "000b0f55-50ca-4d10-87b4-6b38100a96ee",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d6f2aa11-dfd7-45aa-844d-617e9582ed9b",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 785.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "05c6129d-ddc2-4839-b6b4-6ca36a22569a",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "0072872d-7007-489b-afbb-8035f98c4182",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "420f34e5-5ec3-4aab-aaa4-958f76f37a73",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 784.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 784.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "3cb98e3a-824e-42cb-8cc1-5fa50d1a93d8",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 228.33
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "e213a347-512a-4f90-b3e5-c0b4b63b4cc9",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 456.67
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "b89ee421-a5c9-462c-bd62-f015fd8ce199",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_esquerda",
+          "nome_comercial": "Porta Esquerda 1",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "7d3cd4de-5b2f-4da1-9896-a115a0e72899",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "7a8ce5db-bcdd-4f82-95b7-cf96a5174fe6",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "8740f7e3-a342-4527-8936-d7ec0e77921e",
+          "id_pai": "003",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_direita",
+          "nome_comercial": "Porta Direita 2",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 402.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "6f6eddfc-ea66-4764-baf5-1b3cf453cd96",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "d44f5f87-64b8-4f82-82e2-e3265e946b55",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "📑 Cópia #003 gerada a partir do item #001.",
+      "prompt_original": "Coloque 2 prateleiras e 2 portas",
+      "posicionamento_ambiente": {
+        "id_parede": "par_b73866",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 1600.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 1600.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 1200.0
+      },
+      "cliente": "Cliente TiranoGio",
+      "nome_cliente": "Cliente TiranoGio"
+    },
+    "004": {
+      "id_modulo": "004",
+      "guid": "3f8810bd-b17a-4d4b-b416-cf19e68f881a",
+      "nome_projeto": "Cliente TiranoGio - Cozinha Planejada",
+      "familia": "MODULO_INFERIOR",
+      "dimensoes_ocupadas": {
+        "largura_x": 800.0,
+        "altura_y": 700.0,
+        "profundidade_z": 550.0
+      },
+      "parametros": {
+        "material_caixaria": "generico_branco_tx",
+        "material_frentes": "generico_branco_tx",
+        "id_perfil_ativo": "padrao_convencional_15mm",
+        "perfil_ativo": {
+          "folgas_frentes": {
+            "afastamento_frontal_caixa": 1.5,
+            "gap_entre_frentes": 4,
+            "gap_inferior": 3,
+            "gap_lateral_direita": 3,
+            "gap_lateral_esquerda": 3,
+            "gap_superior": 3,
+            "recuo_frente_embutida": 2,
+            "tipo_montagem_frente": "SOBREPOSTA"
+          },
+          "geometria_caixaria": {
+            "altura_cava_puxador": 35,
+            "altura_total_mao_amiga": 120,
+            "altura_travessa_reforco_torre": 70,
+            "fator_z_reforco_inferior_torre": 0.45,
+            "folga_encaixe_fundo": 1,
+            "folga_encaixe_mao_amiga": 2,
+            "folga_fundo_sobreposto_cada_lado": 1,
+            "folga_lateral_mao_amiga_parede": 50,
+            "largura_regua_afastador": 60,
+            "largura_sarrafo": 70,
+            "montagem_base_inferior": "BASE_PASSANTE",
+            "montagem_teto_balcao": "SARRAFOS",
+            "posicao_sarrafo_traseiro_balcao": "DEITADO",
+            "recuo_canal_fundo": 15,
+            "recuo_frontal_divisoria": 0,
+            "recuo_frontal_prateleira": 20,
+            "recuo_traseiro_divisoria": 1.0,
+            "recuo_traseiro_prateleira": 1.0,
+            "reforco_traseiro_torre": "TRAVESSA_DUPLO_REFORCO",
+            "sistema_fixacao_aereo": "REGUA_MAO_AMIGA_45",
+            "tipo_montagem_fundo": "ENCAIXADO_RASGO"
+          },
+          "id_perfil": "padrao_convencional_15mm",
+          "limites_engenharia": {
+            "altura_min_nicho_prateleira_mm": 40,
+            "largura_max_gaveta_mm": 1200,
+            "largura_max_porta_tempero_mm": 350,
+            "largura_min_gaveta_mm": 250,
+            "largura_min_porta_dupla_mm": 80,
+            "largura_min_porta_tempero_mm": 110,
+            "medida_min_bancada_rodape_mm": 50,
+            "medida_minima_vao_mm": 50,
+            "profundidade_max_aereo_mm": 600,
+            "profundidade_min_divisoria_mm": 50,
+            "profundidade_min_prateleira_mm": 60
+          },
+          "materiais_padrao": {
+            "espessura_estrutural_mm": 15,
+            "espessura_fita_borda_mm": 0.45,
+            "espessura_frente_mm": 15,
+            "espessura_fundo_mm": 6,
+            "material_caixaria": "generico_branco_tx",
+            "material_frentes": "generico_branco_tx",
+            "material_fundo": "generico_branco_tx_6mm",
+            "padroes_sem_veio": [
+              "BRANCO",
+              "CRU",
+              "PRETO",
+              "CINZA",
+              "GRAFITE",
+              "TX"
+            ]
+          },
+          "nome_exibicao": "Padrão Convencional 15mm (Soberbo / Girofix)",
+          "nomenclatura": {
+            "afastador_canto": "Afastador Frontal (Canto)",
+            "base_inferior": "Base Inferior",
+            "base_nivel_porta_tempero": "Base Nível Porta-Tempero",
+            "base_superior": "Base Superior / Teto",
+            "batente_canto": "Batente / Montante de Canto",
+            "coluna_frontal_porta_tempero": "Coluna Frontal Porta-Tempero",
+            "coluna_traseira_porta_tempero": "Coluna Traseira Porta-Tempero",
+            "contra_frente_gaveta": "Contra-Frente Gaveta",
+            "divisoria_vertical": "Divisória Vertical",
+            "engrosso_gaveta_interna_dir": "Espaçador Gav. Interna (Dir)",
+            "engrosso_gaveta_interna_esq": "Espaçador Gav. Interna (Esq)",
+            "fechamento_parede_dir": "Fechamento Parede (Dir)",
+            "fechamento_parede_esq": "Fechamento Parede (Esq)",
+            "frente_gaveta": "Frente Gaveta",
+            "frente_gaveta_avulsa": "Frente de Gaveta Avulsa",
+            "frente_gaveta_interna": "Frente Gaveta Interna",
+            "frente_porta_tempero": "Frente Porta-Tempero",
+            "frente_sapateira": "Frente Sapateira Interna",
+            "fundo_costa": "Fundo Costa",
+            "fundo_gaveta": "Fundo Gaveta",
+            "fundo_sapateira": "Fundo Sapateira",
+            "guarda_lateral_porta_tempero_dir": "Lateral Porta-Tempero (Dir)",
+            "guarda_lateral_porta_tempero_esq": "Lateral Porta-Tempero (Esq)",
+            "lateral_avulsa": "Painel / Lateral Avulsa",
+            "lateral_direita": "Lateral Direita",
+            "lateral_esquerda": "Lateral Esquerda",
+            "lateral_gaveta_direita": "Lateral de Gaveta (Dir)",
+            "lateral_gaveta_esquerda": "Lateral de Gaveta (Esq)",
+            "lateral_sapateira_direita": "Lateral Sapateira (Dir)",
+            "lateral_sapateira_esquerda": "Lateral Sapateira (Esq)",
+            "marmoraria_bancada": "Tampo Bancada de Pedra",
+            "marmoraria_cascata_dir": "Cascata Lateral Pedra (Dir)",
+            "marmoraria_cascata_esq": "Cascata Lateral Pedra (Esq)",
+            "marmoraria_frontao_dir": "Frontão Lateral (Dir)",
+            "marmoraria_frontao_esq": "Frontão Lateral (Esq)",
+            "marmoraria_frontao_traseiro": "Frontão / Rodopia Traseiro",
+            "marmoraria_saia": "Saia Frontal Bancada (Testeira)",
+            "porta_basculante": "Porta Basculante",
+            "porta_cega_canto": "Fechamento Cego (Canto)",
+            "porta_giro_direita": "Porta Direita",
+            "porta_giro_esquerda": "Porta Esquerda",
+            "prateleira_avulsa": "Prateleira / Base Avulsa",
+            "prateleira_fixa": "Prateleira Fixa",
+            "prateleira_livre": "Prateleira Livre",
+            "regua_mao_amiga_movel": "Régua Mão Amiga 45° (Móvel)",
+            "regua_mao_amiga_parede": "Régua Mão Amiga 45° (Parede)",
+            "rodape_calco_estrutural": "Calço Estrutural Rodapé",
+            "rodape_frontal": "Rodapé Frontal",
+            "rodape_lateral_dir": "Lateral Rodapé (Dir)",
+            "rodape_lateral_esq": "Lateral Rodapé (Esq)",
+            "rodape_traseiro": "Rodapé Traseiro",
+            "sarrafo_frontal": "Sarrafo Frontal",
+            "sarrafo_traseiro_deitado": "Sarrafo Traseiro Deitado",
+            "sarrafo_traseiro_em_pe": "Sarrafo Traseiro em Pé",
+            "tamponamento_lateral_dir": "Tamponamento Lateral (Dir)",
+            "tamponamento_lateral_esq": "Tamponamento Lateral (Esq)",
+            "tamponamento_superior": "Tamponamento Superior",
+            "traseira_gaveta": "Traseira Gaveta",
+            "traseira_sapateira": "Traseira Sapateira",
+            "travessa_fixacao_aereo": "Travessa Fixação Aéreo",
+            "travessa_reforco_torre_inf": "Travessa Reforço Torre (Inf)",
+            "travessa_reforco_torre_sup": "Travessa Reforço Torre (Sup)",
+            "vista_superior_l_base": "Travessa Base da Vista em L",
+            "vista_superior_l_frontal": "Vista Superior Frontal (Perfil L)",
+            "porta_correr": "Porta de Correr"
+          },
+          "parametros_usinagem": {
+            "broca_caneco_dobradica": 35,
+            "broca_cavilha": 8,
+            "broca_marcacao_guia": 3,
+            "broca_parafuso_estrutural": 4.5,
+            "broca_tambor_minifix": 15,
+            "cota_pistao_gas_frente": 55,
+            "cota_pistao_gas_topo": 80,
+            "distancia_centro_caneco_borda": 22.5,
+            "distancia_centro_minifix_borda": 34,
+            "distancia_max_entre_furos": 250,
+            "largura_canal_fundo": 7,
+            "margem_furo_acima_canal_gaveta": 12,
+            "margem_seguranca_borda_furo": 2,
+            "offset_cavilha_parafuso": 32,
+            "profundidade_canal_fundo": 8,
+            "profundidade_caneco_dobradica": 11.5,
+            "profundidade_cavilha": 12,
+            "profundidade_marcacao_guia": 2,
+            "profundidade_tambor_minifix": 12.5,
+            "recuo_calco_dobradica_frontal": 37,
+            "recuo_dobradica_topo_base": 100,
+            "recuo_furo_estrutural_frontal": 50,
+            "recuo_furo_estrutural_traseiro": 50,
+            "recuo_furo_gaveta": 30,
+            "recuo_furo_sarrafo_deitado": 20,
+            "recuo_furo_travessa_em_pe": 15
+          },
+          "regras_bancada_rodape": {
+            "altura_bojo_cuba_mm": 180,
+            "altura_frontao_padrao_mm": 100,
+            "altura_instalacao_bancada_z_mm": 900,
+            "altura_saia_frontal_padrao_mm": 40,
+            "distancia_max_entre_calcos_rodape_mm": 600,
+            "espessura_cooktop_mm": 12,
+            "espessura_pedra_padrao_mm": 20,
+            "largura_cooktop_padrao_mm": 600,
+            "largura_cuba_padrao_mm": 560,
+            "margem_min_borda_acessorio_mm": 50,
+            "profundidade_cooktop_padrao_mm": 450,
+            "profundidade_cuba_padrao_mm": 340,
+            "profundidade_min_quadro_rodape_mm": 100,
+            "recuo_frontal_rodape_padrao_mm": 50,
+            "recuo_traseiro_rodape_padrao_mm": 20
+          },
+          "regras_canto_reto": {
+            "avanco_frontal_batente_mm": 40,
+            "deslocamento_x_afastador_mm": 50,
+            "largura_area_cega_padrao_mm": 580,
+            "largura_batente_padrao_mm": 70,
+            "tipo_porta_cega_padrao": "EXTERNA"
+          },
+          "regras_porta_correr": {
+            "sistema_padrao": "RO_65_EMBUTIDA",
+            "espaco_trilho_frontal_mm": 60.0,
+            "desconto_altura_trilhos_mm": 35.0,
+            "folga_inferior_trilho_mm": 18.0,
+            "transpasse_entre_portas_mm": 20.0,
+            "folga_lateral_trilho_mm": 2.0,
+            "distancia_entre_planos_y_mm": 22.0,
+            "largura_min_folha_mm": 350.0,
+            "disposicao_trilhos_padrao": "MEIO_FRENTE"
+          },
+          "regras_dobradicas": [
+            {
+              "altura_max_mm": 900,
+              "quantidade": 2
+            },
+            {
+              "altura_max_mm": 1500,
+              "quantidade": 3
+            },
+            {
+              "altura_max_mm": 2000,
+              "quantidade": 4
+            },
+            {
+              "altura_max_mm": 3000,
+              "quantidade": 5
+            }
+          ],
+          "regras_gaveta": {
+            "altura_lateral_sapateira": 80,
+            "diferenca_altura_lateral_interna": 15,
+            "elevacao_base_caixote_z": 15,
+            "elevacao_base_sapateira_z": 20,
+            "elevacao_frente_interna_z": 5,
+            "espessura_engrosso_gaveta_interna": 25,
+            "folga_altura_caixote": 30,
+            "folga_corredica_cada_lado": 13,
+            "folga_lateral_frente_interna": 2,
+            "folga_profundidade_traseira": 10,
+            "offset_eixo_corredica_z": 45,
+            "profundidade_engrosso_gaveta_interna": 450,
+            "rebaixo_contra_frente_traseira": 5,
+            "recuo_canal_fundo_gaveta": 15,
+            "recuo_frontal_caixote": 0,
+            "recuo_frontal_gaveta_interna": 35,
+            "recuo_frontal_sapateira": 30,
+            "recuo_trilho_frontal": 37,
+            "tipo_corredica": "TELESCOPICA_LATERAL",
+            "trilhos_comerciais_mm": [
+              600,
+              550,
+              500,
+              450,
+              400,
+              350,
+              300,
+              250,
+              200
+            ],
+            "vao_puxador_gaveta_interna": 28
+          },
+          "regras_porta_tempero": {
+            "altura_guarda_lateral": 70,
+            "cota_z_prateleira_intermediaria_fator": 0.52,
+            "folga_topo_estrutura": 25,
+            "recuo_frontal_estrutura": 0,
+            "trilhos_comerciais_mm": [
+              500,
+              450,
+              400,
+              350,
+              300,
+              250
+            ],
+            "vao_livre_abaixo_guarda_z": 15
+          },
+          "regras_tamponamento": {
+            "altura_minima_vista_l_mm": 25,
+            "avanco_frontal_padrao_mm": 18,
+            "espessura_padrao_mm": 18,
+            "largura_aba_l_padrao_mm": 60,
+            "largura_fechamento_padrao_mm": 50,
+            "subida_topo_padrao_mm": 70
+          },
+          "restricoes_chapa": {
+            "comprimento_max_mdf": 2750,
+            "fator_perda_corte_bom": 1.15,
+            "largura_max_mdf": 1830,
+            "largura_max_vao_livre_sem_apoio": 850,
+            "perda_destopo_fita_por_borda_mm": 30,
+            "refilo_seguranca": 20
+          },
+          "tipo_montagem_caixa": "Parafuso_Soberbo"
+        },
+        "zonas_materiais": {
+          "cor_caixaria": "duratex_grafite_trama",
+          "cor_internos": "duratex_grafite_trama",
+          "fita_frontal_caixaria": "duratex_carvalho_avela",
+          "fita_internos": "duratex_grafite_trama",
+          "cor_frentes": "duratex_carvalho_avela",
+          "fita_frentes": "duratex_carvalho_avela",
+          "cor_fundo_gaveta": "duratex_grafite_trama",
+          "cor_fundo_costa": "duratex_grafite_trama"
+        },
+        "overrides_pecas": {},
+        "tamponamentos_agregados": {}
+      },
+      "operacoes_internas": [
+        {
+          "tipo": "PRATELEIRAS",
+          "quantidade": 2,
+          "fixas": false,
+          "id_vao": "raiz"
+        },
+        {
+          "tipo": "PORTAS_GIRO",
+          "abertura": "DUPLA",
+          "id_vao": "raiz"
+        }
+      ],
+      "arvore_espacial_vaos": {
+        "id_vao": "raiz",
+        "nome_vao": "Vão Principal",
+        "eh_folha": true,
+        "ocupacao_interna": null,
+        "tem_portas": true,
+        "tipo_divisao": null,
+        "geometria_3d": {
+          "x": 15.0,
+          "y": 0.0,
+          "z": 15.0,
+          "largura": 770.0,
+          "profundidade": 529.0,
+          "altura": 670.0
+        },
+        "id_vizinhos": {
+          "esquerda": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "direita": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "base": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "topo": "05c6129d-ddc2-4839-b6b4-6ca36a22569a"
+        },
+        "filhos": []
+      },
+      "alertas_engenharia": [],
+      "lista_de_pecas": [
+        {
+          "id_peca": "c3c18620-d800-4c3d-b430-aea7921bdad3",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "base_inferior",
+          "nome_comercial": "Base Inferior",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 800.0,
+            "y": 550.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 800.0,
+            "altura_y": 550.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 0.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "9b8850d6-c8e7-4537-944c-485d215b3106",
+                "x": 7.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c071cea8-99cb-40b7-8dc3-ee9bfed948c3",
+                "x": 792.5,
+                "y": 50.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c5cdf107-dc5e-43c2-859b-6c946b24608e",
+                "x": 7.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "56dd0e6b-3f11-4f85-abb9-2fa41855862d",
+                "x": 792.5,
+                "y": 275.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 275.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "63f4844a-fc30-42d7-b0fa-671a66fccd0d",
+                "x": 7.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              },
+              {
+                "id_furo": "c61636a9-838d-47c4-93b3-05fc0f31aa3f",
+                "x": 792.5,
+                "y": 500.0,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 500.0,
+                  "z": 7.5,
+                  "eixo": "Z"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 0.0,
+                "y": 529.0,
+                "pos_x": 0.0,
+                "pos_y": 529.0,
+                "largura": 7.0,
+                "comprimento": 800.0,
+                "profundidade": 8.0,
+                "direcao": "H",
+                "tipo": "CANAL_FUNDO_H",
+                "geometria_3d": {
+                  "pos_x": 0.0,
+                  "pos_y": 529.0,
+                  "pos_z": 7.0,
+                  "dx": 800.0,
+                  "dy": 7.0,
+                  "dz": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "1643a83b-3300-486f-836d-be66ad8c8315",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_esquerda",
+          "nome_comercial": "Lateral Esquerda",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "c9140523-a0f7-4546-bdda-8a035f521997",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "31ef0fdf-1566-41e1-b0cf-3e83fa362dba",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9addee92-183b-4e5b-b295-5efe926bfba4",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b705aa5-4565-4a4a-982b-15d93f254616",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "6c5684a4-f9b9-478e-832c-c64913076901",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "a8069720-63af-4c44-903c-36c3b6518f94",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "02e52016-d53a-4491-a06c-1a76363e2956",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f3fb3aa9-33dc-468b-967d-650e4aee64cb",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "efd9af3a-78d3-407e-a246-bacd9b469583",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f5418926-6470-44e6-ac8d-ee8e94874875",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 7.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 7.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "84172bbb-2ec4-4e0a-aec8-13482d3d1d23",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "lateral_direita",
+          "nome_comercial": "Lateral Direita",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "VERTICAL_YZ",
+          "dimensoes": {
+            "x": 15.0,
+            "y": 550.0,
+            "z": 685.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 550.0,
+            "altura_y": 685.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 785.0,
+            "pos_y": 0.0,
+            "pos_z": 15.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "a41b3a3d-d4d0-4b09-93ba-26e0388d164b",
+                "x": 20.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 20.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "cd84d72a-1c10-4618-96c1-45b150640237",
+                "x": 50.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 50.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "7b2e82aa-4614-4d10-8929-7840a44f05ad",
+                "x": 479.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 479.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "f51326c1-2103-4d34-bfe9-3054b622c551",
+                "x": 509.0,
+                "y": 677.5,
+                "diametro": 4.5,
+                "profundidade": 15.0,
+                "face_normal": "FACE_EXTERNA",
+                "tipo_furo": "ESTRUTURAL",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 509.0,
+                  "z": 692.5,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "59697a78-10df-4754-89d6-49789eaa7a11",
+                "x": 70.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "9074b4d4-29ca-47bb-a5a3-314db029d55d",
+                "x": 478.0,
+                "y": 213.33,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 228.33,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "e93a46f0-2ed8-44aa-8c79-5eaec5ec8e3a",
+                "x": 70.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 70.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "97c1190f-7e84-4f55-8aa2-3f01ca025229",
+                "x": 478.0,
+                "y": 441.67,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 478.0,
+                  "z": 456.67,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "000b0f55-50ca-4d10-87b4-6b38100a96ee",
+                "x": 37.0,
+                "y": 88.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 103.0,
+                  "eixo": "X"
+                }
+              },
+              {
+                "id_furo": "d6f2aa11-dfd7-45aa-844d-617e9582ed9b",
+                "x": 37.0,
+                "y": 582.0,
+                "diametro": 3.0,
+                "profundidade": 2.0,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "GUIA",
+                "geometria_3d": {
+                  "x": 792.5,
+                  "y": 37.0,
+                  "z": 597.0,
+                  "eixo": "X"
+                }
+              }
+            ],
+            "rasgos": [
+              {
+                "x": 529.0,
+                "y": 0.0,
+                "pos_x": 529.0,
+                "pos_y": 0.0,
+                "largura": 7.0,
+                "comprimento": 685.0,
+                "profundidade": 8.0,
+                "direcao": "V",
+                "tipo": "CANAL_FUNDO_V",
+                "geometria_3d": {
+                  "pos_x": 785.0,
+                  "pos_y": 529.0,
+                  "pos_z": 15.0,
+                  "dx": 8.0,
+                  "dy": 7.0,
+                  "dz": 685.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id_peca": "05c6129d-ddc2-4839-b6b4-6ca36a22569a",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_frontal",
+          "nome_comercial": "Sarrafo Frontal",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 0.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "0072872d-7007-489b-afbb-8035f98c4182",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "sarrafo_traseiro_deitado",
+          "nome_comercial": "Sarrafo Traseiro Deitado",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 70.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 70.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 459.0,
+            "pos_z": 685.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "420f34e5-5ec3-4aab-aaa4-958f76f37a73",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "fundo_costa",
+          "nome_comercial": "Fundo Costa",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 784.0,
+            "y": 6.0,
+            "z": 692.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 784.0,
+            "altura_y": 692.0,
+            "espessura": 6.0
+          },
+          "posicao_relativa": {
+            "pos_x": 8.0,
+            "pos_y": 529.0,
+            "pos_z": 8.0
+          },
+          "fitas_borda": {
+            "base": false,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "SEM_FITA",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "3cb98e3a-824e-42cb-8cc1-5fa50d1a93d8",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 228.33
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "e213a347-512a-4f90-b3e5-c0b4b63b4cc9",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "prateleira_livre",
+          "nome_comercial": "Prateleira Livre",
+          "material": "duratex_grafite_trama",
+          "tem_veio": false,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "HORIZONTAL_XY",
+          "dimensoes": {
+            "x": 770.0,
+            "y": 508.0,
+            "z": 15.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 770.0,
+            "altura_y": 508.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 15.0,
+            "pos_y": 20.0,
+            "pos_z": 456.67
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": false,
+            "topo": false,
+            "esquerda": false
+          },
+          "cor_fita_borda": "duratex_grafite_trama",
+          "usinagens": {
+            "furos": [],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "b89ee421-a5c9-462c-bd62-f015fd8ce199",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_esquerda",
+          "nome_comercial": "Porta Esquerda 1",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": false,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 3.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "7d3cd4de-5b2f-4da1-9896-a115a0e72899",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "7a8ce5db-bcdd-4f82-95b7-cf96a5174fe6",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 25.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        },
+        {
+          "id_peca": "8740f7e3-a342-4527-8936-d7ec0e77921e",
+          "id_pai": "004",
+          "id_vinculo_structure": null,
+          "categoria_industrial": "porta_giro_direita",
+          "nome_comercial": "Porta Direita 2",
+          "material": "duratex_carvalho_avela",
+          "tem_veio": true,
+          "espelhar_cam_x": true,
+          "orientacao_3d": "FRONTAL_XZ",
+          "dimensoes": {
+            "x": 395.0,
+            "y": 15.0,
+            "z": 694.0
+          },
+          "dimensoes_2d_planificadas": {
+            "largura_x": 395.0,
+            "altura_y": 694.0,
+            "espessura": 15.0
+          },
+          "posicao_relativa": {
+            "pos_x": 402.0,
+            "pos_y": -16.5,
+            "pos_z": 3.0
+          },
+          "fitas_borda": {
+            "base": true,
+            "direita": true,
+            "topo": true,
+            "esquerda": true
+          },
+          "cor_fita_borda": "duratex_carvalho_avela",
+          "usinagens": {
+            "furos": [
+              {
+                "id_furo": "6f6eddfc-ea66-4764-baf5-1b3cf453cd96",
+                "x": 22.5,
+                "y": 100.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 103.0,
+                  "eixo": "Y"
+                }
+              },
+              {
+                "id_furo": "d44f5f87-64b8-4f82-82e2-e3265e946b55",
+                "x": 22.5,
+                "y": 594.0,
+                "diametro": 35.0,
+                "profundidade": 11.5,
+                "face_normal": "FACE_INTERNA",
+                "tipo_furo": "CANECO",
+                "geometria_3d": {
+                  "x": 774.5,
+                  "y": -9.0,
+                  "z": 597.0,
+                  "eixo": "Y"
+                }
+              }
+            ],
+            "rasgos": []
+          }
+        }
+      ],
+      "resposta_copiloto": "📑 Cópia #004 gerada a partir do item #001.",
+      "prompt_original": "Coloque 2 prateleiras e 2 portas",
+      "posicionamento_ambiente": {
+        "id_parede": "par_b73866",
+        "nome_parede": "Parede A",
+        "distancia_x_parede": 2400.0,
+        "elevacao_z": 0.0,
+        "afastamento_parede": 0.0,
+        "rotacao_offset_graus": 0.0,
+        "x_ambiente": 2400.0,
+        "y_ambiente": 0.0,
+        "z_ambiente": 0.0,
+        "rotacao_graus": 0.0,
+        "sobra_parede_mm": 400.0
+      },
+      "cliente": "Cliente TiranoGio",
+      "nome_cliente": "Cliente TiranoGio"
+    }
+  },
+  "elementos_parede": [],
+  "data_salvamento": "20/11/2026 19:48"
+}

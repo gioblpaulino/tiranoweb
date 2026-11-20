@@ -11,6 +11,7 @@ from tiranocad_core.modelos.entidades import Peca
 from tiranocad_core.modelos.no_espacial import NoEspacial
 from tiranocad_core.regras.validador_engenharia import ValidadorEngenharia
 from tiranocad_core.construtores.caixaria import ConstrutorCaixaria
+from tiranocad_core.construtores.cantos import ConstrutorCantos
 from tiranocad_core.construtores.internos import ConstrutorInternos
 from tiranocad_core.construtores.gavetas import ConstrutorGavetas
 from tiranocad_core.construtores.frentes import ConstrutorFrentes
@@ -94,9 +95,10 @@ class OrquestradorModulo:
                 modo_espessura=modo_esp,
                 espessura_chapa_base=esp_caixa,
                 material=mat_frentes
+            
             )
             return self._empacotar_payload(
-                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
+                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z, zonas_materiais, overrides_pecas, tamponamentos_agregados,
                 mat_caixa, mat_frentes, [], None, [], pecas_painel,
                 f"🪵 Construtor de Painéis: '{nome_p}' ({modo_esp}) fabricado com {len(pecas_painel)} peça(s)."
             )
@@ -115,7 +117,7 @@ class OrquestradorModulo:
                 quantidade=qtd_avulso
             )
             return self._empacotar_payload(
-                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
+                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z, zonas_materiais, overrides_pecas, tamponamentos_agregados,
                 mat_caixa, mat_frentes, [], None, [], pecas_avulsas,
                 f"🔩 Construtor Avulso: '{subtipo}' fabricado com {len(pecas_avulsas)} peça(s)."
             )
@@ -158,7 +160,28 @@ class OrquestradorModulo:
                 f"🧱 Construtor de Rodapé: Base ({largura_x:.0f}x{altura_y:.0f}mm) gerada com {len(pecas_rodape)} peça(s) de corte.",
                 zonas_materiais, overrides_pecas, tamponamentos_agregados
             )
-            
+        
+        # =====================================================================
+        # ROTA ESPECIAL 5: CONSTRUTOR DE CANTO RETO (INFERIOR, AÉREO OU TORRE)
+        # =====================================================================
+        if familia == "MODULO_CANTO_RETO":
+            c_cantos = ConstrutorCantos(self.gerenciador_perfis)
+            pecas_canto, vao_canto = c_cantos.construir_canto_reto(
+                id_modulo=id_modulo,
+                largura_x=largura_x,
+                altura_y=altura_y,
+                profundidade_z=profundidade_z,
+                opcoes=opcoes_esp,
+                com_fundo=com_fundo
+            )
+            self.aplicar_matriz_materiais(pecas_canto, zonas_materiais, overrides_pecas)
+            return self._empacotar_payload(
+                id_modulo, nome_projeto, familia, largura_x, altura_y, profundidade_z,
+                mat_caixa, mat_frentes, [], vao_canto.to_dict(), [], pecas_canto,
+                f"📐 Canto Reto ({opcoes_esp.get('tipo_porta_cega', 'EXTERNA')}) fabricado com {len(pecas_canto)} peça(s).",
+                zonas_materiais, overrides_pecas, tamponamentos_agregados
+            )
+                
         c_caixaria = ConstrutorCaixaria(self.gerenciador_perfis)
         c_internos = ConstrutorInternos(self.gerenciador_perfis)
         c_gavetas = ConstrutorGavetas(self.gerenciador_perfis)
@@ -206,13 +229,19 @@ class OrquestradorModulo:
 
             elif tipo_op == "GAVETEIRO":
                 pecas_gav = c_gavetas.construir_gaveteiro(
-                    id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_gavetas=int(op.get("quantidade", 4))
+                    id_modulo=id_modulo,
+                    vao_alvo=vao_alvo,
+                    quantidade_gavetas=int(op.get("quantidade", 4)),
+                    alturas_custom=op.get("alturas_gavetas")
                 )
                 todas_pecas.extend(pecas_gav)
 
             elif tipo_op == "GAVETEIRO_INTERNO":
                 pecas_gav_int = c_gavetas.construir_gaveteiro_interno(
-                    id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_gavetas=int(op.get("quantidade", 3))
+                    id_modulo=id_modulo,
+                    vao_alvo=vao_alvo,
+                    quantidade_gavetas=int(op.get("quantidade", 3)),
+                    alturas_custom=op.get("alturas_gavetas")
                 )
                 todas_pecas.extend(pecas_gav_int)
 
@@ -237,7 +266,15 @@ class OrquestradorModulo:
                     id_modulo=id_modulo, vao_alvo=vao_alvo, quantidade_basculantes=int(op.get("quantidade", 1))
                 )
                 todas_pecas.extend(pecas_basc)
-
+            elif tipo_op == "PORTAS_CORRER":
+                pecas_corr = c_frentes.construir_portas_correr(
+                    id_modulo=id_modulo,
+                    vao_alvo=vao_alvo,
+                    quantidade_portas=int(op.get("quantidade", 2)),
+                    disposicao_trilhos=op.get("disposicao_trilhos")
+                )
+                todas_pecas.extend(pecas_corr)
+             
         o_usinagens.aplicar_todas_usinagens(mapa_estrutural, vao_raiz)
         
         # Gera os Tamponamentos Agregados e a Vista em "L" (se ativos no módulo)
@@ -289,8 +326,8 @@ class OrquestradorModulo:
             "travessa_reforco_torre_sup", "travessa_reforco_torre_inf"
         }
         cats_frentes = {
-            "porta_giro_esquerda", "porta_giro_direita", "porta_basculante",
-            "frente_gaveta", "frente_porta_tempero", "painel_tamponamento"
+            "porta_giro_esquerda", "porta_giro_direita", "porta_basculante", "porta_correr_frente", "porta_correr_tras",
+            "frente_gaveta", "frente_porta_tempero", "painel_tamponamento", "porta_cega_canto", "afastador_canto"
         }
         cats_fundo_gaveta = {"fundo_gaveta", "fundo_sapateira"}
 

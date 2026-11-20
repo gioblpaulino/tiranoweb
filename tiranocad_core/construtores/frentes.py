@@ -1,7 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/construtores/frentes.py
-# RESPONSABILIDADE: Construir Portas de Giro (Esquerda, Direita, Dupla) e
-# Portas Basculantes Horizontais (Simples ou Dupla) sobre qualquer Nó Espacial.
+# RESPONSABILIDADE: Construir Portas de Giro e Portas Basculantes Horizontais
+# 100% Data-Driven sobre qualquer Nó Espacial.
 # =============================================================================
 
 from typing import Dict, List
@@ -37,10 +37,9 @@ class ConstrutorFrentes:
         gap_dir = float(self.perfil.obter("folgas_frentes.gap_lateral_direita"))
         gap_entre = float(self.perfil.obter("folgas_frentes.gap_entre_frentes"))
         afast_frontal = float(self.perfil.obter("folgas_frentes.afastamento_frontal_caixa"))
+        larg_min_porta_dupla = float(self.perfil.obter("limites_engenharia.largura_min_porta_dupla_mm"))
 
-        tem_veio_frente = not any(
-            cor in mat_frente.upper() for cor in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"]
-        )
+        tem_veio_frente = self.perfil.material_possui_veio(mat_frente)
 
         if modo_frente == "EMBUTIDA":
             largura_total_cobertura = round(vao_alvo.largura - gap_esq - gap_dir, 2)
@@ -92,8 +91,10 @@ class ConstrutorFrentes:
             })
         else:
             largura_cada_porta = round((largura_total_cobertura - gap_entre) / 2.0, 2)
-            if largura_cada_porta <= 80.0:
-                raise ErroGeometriaCAD(f"🚨 Vão estreito demais ({vao_alvo.largura}mm) para porta dupla.")
+            if largura_cada_porta <= larg_min_porta_dupla:
+                raise ErroGeometriaCAD(
+                    f"🚨 Vão estreito demais ({vao_alvo.largura}mm) para porta dupla (mínimo por folha: {larg_min_porta_dupla:.0f}mm)."
+                )
 
             porta_esq = Peca(
                 categoria_industrial="porta_giro_esquerda",
@@ -156,7 +157,7 @@ class ConstrutorFrentes:
         gap_entre = float(self.perfil.obter("folgas_frentes.gap_entre_frentes"))
         afast_frontal = float(self.perfil.obter("folgas_frentes.afastamento_frontal_caixa"))
 
-        tem_veio_frente = not any(c in mat_frente.upper() for c in ["BRANCO", "CRU", "PRETO", "CINZA", "TX"])
+        tem_veio_frente = self.perfil.material_possui_veio(mat_frente)
 
         if modo_frente == "EMBUTIDA":
             larg_porta = round(vao_alvo.largura - gap_esq - gap_dir, 2)
@@ -212,6 +213,83 @@ class ConstrutorFrentes:
         setattr(vao_alvo, "metadados_portas", metadados_portas)
         return portas_geradas
 
+    def construir_portas_correr(
+        self,
+        id_modulo: str,
+        vao_alvo: NoEspacial,
+        quantidade_portas: int = 2,
+        disposicao_trilhos: str = None
+    ) -> List[Peca]:
+        """
+        Constrói sistema de 2, 3 ou 4 Portas de Correr embutidas no vão,
+        calculando transpasse, desconto de trilhos e planos Y alternados.
+        """
+        qtd = max(2, min(4, int(quantidade_portas)))
+
+        esp_frente = float(self.perfil.obter("materiais_padrao.espessura_frente_mm"))
+        mat_frente = str(self.perfil.obter("materiais_padrao.material_frentes"))
+        tem_veio_frente = self.perfil.material_possui_veio(mat_frente)
+
+        desconto_alt = float(self.perfil.obter("regras_porta_correr.desconto_altura_trilhos_mm"))
+        folga_inf = float(self.perfil.obter("regras_porta_correr.folga_inferior_trilho_mm"))
+        transpasse = float(self.perfil.obter("regras_porta_correr.transpasse_entre_portas_mm"))
+        folga_lat = float(self.perfil.obter("regras_porta_correr.folga_lateral_trilho_mm"))
+        dist_planos_y = float(self.perfil.obter("regras_porta_correr.distancia_entre_planos_y_mm"))
+        larg_min_folha = float(self.perfil.obter("regras_porta_correr.largura_min_folha_mm"))
+        modo_trilho = str(
+            disposicao_trilhos or self.perfil.obter("regras_porta_correr.disposicao_trilhos_padrao")
+        ).strip().upper()
+        
+
+        larg_util = round(vao_alvo.largura - (2.0 * folga_lat), 2)
+        larg_folha = round((larg_util + ((qtd - 1) * transpasse)) / float(qtd), 2)
+        alt_folha = round(vao_alvo.altura - desconto_alt, 2)
+
+        if larg_folha < larg_min_folha:
+            raise ErroGeometriaCAD(
+                f"🚨 [PORTAS DE CORRER] Vão ({vao_alvo.largura:.0f}mm) estreito para {qtd} portas "
+                f"(folha resultou em {larg_folha:.0f}mm; mínimo configurado: {larg_min_folha:.0f}mm)."
+            )
+
+        nome_base = self.perfil.obter_nome_peca("porta_correr")
+        portas_geradas: List[Peca] = []
+        metadados_portas: List[Dict] = []
+
+        passo_x = round(larg_folha - transpasse, 2)
+        z_folha = round(vao_alvo.z + folga_inf, 2)
+
+        for i in range(qtd):
+            if qtd >= 3 and modo_trilho == "MEIO_FRENTE":
+                eh_trilho_frente = (0 < i < qtd - 1)
+            elif qtd >= 3 and modo_trilho == "LATERAIS_FRENTE":
+                eh_trilho_frente = (i == 0 or i == qtd - 1)
+            else:
+                eh_trilho_frente = (i % 2 == 0)
+            cat_folha = "porta_correr_frente" if eh_trilho_frente else "porta_correr_tras"
+            x_folha = round(vao_alvo.x + folga_lat + (i * passo_x), 2)
+            # Alterna o plano Y entre trilho frontal (Y=5mm) e trilho traseiro (Y=5 + dist_planos_y)
+            y_folha = round(vao_alvo.y + 5.0 + (0.0 if eh_trilho_frente else dist_planos_y), 2)
+
+            porta = Peca(
+                categoria_industrial=cat_folha,
+                nome_comercial=f"{nome_base} {i + 1} ({'Frente' if eh_trilho_frente else 'Trás'})",
+                dim_3d=(larg_folha, esp_frente, alt_folha),
+                pos_3d=(x_folha, y_folha, z_folha),
+                material=mat_frente,
+                id_pai=id_modulo,
+                tem_veio=tem_veio_frente
+            )
+            self._aplicar_fita_4_lados(porta)
+            portas_geradas.append(porta)
+            metadados_portas.append({
+                "peca_porta": porta,
+                "eh_correr": True,
+                "trilho": "FRENTE" if eh_trilho_frente else "TRAS"
+            })
+
+        setattr(vao_alvo, "metadados_portas", metadados_portas)
+        return portas_geradas
+    
     @staticmethod
     def _aplicar_fita_4_lados(peca: Peca) -> None:
         peca.fitas.base = True

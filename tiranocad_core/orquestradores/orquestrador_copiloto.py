@@ -174,7 +174,13 @@ class OrquestradorCopiloto:
             resumo_acoes.append(f"1 prateleira no {nome_legivel}")
 
         # E) Portas (Basculantes vs Giro — Bloco Único Unificado!)
-        if "basculante" in trecho:
+        if "correr" in trecho:
+         match_corr = re.search(r"(\d+)\s*(?:porta[s]?\s*)?(?:de\s*)?correr", trecho)
+         qtd_c = int(match_corr.group(1)) if match_corr else 2
+         operacoes.append({"tipo": "PORTAS_CORRER", "quantidade": qtd_c, "id_vao": id_vao_alvo})
+         resumo_acoes.append(f"{qtd_c} porta(s) de correr no {nome_legivel}")
+           
+        elif "basculante" in trecho:
             match_basc = re.search(r"(\d+)\s*(?:porta\s*)?basculante", trecho)
             qtd_b = int(match_basc.group(1)) if match_basc else 1
             operacoes.append({"tipo": "PORTAS_BASCULANTES", "quantidade": qtd_b, "id_vao": id_vao_alvo})

@@ -1,7 +1,7 @@
 # =============================================================================
 # ARQUIVO: tiranocad_core/orquestradores/orquestrador_usinagens.py
-# RESPONSABILIDADE: Aplicar furações automáticas guiadas pelo Perfil JSON, com
-# validação prévia de limites para nunca estourar coordenadas em casos extremos.
+# RESPONSABILIDADE: Aplicar furações automáticas 100% Data-Driven (guiadas pelo
+# Perfil JSON), com validação prévia de limites para nunca estourar coordenadas.
 # =============================================================================
 
 from typing import Dict, Tuple
@@ -36,8 +36,8 @@ class OrquestradorUsinagens:
         else:
             return round(x_global - px, 2), round(z_global - pz, 2)
 
-    @staticmethod
     def _furar_seguro(
+        self,
         peca: Peca,
         x_2d: float,
         y_2d: float,
@@ -47,7 +47,8 @@ class OrquestradorUsinagens:
         tipo_furo: str = "ESTRUTURAL"
     ) -> None:
         """Garante que o furo está dentro da área útil da peça antes de inseri-lo."""
-        if (2.0 <= x_2d <= peca.dim_x_2d - 2.0) and (2.0 <= y_2d <= peca.dim_y_2d - 2.0):
+        margem = float(self.perfil.obter("parametros_usinagem.margem_seguranca_borda_furo"))
+        if (margem <= x_2d <= peca.dim_x_2d - margem) and (margem <= y_2d <= peca.dim_y_2d - margem):
             prof_segura = min(profundidade, peca.espessura)
             peca.adicionar_furo(x_2d, y_2d, diametro, prof_segura, face, tipo_furo)
 
@@ -75,6 +76,8 @@ class OrquestradorUsinagens:
 
         recuo_f = float(self.perfil.obter("parametros_usinagem.recuo_furo_estrutural_frontal"))
         recuo_t = float(self.perfil.obter("parametros_usinagem.recuo_furo_estrutural_traseiro"))
+        recuo_sarrafo = float(self.perfil.obter("parametros_usinagem.recuo_furo_sarrafo_deitado"))
+        recuo_travessa_pe = float(self.perfil.obter("parametros_usinagem.recuo_furo_travessa_em_pe"))
 
         usa_cavilha = ("CAVILHA" in tipo_montagem or "MINIFIX" in tipo_montagem)
         usa_minifix = ("MINIFIX" in tipo_montagem)
@@ -94,7 +97,7 @@ class OrquestradorUsinagens:
             cotas_y_base = [recuo_f, prof_total / 2.0, prof_total - recuo_t]
 
             for cy in cotas_y_base:
-                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
+                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - recuo_sarrafo) else (cy - offset_cav)
 
                 if modo_base == "LATERAL_PASSANTE":
                     if usa_minifix:
@@ -138,7 +141,7 @@ class OrquestradorUsinagens:
             cotas_y_sup = [recuo_f, prof_total / 2.0, prof_total - recuo_t]
 
             for cy in cotas_y_sup:
-                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - 20.0) else (cy - offset_cav)
+                cy_cav = cy + offset_cav if (cy + offset_cav) < (prof_total - recuo_sarrafo) else (cy - offset_cav)
 
                 if modo_base == "LATERAL_PASSANTE":
                     if usa_minifix:
@@ -182,7 +185,7 @@ class OrquestradorUsinagens:
             y_ini_s = sarrafo.posicao_relativa["pos_y"]
             larg_s = sarrafo.dimensoes_3d["y"]
             z_meio_s = sarrafo.posicao_relativa["pos_z"] + meia_esp
-            cotas_y_sarrafo = [y_ini_s + 20.0, y_ini_s + larg_s - 20.0]
+            cotas_y_sarrafo = [y_ini_s + recuo_sarrafo, y_ini_s + larg_s - recuo_sarrafo]
 
             if usa_minifix:
                 larg_s_x = sarrafo.dimensoes_3d["x"]
@@ -214,7 +217,7 @@ class OrquestradorUsinagens:
             y_meio_pe = peca_pe.posicao_relativa["pos_y"] + meia_esp
             z_ini_pe = peca_pe.posicao_relativa["pos_z"]
             alt_pe = peca_pe.dimensoes_3d["z"]
-            cotas_z_pe = [z_ini_pe + 15.0, z_ini_pe + alt_pe - 15.0]
+            cotas_z_pe = [z_ini_pe + recuo_travessa_pe, z_ini_pe + alt_pe - recuo_travessa_pe]
 
             for cz in cotas_z_pe:
                 for lat in (lat_esq, lat_dir):
@@ -295,6 +298,8 @@ class OrquestradorUsinagens:
         diam_guia = float(self.perfil.obter("parametros_usinagem.broca_marcacao_guia"))
         prof_guia = float(self.perfil.obter("parametros_usinagem.profundidade_marcacao_guia"))
         recuo_gav = float(self.perfil.obter("parametros_usinagem.recuo_furo_gaveta"))
+        margem_canal_gav = float(self.perfil.obter("parametros_usinagem.margem_furo_acima_canal_gaveta"))
+        recuo_trilho = float(self.perfil.obter("regras_gaveta.recuo_trilho_frontal"))
         recuo_canal_gav = float(self.perfil.obter("regras_gaveta.recuo_canal_fundo_gaveta"))
         larg_canal = float(self.perfil.obter("parametros_usinagem.largura_canal_fundo"))
 
@@ -305,7 +310,7 @@ class OrquestradorUsinagens:
             y_ini = item["y_inicio_trilho"]
             comp_trilho = item["comprimento_trilho"]
 
-            cotas_y_trilho = [y_ini + 37.0, y_ini + (comp_trilho / 2.0), y_ini + comp_trilho - 37.0]
+            cotas_y_trilho = [y_ini + recuo_trilho, y_ini + (comp_trilho / 2.0), y_ini + comp_trilho - recuo_trilho]
             for lado in ("esquerda", "direita"):
                 painel_vizinho = no.vizinhos.get(lado)
                 if not painel_vizinho:
@@ -317,11 +322,13 @@ class OrquestradorUsinagens:
             if item.get("somente_trilho_lateral"):
                 continue
 
-            for lat_gav in (item["lat_esq"], item["lat_dir"]):
+            for lat_gav in (item.get("lat_esq"), item.get("lat_dir")):
+                if not lat_gav:
+                    continue
                 alt_lat = lat_gav.dim_y_2d
                 comp_lat = lat_gav.dim_x_2d
 
-                z_furo_inf_local = min(alt_lat - 12.0, round(recuo_canal_gav + larg_canal + 12.0, 2))
+                z_furo_inf_local = min(alt_lat - margem_canal_gav, round(recuo_canal_gav + larg_canal + margem_canal_gav, 2))
                 z_furo_sup_local = max(z_furo_inf_local + 10.0, round(alt_lat - min(recuo_gav, alt_lat * 0.25), 2))
 
                 for y_2d in (z_furo_inf_local, z_furo_sup_local):
@@ -332,13 +339,19 @@ class OrquestradorUsinagens:
         diam_caneco = float(self.perfil.obter("parametros_usinagem.broca_caneco_dobradica"))
         prof_caneco = float(self.perfil.obter("parametros_usinagem.profundidade_caneco_dobradica"))
         dist_borda_caneco = float(self.perfil.obter("parametros_usinagem.distancia_centro_caneco_borda"))
+        recuo_calco_dobradica = float(self.perfil.obter("parametros_usinagem.recuo_calco_dobradica_frontal"))
         recuo_topo_base = float(self.perfil.obter("parametros_usinagem.recuo_dobradica_topo_base"))
+        cota_pistao_topo = float(self.perfil.obter("parametros_usinagem.cota_pistao_gas_topo"))
+        cota_pistao_frente = float(self.perfil.obter("parametros_usinagem.cota_pistao_gas_frente"))
         diam_guia = float(self.perfil.obter("parametros_usinagem.broca_marcacao_guia"))
         prof_guia = float(self.perfil.obter("parametros_usinagem.profundidade_marcacao_guia"))
 
         for item in lista_portas:
             porta: Peca = item["peca_porta"]
-
+            
+            if item.get("eh_correr"):
+             continue
+         
             if item.get("eh_basculante"):
                 larg_porta = porta.dim_x_2d
                 alt_porta = porta.dim_y_2d
@@ -352,8 +365,8 @@ class OrquestradorUsinagens:
                 for painel_lat in (item.get("peca_apoio_esq"), item.get("peca_apoio_dir")):
                     if not painel_lat:
                         continue
-                    z_pistao = round(porta.posicao_relativa["pos_z"] + alt_porta - 80.0, 2)
-                    y_pistao = round(painel_lat.posicao_relativa["pos_y"] + 55.0, 2)
+                    z_pistao = round(porta.posicao_relativa["pos_z"] + alt_porta - cota_pistao_topo, 2)
+                    y_pistao = round(painel_lat.posicao_relativa["pos_y"] + cota_pistao_frente, 2)
                     px, py = self.converter_global_para_2d_peca(painel_lat, 0.0, y_pistao, z_pistao)
                     self._furar_seguro(painel_lat, px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
                 continue
@@ -374,6 +387,6 @@ class OrquestradorUsinagens:
 
                 if painel_apoio:
                     z_global_dobradica = porta.posicao_relativa["pos_z"] + cy_local
-                    y_global_calco = painel_apoio.posicao_relativa["pos_y"] + 37.0
+                    y_global_calco = painel_apoio.posicao_relativa["pos_y"] + recuo_calco_dobradica
                     px, py = self.converter_global_para_2d_peca(painel_apoio, 0.0, y_global_calco, z_global_dobradica)
                     self._furar_seguro(painel_apoio, px, py, diam_guia, prof_guia, "FACE_INTERNA", "GUIA")
