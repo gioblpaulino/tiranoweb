@@ -819,7 +819,7 @@ function desenharNoEspacialRecursivo(no, profTotal, grupoMod) {
 
 function atualizarCinematica3D() {
     const fatorExplosao = parseFloat(document.getElementById("rng_explosao").value);
-    const pctAbertura = parseFloat(document.getElementById("rng_abertura").value) / 100.0;
+    const pctAbertura = parseFloat(document.getElementById("rng_abertura_portas").value) / 100.0;
 
     grupoAmbienteModulos.children.forEach(grupoMod => {
         grupoMod.children.forEach(container => {
@@ -1142,6 +1142,7 @@ const MAPA_HEX_MATERIAIS = {
     "duratex_carvalho_hanover": 0xC89D66,
     "duratex_grafite_trama": 0x373B3E,
     "duratex_gianduia_trama": 0x8D7B68,
+    "duratex_freijo_puro": 0x9C6236,
     "arauco_louro_freijo": 0xA86B3E,
     "arauco_cinza_cristal": 0x9E9E9E,
     "guararapes_freijo_puro": 0x9C6236,

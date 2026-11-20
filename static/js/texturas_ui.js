@@ -1864,7 +1864,7 @@ async function redimensionarMedidaInternaDoVao() {
 
     let ops = moduloAtivo.operacoes_internas ? JSON.parse(JSON.stringify(moduloAtivo.operacoes_internas)) : [];
 
-    // CASO 1: Usuário editou a medida interna do Vão Principal (raiz) -> Ajusta o módulo externo!
+    // CASO 1: Usuário editou a medida interna do Vão Principal ("raiz") -> Ajusta o módulo externo!
     if (vaoSelecionadoId === "raiz") {
         if (!isNaN(novaLarg) && Math.abs(novaLarg - largAtual) > 0.5) {
             largMod = Math.round((largMod + (novaLarg - largAtual)) * 10) / 10;
@@ -1875,59 +1875,49 @@ async function redimensionarMedidaInternaDoVao() {
             document.getElementById("inp_altura").value = altMod;
         }
     } else {
-        // CASO 2: É um Sub-Vão (IDs do NoEspacial: "_E", "_D", "_I", "_S") -> Move a Divisória no Pai!
+        // CASO 2: É um Sub-Vão (IDs do NoEspacial: "raiz.0", "raiz.1", "raiz.0.1", etc.) -> Move a Divisória no Pai!
         
-        // A) Mudou a Largura Livre (X) do sub-vão? Procura o ancestral dividido na vertical (_E ou _D)
+        // A) Mudou a Largura Livre (X) do sub-vão? Sobe na árvore procurando a DIVISORIA_VERTICAL que gerou este ramo
         if (!isNaN(novaLarg) && Math.abs(novaLarg - largAtual) > 0.5) {
             let idCursor = vaoSelecionadoId;
-            let encontrouDivVertical = false;
-            while (idCursor.includes("_")) {
-                if (idCursor.endsWith("_E") || idCursor.endsWith("_D")) {
-                    const ehEsq = idCursor.endsWith("_E");
-                    const idPai = idCursor.slice(0, -2); // Remove "_E" ou "_D"
-                    const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
-                    const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_VERTICAL");
-                    if (noPai && opDiv) {
-                        opDiv.cota_esquerda = ehEsq
-                            ? Math.round(novaLarg * 10) / 10
-                            : Math.round((noPai.geometria_3d.largura - espCaixa - novaLarg) * 10) / 10;
-                        encontrouDivVertical = true;
-                    }
+            while (idCursor.includes(".")) {
+                const ultimoPonto = idCursor.lastIndexOf(".");
+                const idPai = idCursor.substring(0, ultimoPonto);
+                const sufixoFilho = idCursor.substring(ultimoPonto + 1); // "0" = Esquerdo, "1" = Direito
+                const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_VERTICAL");
+                const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
+
+                if (opDiv && noPai) {
+                    const ehVaoEsquerdo = (sufixoFilho === "0");
+                    // Chave oficial lida na linha 166 do orquestrador_modulo.py: 'posicao_x'
+                    opDiv.posicao_x = ehVaoEsquerdo
+                        ? Math.round(novaLarg * 10) / 10
+                        : Math.round((noPai.geometria_3d.largura - espCaixa - novaLarg) * 10) / 10;
                     break;
                 }
-                idCursor = idCursor.substring(0, idCursor.lastIndexOf("_"));
-            }
-            // Se o sub-vão só tinha divisão horizontal, ajusta a largura total do módulo
-            if (!encontrouDivVertical) {
-                largMod = Math.round((largMod + (novaLarg - largAtual)) * 10) / 10;
-                document.getElementById("inp_largura").value = largMod;
+                idCursor = idPai;
             }
         }
 
-        // B) Mudou a Altura Livre (Z) do sub-vão? Procura o ancestral dividido na horizontal (_I ou _S)
+        // B) Mudou a Altura Livre (Z) do sub-vão? Sobe na árvore procurando a DIVISORIA_HORIZONTAL que gerou este ramo
         if (!isNaN(novaAlt) && Math.abs(novaAlt - altAtual) > 0.5) {
             let idCursor = vaoSelecionadoId;
-            let encontrouDivHorizontal = false;
-            while (idCursor.includes("_")) {
-                if (idCursor.endsWith("_I") || idCursor.endsWith("_S")) {
-                    const ehInf = idCursor.endsWith("_I");
-                    const idPai = idCursor.slice(0, -2); // Remove "_I" ou "_S"
-                    const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
-                    const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_HORIZONTAL");
-                    if (noPai && opDiv) {
-                        opDiv.cota_inferior = ehInf
-                            ? Math.round(novaAlt * 10) / 10
-                            : Math.round((noPai.geometria_3d.altura - espCaixa - novaAlt) * 10) / 10;
-                        encontrouDivHorizontal = true;
-                    }
+            while (idCursor.includes(".")) {
+                const ultimoPonto = idCursor.lastIndexOf(".");
+                const idPai = idCursor.substring(0, ultimoPonto);
+                const sufixoFilho = idCursor.substring(ultimoPonto + 1); // "0" = Inferior, "1" = Superior
+                const opDiv = ops.find(o => o.id_vao === idPai && o.tipo === "DIVISORIA_HORIZONTAL");
+                const noPai = buscarNoEspacialPorId(moduloAtivo.arvore_espacial_vaos, idPai);
+
+                if (opDiv && noPai) {
+                    const ehVaoInferior = (sufixoFilho === "0");
+                    // Chave oficial lida na linha 172 do orquestrador_modulo.py: 'posicao_z'
+                    opDiv.posicao_z = ehVaoInferior
+                        ? Math.round(novaAlt * 10) / 10
+                        : Math.round((noPai.geometria_3d.altura - espCaixa - novaAlt) * 10) / 10;
                     break;
                 }
-                idCursor = idCursor.substring(0, idCursor.lastIndexOf("_"));
-            }
-            // Se o sub-vão só tinha divisão vertical, ajusta a altura total do módulo
-            if (!encontrouDivHorizontal) {
-                altMod = Math.round((altMod + (novaAlt - altAtual)) * 10) / 10;
-                document.getElementById("inp_altura").value = altMod;
+                idCursor = idPai;
             }
         }
     }
@@ -1964,16 +1954,16 @@ async function redimensionarMedidaInternaDoVao() {
     if (noAtualizado) abrirPainelVao(noAtualizado);
 }
 
-// Subdivisão e inserção usando as chaves exatas do OrquestradorModulo ('cota_esquerda' e 'cota_inferior')!
+// Subdivisão e inserção usando as chaves oficiais do orquestrador_modulo.py ('posicao_x' e 'posicao_z')!
 async function aplicarOperacaoVaoParametrica(tipoOp, extras = {}) {
     const cotaDiv = parseFloat(document.getElementById("inp_vao_cota_div").value) || 0;
     const qtdItens = parseInt(document.getElementById("inp_vao_qtd_itens").value) || 2;
 
     const paramsExtras = { ...extras };
     if (tipoOp === "DIVISORIA_VERTICAL" && cotaDiv >= 50) {
-        paramsExtras.cota_esquerda = cotaDiv;
+        paramsExtras.posicao_x = cotaDiv; // Chave exata da linha 166 do orquestrador_modulo.py!
     } else if (tipoOp === "DIVISORIA_HORIZONTAL" && cotaDiv >= 50) {
-        paramsExtras.cota_inferior = cotaDiv;
+        paramsExtras.posicao_z = cotaDiv; // Chave exata da linha 172 do orquestrador_modulo.py!
     }
 
     if (["GAVETEIRO", "GAVETEIRO_INTERNO", "SAPATEIRA", "PRATELEIRAS", "PORTAS_BASCULANTES"].includes(tipoOp)) {
@@ -1991,8 +1981,8 @@ async function limparOperacoesDoVaoSelecionado() {
     const tinhaNoVao = ops.some(op => op.id_vao === vaoSelecionadoId);
     if (tinhaNoVao) {
         ops = ops.filter(op => op.id_vao !== vaoSelecionadoId);
-    } else if (vaoSelecionadoId.includes("_")) {
-        const idPai = vaoSelecionadoId.substring(0, vaoSelecionadoId.lastIndexOf("_"));
+    } else if (vaoSelecionadoId.includes(".")) {
+        const idPai = vaoSelecionadoId.substring(0, vaoSelecionadoId.lastIndexOf("."));
         ops = ops.filter(op => !op.id_vao.startsWith(idPai));
         vaoSelecionadoId = idPai;
     } else if (ops.length > 0) {
